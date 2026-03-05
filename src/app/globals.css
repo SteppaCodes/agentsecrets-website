@@ -1,0 +1,162 @@
+@import "tailwindcss";
+
+
+:root {
+  --em: #00ff87;
+  --em2: #00cc6a;
+  --am: #ffb800;
+  --re: #ff3b5c;
+  --sky: #38bdf8;
+  --vi: #c084fc;
+  --bg: #060608;
+  --bg2: #0a0c10;
+  --bg3: #0f1218;
+  --border: rgba(255, 255, 255, 0.06);
+  --border-em: rgba(0, 255, 135, 0.22);
+  --text: #dde1ed;
+  --muted: #4a5068;
+  --code-bg: #03050a;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(0, 255, 135, 0.2);
+  color: var(--em);
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--em2);
+  border-radius: 2px;
+}
+
+/* Animation utilities */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@keyframes pring {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 135, 0.7); }
+  50% { box-shadow: 0 0 0 7px rgba(0, 255, 135, 0); }
+}
+
+@keyframes travel {
+  from { left: -5px; }
+  to { left: calc(100% + 5px); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sring {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 135, 0.35); }
+  50% { box-shadow: 0 0 0 22px rgba(0, 255, 135, 0); }
+}
+
+@keyframes spinePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 135, 0.5); }
+  50% { box-shadow: 0 0 0 10px rgba(0, 255, 135, 0); }
+}
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Particle canvas */
+#bgc {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* Grid background */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: linear-gradient(rgba(0, 255, 135, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 135, 0.02) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(140px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Section reveal — animation handled by Framer Motion */
+.rv { opacity: 1; }
+.rvd { opacity: 1; }
+
+/* Traffic lights */
+.tl {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* Terminal colors */
+.c-em { color: #00ff87; }
+.c-em2 { color: #00cc6a; }
+.c-am { color: #ffb800; }
+.c-sky { color: #38bdf8; }
+.c-vi { color: #c084fc; }
+.c-re { color: #ff3b5c; }
+.c-wh { color: #dde1ed; }
+.c-mu { color: #4a5068; }
+.c-di { color: rgba(255, 255, 255, 0.2); }
