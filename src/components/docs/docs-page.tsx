@@ -179,7 +179,7 @@ export default function DocsPage() {
           overflowY: "auto",
           borderRight: "1px solid var(--border)",
           padding: "32px 20px",
-          background: "rgba(6,6,8,0.7)",
+          background: "var(--nav-bg)",
           backdropFilter: "blur(12px)",
         }}
       >
