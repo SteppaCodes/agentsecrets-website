@@ -138,14 +138,14 @@ export default function FlowDemo() {
     const isWarn = STEPS[i].warn;
     return {
       scale: isActive ? 1.14 : 1,
-      borderColor: isDone ? "#00cc6a" : isActive ? (isWarn ? "#ffb800" : "#00ff87") : "rgba(255,255,255,0.07)",
+      borderColor: isDone ? "var(--em2)" : isActive ? (isWarn ? "var(--am)" : "var(--em)") : "var(--overlay-active)",
       backgroundColor: isDone
         ? "rgba(0,204,106,0.15)"
         : isActive
         ? isWarn
           ? "rgba(255,184,0,0.1)"
           : "rgba(0,255,135,0.1)"
-        : "rgba(255,255,255,0.02)",
+        : "var(--panel-bg)",
       boxShadow: isDone
         ? "none"
         : isActive
@@ -160,7 +160,7 @@ export default function FlowDemo() {
     doneSteps.includes(i) ? "var(--em)" : i === activeStep ? (STEPS[i].warn ? "var(--am)" : "var(--em)") : "var(--muted)";
 
   const connColor = (i: number) =>
-    doneSteps.includes(i) ? "var(--em2)" : i === activeStep ? "rgba(0,255,135,0.2)" : "rgba(255,255,255,0.05)";
+    doneSteps.includes(i) ? "var(--em2)" : i === activeStep ? "var(--em)" : "var(--overlay-hover)";
 
   return (
     <div id="how-it-works" className="rv" style={{
@@ -169,7 +169,7 @@ export default function FlowDemo() {
       background: "var(--code-bg)",
       overflow: "hidden",
       marginTop: 48,
-      boxShadow: "0 0 80px rgba(0,255,135,0.04),0 40px 80px rgba(0,0,0,0.5)",
+      boxShadow: "0 0 80px rgba(0,255,135,0.04),0 40px 80px var(--shadow)",
     }}>
       {/* Title bar */}
       <div style={{
@@ -216,7 +216,7 @@ export default function FlowDemo() {
                 style={{
                   width: 50, height: 50, borderRadius: "50%",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 20, border: "2px solid rgba(255,255,255,0.07)",
+                  fontSize: 20, border: "2px solid var(--overlay-active)",
                 }}
               >
                 {doneSteps.includes(i) ? "✓" : s.icon}
@@ -294,13 +294,13 @@ export default function FlowDemo() {
                   className={`tline ${l.cls}`}
                   style={{ fontSize: 12, lineHeight: "2.1" }}
                 >
-                  {l.d && <span style={{ color: "#fff", marginRight: 5 }}>$</span>}
+                  {l.d && <span style={{ color: "var(--text)", marginRight: 5 }}>$</span>}
                   {l.text}
                 </motion.div>
               ))}
               {typing && (
                 <div className={`tline ${typing.cls}`} style={{ fontSize: 12, lineHeight: "2.1" }}>
-                  {typing.d && <span style={{ color: "#fff", marginRight: 5 }}>$</span>}
+                  {typing.d && <span style={{ color: "var(--text)", marginRight: 5 }}>$</span>}
                   {typing.text}
                   <span style={{ animation: "blink 1s step-end infinite" }}>▌</span>
                 </div>

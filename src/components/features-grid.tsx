@@ -70,7 +70,7 @@ function FeatureCard({
       }}
       whileHover={{
         y: -5,
-        boxShadow: "0 22px 48px rgba(0,0,0,0.5)",
+        boxShadow: "0 22px 48px var(--shadow)",
         borderColor: "var(--border-em)",
         transition: { type: "spring", stiffness: 350, damping: 22 },
       }}

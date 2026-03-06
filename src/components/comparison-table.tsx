@@ -64,9 +64,9 @@ export default function ComparisonTable() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: ri * 0.04, duration: 0.35 }}
-              whileHover={{ backgroundColor: "rgba(255,255,255,0.012)" }}
+              whileHover={{ backgroundColor: "var(--overlay)" }}
               style={{
-                borderBottom: ri < rows.length - 1 ? "1px solid rgba(255,255,255,0.025)" : "none",
+                borderBottom: ri < rows.length - 1 ? "1px solid var(--overlay)" : "none",
               }}
             >
               {row.map((cell, ci) => (

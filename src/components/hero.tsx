@@ -26,7 +26,7 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: "100px 40px 80px",
+        padding: "0 40px",
         textAlign: "center",
         position: "relative",
         zIndex: 1,
@@ -62,10 +62,10 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
       <motion.h1
         {...fadeUp(0.1)}
         style={{
-          fontSize: "clamp(44px, 7.5vw, 90px)",
+          fontSize: "clamp(28px, 4.5vw, 56px)",
           fontWeight: 700,
-          lineHeight: 0.95,
-          letterSpacing: "-2px",
+          lineHeight: 1,
+          letterSpacing: "-1px",
           marginBottom: 24,
         }}
       >
@@ -80,7 +80,7 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
         style={{
           fontSize: 13,
           color: "var(--muted)",
-          maxWidth: 480,
+          maxWidth: 580,
           lineHeight: 2,
           margin: "0 auto 40px",
         }}
@@ -98,12 +98,12 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
         }}
       >
         <motion.button
-          whileHover={{ scale: 1.03, y: -2, boxShadow: "0 14px 36px rgba(0,255,135,0.32)", background: "#fff" }}
+          whileHover={{ scale: 1.03, y: -2, boxShadow: "0 14px 36px var(--border-em)", background: "var(--text)" }}
           whileTap={{ scale: 0.97 }}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
           onClick={onDocs}
           style={{
-            padding: "12px 26px", background: "var(--em)", color: "#000",
+            padding: "12px 26px", background: "var(--em)", color: "var(--bg)",
             fontWeight: 700, fontSize: 12, borderRadius: 9, border: "none",
             cursor: "pointer", fontFamily: "inherit",
           }}
@@ -111,7 +111,7 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
           Read the docs →
         </motion.button>
         <motion.a
-          whileHover={{ borderColor: "rgba(255,255,255,0.18)", background: "rgba(255,255,255,0.03)" }}
+          whileHover={{ borderColor: "var(--border)", background: "var(--overlay)" }}
           whileTap={{ scale: 0.97 }}
           href="https://github.com/The-17/agentsecrets"
           target="_blank"
@@ -141,7 +141,7 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
         }}
       >
         <div style={{
-          padding: "13px 15px", color: "#fff", fontSize: 13, fontWeight: 700,
+          padding: "13px 15px", color: "var(--text)", fontSize: 13, fontWeight: 700,
           borderRight: "1px solid var(--border)", background: "rgba(0,255,135,0.04)", flexShrink: 0,
         }}>
           $
@@ -164,7 +164,7 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
       </motion.div>
 
       {/* Stats */}
-      <motion.div
+      {/* <motion.div
         {...fadeUp(0.46)}
         style={{
           display: "grid", gridTemplateColumns: "repeat(3,1fr)",
@@ -185,15 +185,16 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
             <div style={{ fontSize: 10, color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em" }}>{l}</div>
           </div>
         ))}
-      </motion.div>
+      </motion.div> */}
 
       {/* Scroll hint */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.4, duration: 0.8 }}
         style={{
-          position: "absolute", bottom: 32, left: "50%", transform: "translateX(-50%)",
+          position: "relative",
+          marginTop: 24,
           display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
         }}
       >
@@ -208,7 +209,7 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
             background: "linear-gradient(to bottom, var(--em), transparent)",
           }}
         />
-      </motion.div>
+      </motion.div> */}
     </section>
   );
 }

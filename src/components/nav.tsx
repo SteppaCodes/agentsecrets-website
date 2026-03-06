@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import { ThemeToggle } from "./theme-toggle";
 
 interface NavProps {
   page: "home" | "docs";
@@ -44,7 +45,7 @@ export default function Nav({ page, onNavigate }: NavProps) {
           padding: "0 40px",
           justifyContent: "space-between",
           borderBottom: "1px solid var(--border)",
-          background: "rgba(4,4,6,0.92)",
+          background: "var(--nav-bg)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
         }}
@@ -123,14 +124,14 @@ export default function Nav({ page, onNavigate }: NavProps) {
             {page === "docs" ? "← Site" : "Docs"}
           </motion.button>
           <motion.a
-            whileHover={{ background: "#fff", y: -1, boxShadow: "0 6px 20px rgba(0,255,135,0.25)" }}
+            whileHover={{ background: "var(--text)", y: -1, boxShadow: "0 6px 20px rgba(0,255,135,0.25)" }}
             whileTap={{ scale: 0.96 }}
             href="https://github.com/The-17/agentsecrets"
             target="_blank"
             rel="noopener noreferrer"
             style={{
               fontSize: 11, fontWeight: 700, padding: "7px 16px", borderRadius: 7,
-              background: "var(--em)", color: "#000", textDecoration: "none",
+              background: "var(--em)", color: "var(--bg)", textDecoration: "none",
               display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s",
             }}
           >
@@ -139,6 +140,7 @@ export default function Nav({ page, onNavigate }: NavProps) {
             </svg>
             GitHub
           </motion.a>
+          <ThemeToggle />
 
           {/* Hamburger for mobile */}
           <motion.button
@@ -174,7 +176,7 @@ export default function Nav({ page, onNavigate }: NavProps) {
               position: "fixed",
               top: 60, left: 0, right: 0,
               zIndex: 99,
-              background: "rgba(4,4,6,0.97)",
+              background: "var(--nav-bg)",
               backdropFilter: "blur(24px)",
               borderBottom: "1px solid var(--border)",
               padding: "16px 24px 20px",
@@ -216,7 +218,7 @@ export default function Nav({ page, onNavigate }: NavProps) {
                 rel="noopener noreferrer"
                 style={{
                   flex: 1, padding: "10px", fontSize: 12, fontWeight: 700,
-                  background: "var(--em)", color: "#000", textDecoration: "none",
+                  background: "var(--em)", color: "var(--bg)", textDecoration: "none",
                   borderRadius: 8, display: "block", textAlign: "center",
                 }}
               >

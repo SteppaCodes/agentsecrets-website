@@ -102,13 +102,13 @@ export default function CTA({ onDocs }: { onDocs: () => void }) {
         style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginBottom: 24 }}
       >
         <motion.button
-          whileHover={{ background: "#fff", y: -2, boxShadow: "0 14px 36px rgba(0,255,135,0.32)" }}
+          whileHover={{ background: "var(--text)", y: -2, boxShadow: "0 14px 36px rgba(0,255,135,0.32)" }}
           whileTap={{ scale: 0.97 }}
           onClick={onDocs}
           style={{
             padding: "12px 26px",
             background: "var(--em)",
-            color: "#000",
+            color: "var(--bg)",
             fontWeight: 700,
             fontSize: 12,
             borderRadius: 9,
@@ -121,7 +121,7 @@ export default function CTA({ onDocs }: { onDocs: () => void }) {
           Read the docs →
         </motion.button>
         <motion.a
-          whileHover={{ borderColor: "rgba(255,255,255,0.18)", background: "rgba(255,255,255,0.03)" }}
+          whileHover={{ borderColor: "var(--border)", background: "var(--overlay)" }}
           whileTap={{ scale: 0.97 }}
           href="https://github.com/The-17/agentsecrets"
           target="_blank"
@@ -171,7 +171,7 @@ export default function CTA({ onDocs }: { onDocs: () => void }) {
         <div
           style={{
             padding: "13px 15px",
-            color: "#fff",
+            color: "var(--text)",
             fontSize: 13,
             fontWeight: 700,
             borderRight: "1px solid var(--border)",

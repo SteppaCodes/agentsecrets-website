@@ -360,11 +360,11 @@ export default function SecretTheater() {
                     marginBottom: 18,
                     padding: "12px 14px",
                     borderRadius: 8,
-                    border: `1px solid ${activeCallId === c.id && running ? "rgba(255,59,92,0.25)" : "rgba(255,255,255,0.05)"}`,
+                    border: `1px solid ${activeCallId === c.id && running ? "var(--re)" : "var(--overlay)"}`,
                     background:
                       activeCallId === c.id && running
                         ? "rgba(255,59,92,0.04)"
-                        : "rgba(255,255,255,0.02)",
+                        : "var(--panel-bg)",
                     transition: "all 0.3s",
                   }}
                 >
@@ -395,7 +395,7 @@ export default function SecretTheater() {
                       style={{
                         fontSize: 9,
                         color: "var(--muted)",
-                        border: "1px solid rgba(255,255,255,0.08)",
+                        border: "1px solid var(--border)",
                         padding: "1px 6px",
                         borderRadius: 4,
                       }}
@@ -594,8 +594,8 @@ export default function SecretTheater() {
                     marginBottom: 18,
                     padding: "12px 14px",
                     borderRadius: 8,
-                    border: `1px solid ${c.showReal ? "var(--border-em)" : "rgba(255,255,255,0.05)"}`,
-                    background: c.showReal ? "rgba(0,255,135,0.03)" : "rgba(255,255,255,0.02)",
+                    border: `1px solid ${c.showReal ? "var(--border-em)" : "var(--overlay)"}`,
+                    background: c.showReal ? "rgba(0,255,135,0.03)" : "var(--panel-bg)",
                     transition: "all 0.3s",
                   }}
                 >
@@ -840,7 +840,7 @@ export default function SecretTheater() {
                     display: "grid",
                     gridTemplateColumns: "80px 120px 1fr 70px 100px",
                     padding: "12px 20px",
-                    borderBottom: "1px solid rgba(255,255,255,0.025)",
+                    borderBottom: "1px solid var(--overlay)",
                     fontSize: 11,
                     alignItems: "center",
                     background: "var(--code-bg)",

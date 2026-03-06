@@ -220,10 +220,19 @@ export default function Home() {
           >
             Docs
           </button>
-          <span style={{ fontSize: 11, color: "var(--muted)" }}>MIT License</span>
+          <a
+            href="https://github.com/The-17/agentsecrets/blob/main/LICENSE"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ fontSize: 11, color: "var(--muted)", textDecoration: "none", transition: "color 0.2s" }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--em)")}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--muted)")}
+          >
+            MIT License
+          </a>
         </div>
         <span style={{ fontSize: 11, color: "var(--muted)" }}>
-          © 2025 The Seventeen · You cannot steal what was never there.
+          © {new Date().getFullYear()} The Seventeen · You cannot steal what was never there.
         </span>
       </footer>
     </>

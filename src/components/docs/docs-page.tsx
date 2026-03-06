@@ -94,7 +94,7 @@ function DocTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
       </thead>
       <tbody>
         {rows.map((row, i) => (
-          <tr key={i} style={{ borderBottom: i < rows.length - 1 ? "1px solid rgba(255,255,255,0.025)" : "none" }}>
+          <tr key={i} style={{ borderBottom: i < rows.length - 1 ? "1px solid var(--overlay)" : "none" }}>
             {row.map((cell, j) => (
               <td key={j} style={{ padding: "11px 16px", fontSize: 12, verticalAlign: "top", lineHeight: 1.7, color: j === 0 ? "var(--em)" : "var(--text)", fontWeight: j === 0 ? 700 : 400 }}>
                 {cell}
@@ -129,7 +129,7 @@ function Divider() {
 // ── Inline code for doc prose ──
 function C({ children }: { children: string }) {
   return (
-    <code style={{ background: "rgba(255,255,255,0.06)", padding: "2px 6px", borderRadius: 4, fontSize: 11.5, color: "var(--text)", fontFamily: "inherit" }}>
+    <code style={{ background: "var(--overlay)", padding: "2px 6px", borderRadius: 4, fontSize: 11.5, color: "var(--text)", fontFamily: "inherit" }}>
       {children}
     </code>
   );

@@ -14,8 +14,37 @@
   --border: rgba(255, 255, 255, 0.06);
   --border-em: rgba(0, 255, 135, 0.22);
   --text: #dde1ed;
-  --muted: #4a5068;
+  --muted: #666666;
   --code-bg: #03050a;
+  
+  --overlay: rgba(255, 255, 255, 0.03);
+  --overlay-hover: rgba(255, 255, 255, 0.06);
+  --overlay-active: rgba(255, 255, 255, 0.1);
+  --shadow: rgba(0, 0, 0, 0.5);
+  --nav-bg: rgba(4, 4, 6, 0.92);
+  --invert-text: #000;
+  --panel-bg: rgba(255, 255, 255, 0.012);
+  --faded-text: rgba(255, 255, 255, 0.3);
+}
+
+.light {
+  --bg: #fdfdfd;
+  --bg2: #f5f6fa;
+  --bg3: #ffffff;
+  --text: #111827;
+  --muted: #666666;
+  --code-bg: #f1f5f9;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-em: rgba(0, 255, 135, 0.4);
+
+  --overlay: rgba(0, 0, 0, 0.03);
+  --overlay-hover: rgba(0, 0, 0, 0.06);
+  --overlay-active: rgba(0, 0, 0, 0.1);
+  --shadow: rgba(0, 0, 0, 0.1);
+  --nav-bg: rgba(255, 255, 255, 0.92);
+  --invert-text: #fff;
+  --panel-bg: rgba(0, 0, 0, 0.02);
+  --faded-text: rgba(0, 0, 0, 0.4);
 }
 
 *,
@@ -151,12 +180,12 @@ body {
 }
 
 /* Terminal colors */
-.c-em { color: #00ff87; }
-.c-em2 { color: #00cc6a; }
-.c-am { color: #ffb800; }
-.c-sky { color: #38bdf8; }
-.c-vi { color: #c084fc; }
-.c-re { color: #ff3b5c; }
-.c-wh { color: #dde1ed; }
-.c-mu { color: #4a5068; }
-.c-di { color: rgba(255, 255, 255, 0.2); }
+.c-em { color: var(--em); }
+.c-em2 { color: var(--em2); }
+.c-am { color: var(--am); }
+.c-sky { color: var(--sky); }
+.c-vi { color: var(--vi); }
+.c-re { color: var(--re); }
+.c-wh { color: var(--text); }
+.c-mu { color: var(--muted); }
+.c-di { color: var(--faded-text); }
