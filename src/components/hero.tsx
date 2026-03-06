@@ -15,7 +15,7 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
   const fadeUp = (delay = 0) => ({
     initial: { opacity: 0, y: 22 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.65, delay, ease: [0.34, 1.56, 0.64, 1] },
+    transition: { duration: 0.65, delay, ease: [0.34, 1.56, 0.64, 1] as const },
   });
 
   return (
