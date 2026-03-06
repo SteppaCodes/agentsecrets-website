@@ -27,26 +27,6 @@
   --faded-text: rgba(255, 255, 255, 0.3);
 }
 
-.light {
-  --bg: #fdfdfd;
-  --bg2: #f5f6fa;
-  --bg3: #ffffff;
-  --text: #111827;
-  --muted: #666666;
-  --code-bg: #f1f5f9;
-  --border: rgba(0, 0, 0, 0.08);
-  --border-em: rgba(0, 255, 135, 0.4);
-
-  --overlay: rgba(0, 0, 0, 0.03);
-  --overlay-hover: rgba(0, 0, 0, 0.06);
-  --overlay-active: rgba(0, 0, 0, 0.1);
-  --shadow: rgba(0, 0, 0, 0.1);
-  --nav-bg: rgba(255, 255, 255, 0.92);
-  --invert-text: #fff;
-  --panel-bg: rgba(0, 0, 0, 0.02);
-  --faded-text: rgba(0, 0, 0, 0.4);
-}
-
 *,
 *::before,
 *::after {

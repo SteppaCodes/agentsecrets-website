@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { ThemeToggle } from "./theme-toggle";
 
 interface NavProps {
   page: "home" | "docs";
@@ -140,7 +139,6 @@ export default function Nav({ page, onNavigate }: NavProps) {
             </svg>
             GitHub
           </motion.a>
-          <ThemeToggle />
 
           {/* Hamburger for mobile */}
           <motion.button
