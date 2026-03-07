@@ -4,15 +4,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CodeWindow } from "./ui/code-window";
 
 const INSTALLERS = [
-  { l: "npx",  c: "$ npx @the-17/agentsecrets init" },
-  { l: "pip",  c: "$ pip install agentsecrets" },
-  { l: "npm",  c: "$ npm install -g @the-17/agentsecrets" },
   { l: "brew", c: "$ brew install The-17/tap/agentsecrets" },
+  { l: "npm",  c: "$ npm install -g @the-17/agentsecrets" },
+  { l: "pip",  c: "$ pip install agentsecrets-cli" },
   { l: "go",   c: "$ go install github.com/The-17/agentsecrets/cmd/agentsecrets@latest" },
 ];
 
 export default function InstallSection() {
-  const [active, setActive] = useState("npx");
+  const [active, setActive] = useState("brew");
   const cmd = INSTALLERS.find((i) => i.l === active)!.c;
 
   return (
@@ -54,13 +53,17 @@ export default function InstallSection() {
           <CodeWindow
             title={`install via ${active}`}
             lines={[
-              { t: cmd, c: "c-em" },
-              { t: "", c: "" },
-              { t: "# Then initialise a project:", c: "c-di" },
-              { t: "$ agentsecrets project create my-agent", c: "c-sky" },
-              { t: "", c: "" },
-              { t: "# Store your first secret:", c: "c-di" },
-              { t: "$ agentsecrets secrets set STRIPE_KEY=sk_live_...", c: "c-am" },
+              { t: cmd,                                                                     c: "c-em" },
+              { t: "",                                                                      c: "" },
+              { t: "$ agentsecrets init",                                                   c: "c-sky" },
+              { t: "$ agentsecrets project create my-agent",                                c: "c-sky" },
+              { t: "$ agentsecrets secrets set STRIPE_KEY=sk_live_...",                     c: "c-am" },
+              { t: "$ agentsecrets workspace allowlist add api.stripe.com",                 c: "c-mu" },
+              { t: "$ agentsecrets proxy start",                                            c: "c-sky" },
+              { t: "$ agentsecrets call --url https://api.stripe.com/v1/balance --bearer STRIPE_KEY", c: "c-em" },
+              { t: "",                                                                      c: "" },
+              { t: '  → {"available":[{"amount":24350,"currency":"usd"}]}',                c: "c-mu" },
+              { t: "  → STRIPE_KEY value: never in agent context ✓",                       c: "c-em" }
             ]}
           />
         </motion.div>

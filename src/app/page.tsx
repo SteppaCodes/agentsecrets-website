@@ -232,7 +232,7 @@ export default function Home() {
           </a>
         </div>
         <span style={{ fontSize: 11, color: "var(--muted)" }}>
-          © {new Date().getFullYear()} The Seventeen · You cannot steal what was never there.
+          MIT License · open source · zero secrets. structurally.
         </span>
       </footer>
     </>

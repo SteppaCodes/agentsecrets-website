@@ -2,21 +2,26 @@
 import { useState, useEffect, useRef } from "react";
 import { CodeWindow, McpJsonWindow } from "@/components/ui/code-window";
 
-const SECTIONS = [
-  { id: "overview", group: "Introduction", label: "Overview" },
-  { id: "quickstart", group: "Introduction", label: "Quick Start" },
-  { id: "howworks", group: "Core Concepts", label: "How It Works" },
-  { id: "keychain", group: "Core Concepts", label: "OS Keychain" },
-  { id: "zerok", group: "Core Concepts", label: "Zero-Knowledge Design" },
-  { id: "mcp", group: "Integrations", label: "MCP / Claude Desktop" },
-  { id: "proxy", group: "Integrations", label: "HTTP Proxy" },
-  { id: "cliref", group: "Integrations", label: "CLI Direct" },
-  { id: "envinjection", group: "Integrations", label: "Env Injection" },
-  { id: "openclaw", group: "Integrations", label: "OpenClaw" },
-  { id: "clifull", group: "Reference", label: "Full CLI Reference" },
-  { id: "auth", group: "Reference", label: "Auth Methods" },
-  { id: "audit", group: "Reference", label: "Audit Log Schema" },
-  { id: "security", group: "Reference", label: "Security Model" },
+const DOCS_SECTIONS = [
+  { id: "overview",      group: "Introduction",  label: "Overview" },
+  { id: "quickstart",    group: "Introduction",  label: "Getting Started" },
+  { id: "howworks",      group: "Core Concepts", label: "How It Works" },
+  { id: "keychain",      group: "Core Concepts", label: "OS Keychain" },
+  { id: "zerok",         group: "Core Concepts", label: "Zero-Knowledge Design" },
+  { id: "allowlist",     group: "Core Concepts", label: "Domain Allowlist" },
+  { id: "redaction",     group: "Core Concepts", label: "Response Redaction" },
+  { id: "mcp",           group: "Integrations",  label: "MCP / Claude Desktop" },
+  { id: "proxy-int",     group: "Integrations",  label: "HTTP Proxy" },
+  { id: "sdk-int",       group: "Integrations",  label: "Python SDK" },
+  { id: "env-int",       group: "Integrations",  label: "agentsecrets env" },
+  { id: "openclaw-i",    group: "Integrations",  label: "OpenClaw" },
+  { id: "cli-full",      group: "Reference",     label: "CLI Reference" },
+  { id: "sdk-ref",       group: "Reference",     label: "SDK Reference" },
+  { id: "auth-methods",  group: "Reference",     label: "Auth Methods" },
+  { id: "audit",         group: "Reference",     label: "Audit Log Schema" },
+  { id: "architecture",  group: "Reference",     label: "Architecture" },
+  { id: "security",      group: "Reference",     label: "Security Model" },
+  { id: "pricing",       group: "Reference",     label: "Pricing" },
 ];
 
 function Breadcrumb({ items }: { items: string[] }) {
@@ -64,7 +69,8 @@ function P({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Callout({ children, warn }: { children: React.ReactNode; warn?: boolean }) {
+function Callout({ children, warn, icon }: { children: React.ReactNode; warn?: boolean; icon?: string }) {
+  const defaultIcon = warn ? "⚠️" : "🔐";
   return (
     <div style={{
       border: `1px solid ${warn ? "rgba(255,184,0,0.35)" : "var(--border-em)"}`,
@@ -76,16 +82,17 @@ function Callout({ children, warn }: { children: React.ReactNode; warn?: boolean
       gap: 12,
       alignItems: "flex-start",
     }}>
-      <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{warn ? "⚠️" : "🔐"}</span>
+      <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{icon || defaultIcon}</span>
       <div style={{ fontSize: 12, lineHeight: 1.8, color: "var(--text)" }}>{children}</div>
     </div>
   );
 }
 
-function DocTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
+function DocTable({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) {
   return (
-    <table style={{ width: "100%", borderCollapse: "collapse", margin: "20px 0", border: "1px solid var(--border)", borderRadius: 10, overflow: "hidden" }}>
-      <thead>
+    <div className="docs-table-wrap">
+      <table className="docs-table" style={{ width: "100%", borderCollapse: "collapse", margin: "20px 0", border: "1px solid var(--border)", borderRadius: 10, overflow: "hidden" }}>
+        <thead>
         <tr>
           {headers.map((h) => (
             <th key={h} style={{ padding: "10px 16px", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--muted)", textAlign: "left", borderBottom: "1px solid var(--border)", background: "var(--bg2)" }}>{h}</th>
@@ -103,11 +110,13 @@ function DocTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
           </tr>
         ))}
       </tbody>
-    </table>
+      </table>
+    </div>
   );
 }
 
-function Step({ n, title, desc, code }: { n: number; title: string; desc: string; code?: { t: string; c: string } }) {
+function Step({ n, title, desc, code }: { n: number; title: string; desc: string; code?: { t: string; c: string }[] | { t: string; c: string } }) {
+  const lineArray = Array.isArray(code) ? code : (code ? [code] : undefined);
   return (
     <div style={{ display: "flex", gap: 16, marginBottom: 20 }}>
       <div style={{ width: 28, height: 28, borderRadius: "50%", border: "1.5px solid var(--border-em)", background: "rgba(0,255,135,0.07)", color: "var(--em)", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2 }}>
@@ -115,8 +124,8 @@ function Step({ n, title, desc, code }: { n: number; title: string; desc: string
       </div>
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>{title}</div>
-        <div style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.8, marginBottom: code ? 10 : 0 }}>{desc}</div>
-        {code && <CodeWindow title="" lines={[code]} />}
+        <div style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.8, marginBottom: lineArray ? 10 : 0 }}>{desc}</div>
+        {lineArray && <CodeWindow title="" lines={lineArray} />}
       </div>
     </div>
   );
@@ -157,7 +166,7 @@ export default function DocsPage() {
     document.getElementById("doc-" + id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const groups = [...new Set(SECTIONS.map((s) => s.group))];
+  const groups = [...new Set(DOCS_SECTIONS.map((s) => s.group))];
 
   return (
     <div
@@ -195,7 +204,7 @@ export default function DocsPage() {
             <div style={{ fontSize: 9, color: "var(--muted)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 10, paddingLeft: 8 }}>
               {g}
             </div>
-            {SECTIONS.filter((s) => s.group === g).map((s) => (
+            {DOCS_SECTIONS.filter((s) => s.group === g).map((s) => (
               <button
                 key={s.id}
                 onClick={() => jump(s.id)}
@@ -235,44 +244,113 @@ export default function DocsPage() {
       </aside>
 
       {/* Content */}
-      <main ref={contentRef} style={{ padding: "48px 56px", maxWidth: 860 }}>
+      <main ref={contentRef} className="docs-content" style={{ padding: "48px 56px", maxWidth: 860 }}>
+        {/* Mobile doc nav — visible only at ≤900px via CSS */}
+        <div className="docs-mobile-nav" style={{
+          overflowX:"auto",
+          gap:"6px",
+          paddingBottom:"20px",
+          marginBottom:"8px",
+          borderBottom:"1px solid var(--border)",
+          WebkitOverflowScrolling:"touch",
+          scrollbarWidth:"none",
+        }}>
+          {DOCS_SECTIONS.map(s=>(
+            <button
+              key={s.id}
+              className={`docs-mobile-nav-pill${active===s.id?" active":""}`}
+              onClick={()=>jump(s.id)}
+              style={{
+                flexShrink:0,
+                fontSize:"10px",
+                fontWeight:700,
+                padding:"6px 12px",
+                borderRadius:"100px",
+                border:"1px solid",
+                borderColor: active===s.id ? "var(--border-em)" : "var(--border)",
+                color: active===s.id ? "var(--em)" : "var(--muted)",
+                background: active===s.id ? "rgba(0,255,135,0.07)" : "transparent",
+                cursor:"pointer",
+                whiteSpace:"nowrap",
+                fontFamily:"'Space Mono',monospace",
+                transition:"all 0.15s",
+              }}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
 
         {/* OVERVIEW */}
         <div id="doc-overview" style={{ marginBottom: 72 }}>
           <Breadcrumb items={["Introduction", "Overview"]} />
           <H1>AgentSecrets <span style={{ fontSize: 12, fontWeight: 700, border: "1px solid rgba(255,184,0,0.4)", color: "var(--am)", background: "rgba(255,184,0,0.08)", padding: "2px 8px", borderRadius: 4, marginLeft: 8, verticalAlign: "middle" }}>Alpha</span></H1>
-          <P><strong style={{ color: "var(--text)" }}>AgentSecrets</strong> is a zero-knowledge credential proxy for AI agents. It lets your agent call any authenticated API — Stripe, OpenAI, GitHub, Slack — without the agent ever seeing the actual secret value. The credential lives in your OS keychain and is injected at the HTTP transport layer, never entering the agent&apos;s context, prompt, memory, or logs.</P>
-          <Callout>
-            <strong style={{ color: "var(--em)" }}>Core guarantee:</strong> The key value is never passed to, logged by, or accessible to the AI agent at any point in the call lifecycle. Not as an argument. Not in the response. Not in the audit log.
+          <P>AgentSecrets is a zero-knowledge credential proxy for AI agents. It lets your agent call any authenticated API — Stripe, OpenAI, GitHub, Slack — without the agent ever seeing the actual secret value. The credential lives in your OS keychain and is injected at the HTTP transport layer, never entering the agent's context window, memory, or logs.</P>
+          <Callout icon="🔐">
+            <strong style={{ color: "var(--text)" }}>Core guarantee:</strong> The key value is never passed to, logged by, or accessible to the AI agent at any point in the call lifecycle. Not as an argument. Not in the response. Not in the audit log.
           </Callout>
-          <H2>Integration modes</H2>
-          <DocTable
-            headers={["Mode", "Description", "Best for"]}
-            rows={[
-              ["MCP Server", "Claude Desktop + Cursor via Model Context Protocol", "Claude, Cursor"],
-              ["HTTP Proxy", "Local proxy at localhost:8765", "LangChain, CrewAI, AutoGen, curl"],
-              ["CLI Direct", "agentsecrets call — one-shot authenticated requests", "Scripts, CI/CD, testing"],
-              ["Env Injection", "agentsecrets env -- <cmd> — injects as env vars", "SDKs, native MCPs, any process"],
-              ["OpenClaw Skill", "Skill + native exec provider for OpenClaw's SecretRef", "OpenClaw agents"],
-            ]}
-          />
-          <H2>Status</H2>
-          <P>AgentSecrets is currently in <strong style={{ color: "var(--text)" }}>alpha</strong>. The CLI surface and MCP schema are stable. Cloud sync and team workspaces are in active development. See the Security Model section for known limitations.</P>
+          <P>The proxy runs at localhost:8765. Your code sends key names. The proxy resolves values from the OS keychain and injects them at the transport layer. Your code receives the API response. The value never crossed into your process.</P>
+          <P>Everything is open source under the MIT license. The CLI, the proxy, the SDK, and the MCP template are all free to use, fork, and self-host.</P>
         </div>
         <Divider />
 
-        {/* QUICKSTART */}
+        {/* QUICKSTART / GETTING STARTED */}
         <div id="doc-quickstart" style={{ marginBottom: 72 }}>
-          <Breadcrumb items={["Introduction", "Quick Start"]} />
-          <H1>Quick Start</H1>
-          <P>Get from zero to your first zero-knowledge API call in under 3 minutes.</P>
-          <Step n={1} title="Install AgentSecrets" desc="Choose your package manager." code={{ t: "$ npx @the-17/agentsecrets init", c: "c-em" }} />
-          <Step n={2} title="Create a project" desc="Creates a local config file and registers with your OS keychain." code={{ t: "$ agentsecrets project create my-agent", c: "c-sky" }} />
-          <Step n={3} title="Store a secret" desc="The value is encrypted and stored in your OS keychain immediately. It is never written to disk as plaintext." code={{ t: "$ agentsecrets secrets set STRIPE_KEY=sk_live_...", c: "c-am" }} />
-          <Step n={4} title="Make your first authenticated call" desc="Pass the key NAME — not the value. AgentSecrets injects the real credential at the transport layer." code={{ t: "$ agentsecrets call --url https://api.stripe.com/v1/balance --bearer STRIPE_KEY", c: "c-sky" }} />
-          <Step n={5} title="(Optional) Connect to Claude Desktop" desc="Auto-installs AgentSecrets as an MCP server. Claude can call APIs without ever seeing your keys." code={{ t: "$ agentsecrets mcp install", c: "c-vi" }} />
-          <Callout warn>
-            <strong style={{ color: "var(--am)" }}>Alpha status:</strong> The CLI and MCP schema are stable. Cloud sync is in development. Pin your version in production.
+          <Breadcrumb items={["Introduction", "Getting Started"]} />
+          <H1>Getting Started</H1>
+          <P>Install AgentSecrets, store your first secret, and make your first zero-knowledge API call.</P>
+          
+          <Step n={1} title="Install the CLI" desc="The CLI manages your credentials, runs the local proxy, and handles workspace and project context." code={[
+            { t: "$ brew install The-17/tap/agentsecrets", c: "c-em" },
+            { t: "", c: "" },
+            { t: "# Also available via:", c: "c-di" },
+            { t: "$ npm install -g @the-17/agentsecrets", c: "c-mu" },
+            { t: "$ pip install agentsecrets-cli", c: "c-mu" },
+            { t: "$ go install github.com/The-17/agentsecrets/cmd/agentsecrets@latest", c: "c-mu" },
+            { t: "", c: "" },
+            { t: "$ agentsecrets --version", c: "c-sky" }
+          ]} />
+          
+          <Step n={2} title="Initialize" desc="Creates your account, generates your encryption keys locally, and sets up your first workspace. Your keys never leave your machine. Everything synced to the cloud is encrypted client-side before upload. The server holds ciphertext and cannot decrypt it." code={{ t: "$ agentsecrets init", c: "c-em" }} />
+          
+          <Step n={3} title="Create a project" desc="Projects partition your secrets within a workspace. One project per service or environment is a reasonable starting point." code={[
+            { t: "$ agentsecrets project create my-agent", c: "c-sky" },
+            { t: "$ agentsecrets project use my-agent", c: "c-sky" }
+          ]} />
+          
+          <Step n={4} title="Store your credentials" desc="The value goes directly to the OS keychain. It is never written to disk in plaintext and never sent to the AgentSecrets server in plaintext." code={[
+            { t: "$ agentsecrets secrets set STRIPE_KEY=sk_live_...", c: "c-am" },
+            { t: "$ agentsecrets secrets set OPENAI_KEY=sk-proj-...", c: "c-am" },
+            { t: "", c: "" },
+            { t: "# Push an existing .env file:", c: "c-di" },
+            { t: "$ agentsecrets secrets push", c: "c-mu" }
+          ]} />
+          
+          <Step n={5} title="Authorize your domains" desc="The proxy is deny-by-default. Every domain your agent calls must be explicitly authorized. This blocks SSRF attacks and prompt injection attempts that try to route credentials to attacker-controlled URLs." code={[
+            { t: "$ agentsecrets workspace allowlist add api.stripe.com", c: "c-em" },
+            { t: "$ agentsecrets workspace allowlist add api.openai.com", c: "c-em" }
+          ]} />
+          
+          <Step n={6} title="Start the proxy" desc="The proxy runs on localhost:8765. It resolves credential values from the OS keychain and injects them at the transport layer. Your agent code sends key names. Values never cross into your process." code={[
+            { t: "$ agentsecrets proxy start", c: "c-em" },
+            { t: "", c: "" },
+            { t: "$ agentsecrets status", c: "c-sky" }
+          ]} />
+          
+          <Step n={7} title="Make your first call" desc="The proxy resolves STRIPE_KEY from the OS keychain, injects it as a bearer token, makes the request, and returns the API response. The value sk_live_... never appeared in your terminal, in any variable, or in any log." code={[
+            { t: "$ agentsecrets call \\", c: "c-em" },
+            { t: "    --url https://api.stripe.com/v1/balance \\", c: "c-em" },
+            { t: "    --bearer STRIPE_KEY", c: "c-em" },
+            { t: "", c: "" },
+            { t: "$ agentsecrets proxy logs --last 5", c: "c-sky" },
+            { t: "# Key names. Endpoints. Status codes. No value field.", c: "c-di" }
+          ]} />
+          
+          <Step n={8} title="Connect to Claude Desktop" desc="Writes your Claude Desktop config automatically. No env block, no credential values. Restart Claude Desktop and ask it to check your Stripe balance." code={{ t: "$ agentsecrets mcp install", c: "c-em" }} />
+          <McpJsonWindow />
+
+          <Callout warn icon="⚠️">
+            Alpha status: The CLI surface and MCP schema are stable. Cloud sync and team workspaces are in active development. Pin your version in production.
           </Callout>
         </div>
         <Divider />
@@ -281,17 +359,26 @@ export default function DocsPage() {
         <div id="doc-howworks" style={{ marginBottom: 72 }}>
           <Breadcrumb items={["Core Concepts", "How It Works"]} />
           <H1>How It Works</H1>
-          <P>Every AgentSecrets call flows through five stages. At no point does the secret value enter the agent&apos;s context, filesystem, or any log.</P>
+          <P>Every AgentSecrets call flows through five stages. At no point does the secret value enter the agent's context, filesystem, or any log.</P>
+          
           <H3>Stage 1 — Agent request</H3>
-          <P>The agent calls <C>agentsecrets call</C> and passes the key <strong style={{ color: "var(--am)" }}>name</strong> (e.g. <C>STRIPE_KEY</C>) — not the value. This is structurally all the agent can do.</P>
+          <P>The agent (Claude, your script, any MCP client) calls <C>agentsecrets call</C> or <C>client.call()</C> and passes the key name — e.g. <C>STRIPE_KEY</C> — not the value. The proxy address is localhost:8765.</P>
+          
           <H3>Stage 2 — OS keychain lookup</H3>
-          <P>AgentSecrets looks up the encrypted entry in your OS keychain and decrypts it <strong style={{ color: "var(--text)" }}>in-process only</strong>. The plaintext value never hits the filesystem or leaves this process boundary.</P>
+          <P>The proxy looks up the encrypted entry in the OS keychain (macOS Keychain, Linux Secret Service, or Windows Credential Manager) and decrypts it in-process only. The decrypted value is never written to disk or returned to the caller.</P>
+          
           <H3>Stage 3 — Transport injection</H3>
-          <P>The decrypted value is injected directly into the outbound HTTP request at the transport layer — e.g. as a Bearer token. It is never returned as a string to the calling process.</P>
-          <H3>Stage 4 — API call</H3>
-          <P>The HTTP request is sent over TLS 1.3. The remote API receives a properly authenticated request.</P>
-          <H3>Stage 5 — Response + audit</H3>
-          <P>The API response is returned to the agent. An audit entry is written containing: timestamp, key name, endpoint, HTTP status, and latency. <strong style={{ color: "var(--text)" }}>The value field does not exist in the audit schema.</strong></P>
+          <P>The decrypted value is injected directly into the outbound HTTP request at the transport layer — as a Bearer token, custom header, query parameter, or one of the other five injection styles. The value is never returned as a string to the calling process.</P>
+          
+          <H3>Stage 4 — Domain allowlist check</H3>
+          <P>Before forwarding the request, the proxy verifies the target domain is on the workspace allowlist. If it is not, the proxy returns 403 and logs the attempt. No credential is injected. This closes the SSRF and prompt injection exfiltration attack vectors.</P>
+          
+          <H3>Stage 5 — Response, redaction, and audit</H3>
+          <P>The API response is returned. The proxy scans it for any pattern matching the injected credential value. If a match is found (a credential echo), it is replaced with [REDACTED_BY_AGENTSECRETS] before reaching your code. An audit entry is written: timestamp, key name, endpoint, status, latency. The value field does not exist in the audit schema.</P>
+          
+          <Callout icon="🔐">
+            The structural guarantee: The proxy returns only the API response. The SDK has no get() method. The audit log has no value field. The mock testing client has no value field in call records. You cannot break this guarantee by misconfiguring something — the architecture gives the value nowhere to go.
+          </Callout>
         </div>
         <Divider />
 
@@ -299,17 +386,19 @@ export default function DocsPage() {
         <div id="doc-keychain" style={{ marginBottom: 72 }}>
           <Breadcrumb items={["Core Concepts", "OS Keychain"]} />
           <H1>OS Keychain Storage</H1>
-          <P>AgentSecrets stores all credentials in your OS&apos;s native secure credential store — not a file, not an environment variable.</P>
+          <P>AgentSecrets stores all credentials in your operating system's native secure credential store — not in a file, not in a database, not in an environment variable.</P>
+          
           <DocTable
-            headers={["Platform", "Backend", "Encryption"]}
+            headers={["Platform", "Storage Backend", "Encryption"]}
             rows={[
               ["macOS", "macOS Keychain (Security framework)", "AES-256-GCM via Secure Enclave"],
               ["Linux", "libsecret / Secret Service API", "GNOME Keyring or KDE Wallet"],
               ["Windows", "Windows Credential Manager", "DPAPI (user-scoped)"],
             ]}
           />
-          <Callout>
-            Keychain entries are scoped to your user account and cannot be read by other processes without your authentication. This is fundamentally stronger than a <C>.env</C> file, which any process can read.
+          
+          <Callout icon="💡">
+            Keychain entries are scoped to your user account and cannot be read by other processes without your authentication. This is a fundamentally different security boundary than a .env file or an environment variable, which any process running as the same user can read.
           </Callout>
         </div>
         <Divider />
@@ -318,211 +407,550 @@ export default function DocsPage() {
         <div id="doc-zerok" style={{ marginBottom: 72 }}>
           <Breadcrumb items={["Core Concepts", "Zero-Knowledge Design"]} />
           <H1>Zero-Knowledge Design</H1>
-          <P>AgentSecrets is zero-knowledge at every layer — not just at the point of API injection.</P>
+          <P>The cloud sync feature lets you share credentials across machines and teammates. It is designed so the server structurally cannot decrypt your secrets.</P>
+          
+          <H3>Encryption scheme</H3>
+          <P>Before any secret leaves your machine, it is encrypted using X25519 key exchange (NaCl SealedBox), AES-256-GCM, and Argon2id key derivation. The encryption key lives only in your OS keychain. The server receives and stores only ciphertext.</P>
+          
           <DocTable
-            headers={["Command", "What the agent sees"]}
+            headers={["Layer", "Implementation"]}
             rows={[
-              ["secrets list", "Key names only"],
-              ["secrets diff", "Key names and sync status"],
-              ["secrets pull", "Confirmation message — values go to OS keychain"],
-              ["agentsecrets call", "API response only"],
-              ["agentsecrets env", "Injects values into child process — agent never sees them"],
-              ["proxy logs", "Key names, endpoints, status codes"],
+              ["Key exchange", "X25519 (NaCl SealedBox)"],
+              ["Secret encryption", "AES-256-GCM"],
+              ["Key derivation", "Argon2id"],
+              ["Key storage", "OS keychain"],
+              ["Transport", "HTTPS / TLS"],
+              ["Server storage", "Encrypted blobs only"],
             ]}
           />
-          <P>The log struct has no value field. It is <strong style={{ color: "var(--text)" }}>structurally impossible</strong> to accidentally log a credential value anywhere in the system.</P>
-          <H2>Cloud sync encryption</H2>
-          <P>Before any secret leaves your machine, it is encrypted with <strong style={{ color: "var(--text)" }}>X25519 key exchange + AES-256-GCM</strong>. The encryption key lives only in your OS keychain. The server receives and stores only ciphertext — it structurally cannot decrypt your secrets.</P>
+          
+          <H3>What the server sees</H3>
+          <CodeWindow title="server-side storage (ciphertext only)" lines={[
+            { t: "# Server stores:", c: "c-di" },
+            { t: "{ id: 'entry_9xKp', project: 'my-agent',", c: "c-mu" },
+            { t: "  key_name: 'STRIPE_KEY',", c: "c-mu" },
+            { t: "  ciphertext: 'gAAAAABl7...EncryptedBlob...',", c: "c-mu" },
+            { t: "  nonce: 'Zx9k...', tag: 'aB3c...' }", c: "c-mu" },
+            { t: "", c: "" },
+            { t: "# Server does NOT store:", c: "c-di" },
+            { t: "# - The plaintext value", c: "c-re" },
+            { t: "# - The decryption key", c: "c-re" },
+            { t: "# - Any key derivation material", c: "c-re" },
+          ]} />
+          
+          <H3>Policy vs. structure</H3>
+          <P>A policy-based guarantee says we recommend not logging credential values. The system could log them. Whether it does depends on configuration and discipline. A structural guarantee says the log struct has no value field. The system cannot log a credential value regardless of configuration or intent. AgentSecrets makes the zero-knowledge guarantee structural at every layer.</P>
+        </div>
+        <Divider />
+
+        {/* ALLOWLIST */}
+        <div id="doc-allowlist" style={{ marginBottom: 72 }}>
+          <Breadcrumb items={["Core Concepts", "Domain Allowlist"]} />
+          <H1>Domain Allowlist</H1>
+          <P>The proxy is deny-by-default. Before injecting any credential and forwarding any request, the proxy checks the target domain against the workspace allowlist. If the domain is not authorized, the proxy returns 403 and logs the attempt. No credential is injected. The request never reaches the upstream API.</P>
+          
+          <H3>What this closes</H3>
+          <P><strong style={{ color: "var(--text)" }}>SSRF.</strong> If an attacker tricks your application into making a request to a server they control, the proxy blocks it before any credential is injected.</P>
+          <P><strong style={{ color: "var(--text)" }}>Prompt injection exfiltration.</strong> If a malicious API response instructs your agent to send credentials to an attacker-controlled URL, the proxy blocks the outbound request.</P>
+          <P><strong style={{ color: "var(--text)" }}>Misconfiguration.</strong> A tool that accidentally calls the wrong endpoint is blocked before any credential is exposed.</P>
+          
+          <H3>Managing the allowlist</H3>
+          <CodeWindow title="allowlist commands" lines={[
+            { t: "$ agentsecrets workspace allowlist add api.stripe.com", c: "c-em" },
+            { t: "$ agentsecrets workspace allowlist add api.stripe.com api.openai.com api.github.com", c: "c-em" },
+            { t: "$ agentsecrets workspace allowlist list", c: "c-sky" },
+            { t: "$ agentsecrets workspace allowlist log", c: "c-mu" },
+          ]} />
+          
+          <Callout warn icon="⚠️">
+            Allowlist modifications require admin role and password verification. Non-admin team members cannot change what domains agents can reach.
+          </Callout>
+        </div>
+        <Divider />
+
+        {/* REDACTION */}
+        <div id="doc-redaction" style={{ marginBottom: 72 }}>
+          <Breadcrumb items={["Core Concepts", "Response Redaction"]} />
+          <H1>Response Body Redaction</H1>
+          <P>The proxy scans every API response for patterns matching the injected credential value. If a match is found, the proxy replaces it with [REDACTED_BY_AGENTSECRETS] before returning the response to your code.</P>
+          <P>This defends against credential echo exfiltration — an attack where a compromised or malicious API reflects the credential back in its response, putting it into agent context where it can be read or logged.</P>
+          
+          <H3>What the audit log records</H3>
+          <CodeWindow title="audit entry with credential echo" lines={[
+            { t: "14:23:01  GET  api.stripe.com/v1/balance  STRIPE_KEY  bearer  200  credential_echo  245ms", c: "c-am" }
+          ]} />
+          
+          <Callout icon="🔍">
+            The redaction event is logged as credential_echo in the audit log. The value that was echoed is not logged — only the fact that an echo occurred, the key name, and the endpoint.
+          </Callout>
         </div>
         <Divider />
 
         {/* MCP */}
         <div id="doc-mcp" style={{ marginBottom: 72 }}>
           <Breadcrumb items={["Integrations", "MCP / Claude Desktop"]} />
-          <H1>MCP Integration <span style={{ fontSize: 12, fontWeight: 700, border: "1px solid rgba(0,255,135,0.4)", color: "var(--em)", background: "rgba(0,255,135,0.08)", padding: "2px 8px", borderRadius: 4, marginLeft: 8 }}>Recommended</span></H1>
-          <P>The MCP integration lets Claude Desktop and Cursor call any authenticated API through AgentSecrets. Claude asks for data by key name — it never sees the credential value.</P>
-          <H3>Auto-install</H3>
-          <CodeWindow title="auto-configure" lines={[
+          <H1>MCP Integration <span style={{ fontSize: 12, fontWeight: 700, border: "1px solid rgba(0,255,135,0.4)", color: "var(--em)", background: "rgba(0,255,135,0.08)", padding: "2px 8px", borderRadius: 4, marginLeft: 8, verticalAlign: "middle" }}>Recommended</span></H1>
+          <P>The MCP integration lets Claude Desktop and Cursor call any authenticated API through AgentSecrets. The agent asks for data using a key name. It never sees the credential.</P>
+          
+          <H3>Auto-install (recommended)</H3>
+          <CodeWindow title="auto-configure Claude Desktop and Cursor" lines={[
             { t: "$ agentsecrets mcp install", c: "c-em" },
-            { t: "  ✓ Detected Claude Desktop", c: "c-mu" },
+            { t: "  ✓ Detected Claude Desktop at ~/Library/Application Support/Claude", c: "c-mu" },
             { t: "  ✓ Written to claude_desktop_config.json", c: "c-mu" },
             { t: "  ✓ Restart Claude Desktop to activate", c: "c-mu" },
           ]} />
+          
           <H3>Manual config</H3>
           <McpJsonWindow />
+          
           <H3>Available MCP tools</H3>
           <DocTable
             headers={["Tool", "Description"]}
             rows={[
-              ["api_call", "Make an authenticated HTTP request. Pass key name, URL, method, optional body."],
-              ["list_keys", "List available key names in the current project (names only, never values)."],
-              ["check_status", "Returns current workspace, project, and keychain connectivity status."],
+              ["api_call", "Make an authenticated HTTP request. Pass key name, URL, method, and optional body. Returns the API response. The value is never passed."],
+              ["list_keys", "List available key names in the current project. Names only, never values."],
+              ["check_status", "Returns current workspace, project, proxy status, and last sync time."],
             ]}
           />
-          <Callout>
-            <strong style={{ color: "var(--em)" }}>Try it:</strong> After installation, ask Claude: &ldquo;Check my Stripe balance using STRIPE_KEY&rdquo;. Claude calls <C>api_call</C> with the key name. It will never see <C>sk_live_...</C>.
+          
+          <Callout icon="💡">
+            The MCP server exposes no tool that retrieves a credential value. list_keys returns names. api_call performs injection. There is no get_secret tool because there is no safe way to hand a value to an agent.
           </Callout>
         </div>
         <Divider />
 
-        {/* PROXY */}
-        <div id="doc-proxy" style={{ marginBottom: 72 }}>
+        {/* PROXY INTEGRATION */}
+        <div id="doc-proxy-int" style={{ marginBottom: 72 }}>
           <Breadcrumb items={["Integrations", "HTTP Proxy"]} />
           <H1>HTTP Proxy Mode</H1>
-          <P>Start a local HTTP proxy at <C>localhost:8765</C>. Agents send requests with injection headers. The proxy resolves from the OS keychain, injects into the outbound request, returns only the response.</P>
-          <CodeWindow title="proxy" lines={[
-            { t: "$ agentsecrets proxy start", c: "c-em" },
+          <P>Start a local HTTP proxy that any agent, script, or framework can route requests through. Send the key name in an injection header. AgentSecrets resolves the value and injects it before forwarding the request. Your code never held the value.</P>
+          
+          <CodeWindow title="proxy mode" lines={[
+            { t: "$ agentsecrets proxy start --port 8765", c: "c-em" },
             { t: "", c: "" },
+            { t: "# Route requests through the proxy", c: "c-di" },
             { t: "$ curl http://localhost:8765/proxy \\", c: "c-sky" },
             { t: '  -H "X-AS-Target-URL: https://api.stripe.com/v1/balance" \\', c: "c-sky" },
             { t: '  -H "X-AS-Inject-Bearer: STRIPE_KEY"', c: "c-am" },
           ]} />
-          <H2>Supported injection headers</H2>
+          
+          <H3>Injection headers reference</H3>
           <DocTable
-            headers={["Header", "Injects as", "Example"]}
+            headers={["Header", "Injects", "Auth style"]}
             rows={[
-              ["X-AS-Inject-Bearer", "Authorization: Bearer <value>", "STRIPE_KEY"],
-              ["X-AS-Inject-Basic", "Authorization: Basic base64(user:pass)", "USER:PASS_KEY"],
-              ["X-AS-Inject-Header", "Custom header: <value>", "X-API-Key=MY_KEY"],
-              ["X-AS-Inject-Query", "URL query param ?key=<value>", "API_KEY"],
-              ["X-AS-Inject-Cookie", "Cookie: name=<value>", "SESSION_KEY"],
+              ["X-AS-Inject-Bearer: KEY_NAME", "Authorization: Bearer value", "OAuth / API tokens"],
+              ["X-AS-Inject-Basic: KEY_NAME", "Authorization: Basic base64(v)", "HTTP Basic Auth"],
+              ["X-AS-Inject-Header-X-Api-Key: KEY_NAME", "X-Api-Key: value", "Custom header"],
+              ["X-AS-Inject-Query-key: KEY_NAME", "?key=value in URL", "Query param APIs"],
+              ["X-AS-Inject-Body-path: KEY_NAME", '{"path": "value"} in JSON body', "Token exchange"],
+              ["X-AS-Inject-Form-field: KEY_NAME", "field=value in form body", "OAuth form flows"],
             ]}
           />
+          <P>The key name travels over localhost. The value never does.</P>
         </div>
         <Divider />
 
-        {/* CLI DIRECT */}
-        <div id="doc-cliref" style={{ marginBottom: 72 }}>
-          <Breadcrumb items={["Integrations", "CLI Direct"]} />
-          <H1>CLI Direct Mode</H1>
-          <P>Use <C>agentsecrets call</C> directly from any shell, script, or agent subprocess. No proxy required.</P>
-          <CodeWindow title="cli direct" lines={[
-            { t: "$ agentsecrets call \\", c: "c-em" },
-            { t: "    --url https://api.stripe.com/v1/balance \\", c: "c-em" },
-            { t: "    --bearer STRIPE_KEY", c: "c-em" },
-            { t: "", c: "" },
-            { t: "# Custom header auth", c: "c-di" },
-            { t: "$ agentsecrets call --url https://api.sendgrid.com/v3/mail/send \\", c: "c-sky" },
-            { t: "    --header X-Api-Key=SENDGRID_KEY", c: "c-sky" },
-            { t: "", c: "" },
-            { t: "# Query parameter", c: "c-di" },
-            { t: '$ agentsecrets call --url "https://maps.googleapis.com/maps/api/geocode/json" \\', c: "c-am" },
-            { t: "    --query key=GMAP_KEY", c: "c-am" },
+        {/* PYTHON SDK */}
+        <div id="doc-sdk-int" style={{ marginBottom: 72 }}>
+          <Breadcrumb items={["Integrations", "Python SDK"]} />
+          <H1>Python SDK <span style={{ fontSize: 12, fontWeight: 700, border: "1px solid rgba(0,255,135,0.4)", color: "var(--em)", background: "rgba(0,255,135,0.08)", padding: "2px 8px", borderRadius: 4, marginLeft: 8, verticalAlign: "middle" }}>new</span></H1>
+          
+          <Callout icon="🔐">
+            The SDK has no get() method. There is no retrieve(). The only way to use a credential is to make the call or spawn the process. The secure path is the only path.
+          </Callout>
+          
+          <H3>Installation</H3>
+          <CodeWindow title="" lines={[
+            { t: "$ pip install agentsecrets", c: "c-em" },
           ]} />
+          
+          <H3>Initializing</H3>
+          <CodeWindow title="" lines={[
+            { t: "from agentsecrets import AgentSecrets", c: "c-sky" },
+            { t: "", c: "" },
+            { t: "client = AgentSecrets()", c: "c-wh" },
+            { t: "client = AgentSecrets(port=9000)", c: "c-wh" },
+            { t: 'client = AgentSecrets(workspace="Acme", project="payments")', c: "c-wh" },
+            { t: "client = AgentSecrets(auto_start=False)", c: "c-wh" },
+            { t: "", c: "" },
+            { t: "# No credentials are passed into the constructor.", c: "c-di" }
+          ]} />
+          
+          <H3>Making calls — client.call()</H3>
+          <CodeWindow title="six injection styles" lines={[
+            { t: "# Bearer token", c: "c-di" },
+            { t: "response = client.call(", c: "c-wh" },
+            { t: '    "https://api.stripe.com/v1/balance",', c: "c-vi" },
+            { t: '    bearer="STRIPE_KEY"', c: "c-am" },
+            { t: ")", c: "c-wh" },
+            { t: "", c: "" },
+            { t: "# Custom header", c: "c-di" },
+            { t: "response = client.call(", c: "c-wh" },
+            { t: '    "https://api.sendgrid.com/v3/mail/send",', c: "c-vi" },
+            { t: '    method="POST", body=payload,', c: "c-wh" },
+            { t: '    header={"X-Api-Key": "SENDGRID_KEY"}', c: "c-am" },
+            { t: ")", c: "c-wh" },
+            { t: "", c: "" },
+            { t: "# Async variant", c: "c-di" },
+            { t: "response = await client.async_call(", c: "c-sky" },
+            { t: '    "https://api.openai.com/v1/models",', c: "c-vi" },
+            { t: '    bearer="OPENAI_KEY"', c: "c-am" },
+            { t: ")", c: "c-sky" },
+          ]} />
+          
+          <H3>Spawning processes — client.spawn()</H3>
+          <P>Inject secrets as environment variables into a child process at launch. The calling code never sees the values.</P>
+          <CodeWindow title="" lines={[
+            { t: 'result = client.spawn("stripe", ["mcp"])', c: "c-em" },
+            { t: 'result = client.spawn("python", ["manage.py", "runserver"])', c: "c-em" },
+            { t: 'proc   = client.spawn_async("stripe", ["mcp"])', c: "c-em" },
+          ]} />
+          
+          <H3>Response object</H3>
+          <DocTable
+            headers={["Field", "Description"]}
+            rows={[
+              ["response.status_code", "HTTP status integer"],
+              ["response.body", "Raw response string"],
+              ["response.json()", "Parsed dict"],
+              ["response.headers", "Response headers dict"],
+              ["response.redacted", "True if proxy scrubbed a credential echo"],
+              ["response.duration_ms", "Request duration in milliseconds"],
+            ]}
+          />
+          <P>No field containing the credential value. Structural.</P>
         </div>
         <Divider />
 
-        {/* ENV INJECTION */}
-        <div id="doc-envinjection" style={{ marginBottom: 72 }}>
-          <Breadcrumb items={["Integrations", "Env Injection"]} />
-          <H1>Environment Variable Injection</H1>
-          <P>For tools that manage their own credential storage (Stripe CLI) or SDKs that read from environment variables: wrap any command with <C>agentsecrets env --</C>. Values exist only in the child process memory and are gone when it exits.</P>
-          <CodeWindow title="env injection" lines={[
+        {/* ENV COMMAND */}
+        <div id="doc-env-int" style={{ marginBottom: 72 }}>
+          <Breadcrumb items={["Integrations", "agentsecrets env"]} />
+          <H1>Environment Injection</H1>
+          <P>agentsecrets env injects secrets as environment variables into a child process at launch. The calling process never sees the values. When the child process exits, they are gone.</P>
+          <CodeWindow title="agentsecrets env" lines={[
+            { t: "$ agentsecrets env -- python manage.py runserver", c: "c-em" },
             { t: "$ agentsecrets env -- stripe mcp", c: "c-em" },
             { t: "$ agentsecrets env -- node server.js", c: "c-em" },
             { t: "$ agentsecrets env -- npm run dev", c: "c-em" },
-            { t: "", c: "" },
-            { t: "# Claude Desktop wrapping native Stripe MCP:", c: "c-di" },
-            { t: '# "command": "agentsecrets", "args": ["env", "--", "stripe", "mcp"]', c: "c-mu" },
           ]} />
+          <Callout warn icon="⚠️">
+            Use this for tools and SDKs that read from environment variables rather than making direct HTTP calls. The credential value exists only inside the child process for its lifetime. This is not the full zero-knowledge guarantee — the subprocess holds the value in its environment — but it is significantly safer than a shared .env file or a hardcoded environment variable.
+          </Callout>
         </div>
         <Divider />
 
-        {/* OPENCLAW */}
-        <div id="doc-openclaw" style={{ marginBottom: 72 }}>
+        {/* OPENCLAW INTEGRATION */}
+        <div id="doc-openclaw-i" style={{ marginBottom: 72 }}>
           <Breadcrumb items={["Integrations", "OpenClaw"]} />
           <H1>OpenClaw Integration</H1>
-          <P>AgentSecrets ships as both a <strong style={{ color: "var(--text)" }}>ClawHub skill</strong> and a native exec provider for OpenClaw&apos;s SecretRef system (shipped in v2026.2.26). The agent manages the full secrets workflow autonomously within OpenClaw.</P>
-          <CodeWindow title="openclaw" lines={[
+          <P>AgentSecrets acts as an exec provider for OpenClaw. It reads a SecretRef from stdin, resolves the value from the OS keychain, and injects it. The calling OpenClaw skill never sees the credential value.</P>
+          <CodeWindow title="openclaw install" lines={[
             { t: "$ openclaw skill install agentsecrets", c: "c-em" },
             { t: "", c: "" },
-            { t: "# Or manual:", c: "c-di" },
-            { t: "$ cp -r integrations/openclaw ~/.openclaw/skills/agentsecrets", c: "c-sky" },
+            { t: "# Or use the exec provider directly:", c: "c-di" },
+            { t: "$ agentsecrets exec", c: "c-sky" },
             { t: "", c: "" },
+            { t: "# Verify:", c: "c-di" },
             { t: "$ openclaw skill list | grep agentsecrets", c: "c-mu" },
-            { t: "  agentsecrets  v0.4.2  ✓ active", c: "c-em" },
+            { t: "  agentsecrets  ✓ active", c: "c-em" },
           ]} />
         </div>
         <Divider />
 
         {/* CLI FULL REFERENCE */}
-        <div id="doc-clifull" style={{ marginBottom: 72 }}>
-          <Breadcrumb items={["Reference", "Full CLI Reference"]} />
-          <H1>Full CLI Reference</H1>
-          <H2>Project</H2>
-          <CodeWindow title="project commands" lines={[
-            { t: "$ agentsecrets init", c: "c-em" },
-            { t: "$ agentsecrets project create <name>", c: "c-em" },
-            { t: "$ agentsecrets project list", c: "c-sky" },
-            { t: "$ agentsecrets project switch <name>", c: "c-sky" },
-            { t: "$ agentsecrets status", c: "c-sky" },
+        <div id="doc-cli-full" style={{ marginBottom: 72 }}>
+          <Breadcrumb items={["Reference", "CLI Reference"]} />
+          <H1>CLI Reference</H1>
+          <P>Every AgentSecrets command with full options and examples.</P>
+          
+          <H2>Account</H2>
+          <H3>agentsecrets init</H3>
+          <P>Create your account and generate encryption keys. Run once on a new machine.</P>
+          <CodeWindow title="" lines={[{ t: "$ agentsecrets init", c: "c-em" }]} />
+          
+          <H3>agentsecrets login</H3>
+          <P>Log in to an existing account.</P>
+          <CodeWindow title="" lines={[{ t: "$ agentsecrets login", c: "c-em" }]} />
+          
+          <H3>agentsecrets logout</H3>
+          <P>Clear your local session.</P>
+          <CodeWindow title="" lines={[{ t: "$ agentsecrets logout", c: "c-em" }]} />
+          
+          <H3>agentsecrets status</H3>
+          <P>Show current user, workspace, project, proxy status, and last sync time.</P>
+          <CodeWindow title="" lines={[{ t: "$ agentsecrets status", c: "c-em" }]} />
+          
+          <H2>Workspaces</H2>
+          <P>A workspace is a shared environment. Teammates join a workspace and get access to the projects inside it. Secrets are encrypted client-side before upload.</P>
+          <H3>workspace create "Acme Engineering"</H3>
+          <CodeWindow title="" lines={[{ t: '$ agentsecrets workspace create "Acme Engineering"', c: "c-em" }]} />
+          <H3>workspace list</H3>
+          <CodeWindow title="" lines={[{ t: "$ agentsecrets workspace list", c: "c-em" }]} />
+          <H3>workspace switch "Acme Engineering"</H3>
+          <CodeWindow title="" lines={[{ t: '$ agentsecrets workspace switch "Acme Engineering"', c: "c-em" }]} />
+          <H3>workspace invite alice@acme.com</H3>
+          <CodeWindow title="" lines={[{ t: "$ agentsecrets workspace invite alice@acme.com", c: "c-em" }]} />
+          <H3>workspace promote alice@acme.com</H3>
+          <P>Grant admin role. Admins can modify the domain allowlist and manage member roles.</P>
+          <CodeWindow title="" lines={[{ t: "$ agentsecrets workspace promote alice@acme.com", c: "c-em" }]} />
+          <H3>workspace demote alice@acme.com</H3>
+          <CodeWindow title="" lines={[{ t: "$ agentsecrets workspace demote alice@acme.com", c: "c-em" }]} />
+          
+          <H3>workspace allowlist add api.stripe.com</H3>
+          <P>Requires admin role and password verification.</P>
+          <CodeWindow title="" lines={[{ t: "$ agentsecrets workspace allowlist add api.stripe.com", c: "c-em" }]} />
+          
+          <H3>workspace allowlist list</H3>
+          <CodeWindow title="" lines={[{ t: "$ agentsecrets workspace allowlist list", c: "c-em" }]} />
+          
+          <H3>workspace allowlist log</H3>
+          <P>View blocked and allowed request attempts.</P>
+          <CodeWindow title="" lines={[{ t: "$ agentsecrets workspace allowlist log", c: "c-em" }]} />
+
+          <H2>Projects</H2>
+          <CodeWindow title="" lines={[
+            { t: "$ agentsecrets project create", c: "c-em" },
+            { t: "$ agentsecrets project list", c: "c-em" },
+            { t: "$ agentsecrets project use", c: "c-em" },
+            { t: "$ agentsecrets project delete", c: "c-em" },
           ]} />
+
           <H2>Secrets</H2>
-          <CodeWindow title="secrets commands" lines={[
-            { t: "$ agentsecrets secrets set KEY=value", c: "c-em" },
-            { t: "$ agentsecrets secrets get KEY", c: "c-sky" },
-            { t: "$ agentsecrets secrets list", c: "c-sky" },
-            { t: "$ agentsecrets secrets delete KEY", c: "c-re" },
-            { t: "$ agentsecrets secrets push", c: "c-am" },
-            { t: "$ agentsecrets secrets pull", c: "c-am" },
-            { t: "$ agentsecrets secrets diff", c: "c-vi" },
+          <CodeWindow title="" lines={[
+            { t: "$ agentsecrets secrets set", c: "c-em" },
+            { t: "$ agentsecrets secrets get", c: "c-em" },
+            { t: "$ agentsecrets secrets list", c: "c-em" },
+            { t: "$ agentsecrets secrets push", c: "c-em" },
+            { t: "$ agentsecrets secrets pull", c: "c-em" },
+            { t: "$ agentsecrets secrets diff", c: "c-em" },
+            { t: "$ agentsecrets secrets delete", c: "c-em" },
           ]} />
+          <CodeWindow title="example output" lines={[
+            { t: "LOCAL ONLY:  PAYSTACK_KEY", c: "c-am" },
+            { t: "REMOTE ONLY: SENDGRID_KEY", c: "c-am" },
+            { t: "OUT OF SYNC: STRIPE_KEY (remote is newer)", c: "c-re" },
+          ]} />
+          
           <H2>Proxy</H2>
-          <CodeWindow title="proxy commands" lines={[
-            { t: "$ agentsecrets proxy start [--port N]", c: "c-em" },
-            { t: "$ agentsecrets proxy stop", c: "c-re" },
-            { t: "$ agentsecrets proxy status", c: "c-sky" },
-            { t: "$ agentsecrets proxy logs [--last N]", c: "c-am" },
+          <CodeWindow title="" lines={[
+            { t: "$ agentsecrets proxy start", c: "c-em" },
+            { t: "$ agentsecrets proxy stop", c: "c-em" },
+            { t: "$ agentsecrets proxy status", c: "c-em" },
+            { t: "$ agentsecrets proxy logs", c: "c-em" },
           ]} />
-          <H2>Team Workspaces</H2>
-          <CodeWindow title="workspace commands" lines={[
-            { t: "$ agentsecrets workspace create \"Acme Engineering\"", c: "c-em" },
-            { t: "$ agentsecrets workspace invite alice@acme.com", c: "c-em" },
-            { t: "$ agentsecrets workspace switch \"Acme Engineering\"", c: "c-am" },
-            { t: "$ agentsecrets workspace allowlist add api.stripe.com api.openai.com", c: "c-sky" },
+          <P>Every entry contains timestamps, key names, endpoints, and status codes. No value field.</P>
+
+          <H2>Calls</H2>
+          <H3>agentsecrets call</H3>
+          <P>Make a one-shot authenticated API call through the proxy. Six injection styles.</P>
+          <CodeWindow title="" lines={[
+            { t: "$ agentsecrets call --url https://api.stripe.com/v1/balance --bearer STRIPE_KEY", c: "c-em" },
+            { t: "$ agentsecrets call --url https://api.sendgrid.com --header X-Api-Key=KEY", c: "c-em" },
+            { t: "$ agentsecrets call --url https://maps.googleapis.com --query key=GMAP_KEY", c: "c-em" },
+            { t: "$ agentsecrets call --url https://api.jira.com --basic USER_KEY", c: "c-em" },
+            { t: "$ agentsecrets call --url https://api.oauth.com --body-field path=KEY", c: "c-em" },
+            { t: "$ agentsecrets call --url https://api.oauth.com --form-field field=KEY", c: "c-em" },
           ]} />
+
+          <H2>Environment Injection</H2>
+          <H3>agentsecrets env</H3>
+          <CodeWindow title="" lines={[
+            { t: "$ agentsecrets env -- python manage.py runserver", c: "c-em" },
+          ]} />
+
+          <H2>MCP</H2>
+          <H3>agentsecrets mcp install</H3>
+          <P>Auto-configure Claude Desktop and Cursor. Writes the MCP server config with no credential values.</P>
+          <CodeWindow title="" lines={[{ t: "$ agentsecrets mcp install", c: "c-em" }]} />
+          <H3>agentsecrets mcp serve</H3>
+          <P>Start the MCP server. This is the command your MCP client calls. You do not run it directly.</P>
+          <CodeWindow title="" lines={[{ t: "$ agentsecrets mcp serve", c: "c-em" }]} />
+          
+          <H2>OpenClaw</H2>
+          <H3>agentsecrets exec</H3>
+          <CodeWindow title="" lines={[{ t: "$ agentsecrets exec", c: "c-em" }]} />
+        </div>
+        <Divider />
+
+        {/* SDK REFERENCE */}
+        <div id="doc-sdk-ref" style={{ marginBottom: 72 }}>
+          <Breadcrumb items={["Reference", "SDK Reference"]} />
+          <H1>SDK Reference</H1>
+          <P>Build tools, MCP servers, and agent integrations on top of AgentSecrets infrastructure.</P>
+          <Callout icon="🔐">
+            The SDK has no get() method. There is no retrieve(). The only way to use a credential is to make the call or spawn the process. The secure path is the only path.
+          </Callout>
+          
+          <H2>Management Layer</H2>
+          <P>Full programmatic control of the credentials lifecycle. Every operation works with key names. No operation returns a credential value.</P>
+          
+          <H3>Status</H3>
+          <CodeWindow title="" lines={[{ t: "status = client.proxy.status()", c: "c-wh" }]} />
+          <H3>Secrets</H3>
+          <CodeWindow title="" lines={[{ t: "client.secrets.list()\nclient.secrets.set('KEY', 'val')\nclient.secrets.push()", c: "c-wh" }]} />
+          <H3>Workspaces</H3>
+          <CodeWindow title="" lines={[{ t: "client.workspaces.list()\nclient.workspaces.create('Acme')", c: "c-wh" }]} />
+          <H3>Projects</H3>
+          <CodeWindow title="" lines={[{ t: "client.projects.list()\nclient.projects.create('my-app')", c: "c-wh" }]} />
+          <H3>Domain Allowlist</H3>
+          <CodeWindow title="" lines={[{ t: "client.allowlist.add('api.stripe.com')", c: "c-wh" }]} />
+          <H3>Proxy and Audit Log</H3>
+          <CodeWindow title="" lines={[{ t: "client.proxy.start()\nlogs = client.proxy.logs()", c: "c-wh" }]} />
+
+          <H2>Error Handling</H2>
+          <CodeWindow title="" lines={[
+            { t: "try:", c: "c-sky" },
+            { t: "    client.call('https://api.stripe.com', bearer='KEY')", c: "c-wh" },
+            { t: "except agentsecrets.errors.AllowlistError:", c: "c-am" },
+            { t: "    print('Domain blocked')", c: "c-wh" },
+          ]} />
+          <DocTable
+            headers={["Exception", "Cause", "Fix"]}
+            rows={[
+              ["KeyNotFoundError", "Key missing from keychain", "agentsecrets secrets set"],
+              ["AllowlistError", "Domain not approved", "agentsecrets workspace allowlist add"],
+              ["ProxyConnectionError", "Proxy not running", "agentsecrets proxy start"],
+              ["AuthFormatError", "Invalid auth params", "Check method signatures"],
+              ["CloudSyncError", "Failed to sync remote", "Check connection"],
+              ["ProjectContextError", "No project active", "agentsecrets project use"],
+              ["RedactionTriggeredError", "Response threw credentials", "Review API integration"],
+            ]}
+          />
+
+          <H2>Testing</H2>
+          <P>Test without a running proxy and without real credentials.</P>
+          <CodeWindow title="" lines={[
+            { t: "from agentsecrets.testing import MockAgentSecrets", c: "c-sky" },
+            { t: "client = MockAgentSecrets()", c: "c-wh" }
+          ]} />
+          <P>The zero-knowledge guarantee holds in test mode. Call records have no value field.</P>
         </div>
         <Divider />
 
         {/* AUTH METHODS */}
-        <div id="doc-auth" style={{ marginBottom: 72 }}>
+        <div id="doc-auth-methods" style={{ marginBottom: 72 }}>
           <Breadcrumb items={["Reference", "Auth Methods"]} />
           <H1>Auth Injection Methods</H1>
+          <P>Six injection styles, selectable per call. All six give the same guarantee: the value is injected at the transport layer and never returned to the caller.</P>
           <DocTable
-            headers={["Flag", "Injects as", "Use case"]}
+            headers={["CLI flag", "SDK param", "Injects as", "Use case"]}
             rows={[
-              ["--bearer KEY", "Authorization: Bearer <value>", "OAuth, Stripe, OpenAI, GitHub"],
-              ["--basic KEY", "Authorization: Basic <value>", "HTTP Basic Auth, Jira"],
-              ["--header KEY:X-Custom", "X-Custom: <value>", "SendGrid, Twilio, custom APIs"],
-              ["--query key=KEY", "?key=<value> in URL", "Google Maps, weather APIs"],
-              ["--body-field field=KEY", "JSON body field injection", "OAuth flows"],
-              ["--form-field field=KEY", "Form data field injection", "Legacy form-based auth"],
+              ["--bearer KEY_NAME", 'bearer="KEY_NAME"', "Authorization: Bearer value", "OAuth, Stripe, OpenAI"],
+              ["--basic KEY_NAME", 'basic="KEY_NAME"', "Authorization: Basic base64(v)", "HTTP Basic Auth, Jira"],
+              ["--header NAME=KEY_NAME", 'header={"X-Api-Key": "KEY_NAME"}', "X-Api-Key: value", "SendGrid, custom APIs"],
+              ["--query param=KEY_NAME", 'query={"key": "KEY_NAME"}', "?key=value in URL", "Google APIs, legacy"],
+              ["--body-field p=KEY_NAME", 'body_field={"path": "KEY_NAME"}', '{"path": "value"} in body', "Token exchange endpoints"],
+              ["--form-field f=KEY_NAME", 'form_field={"field": "KEY_NAME"}', "field=value in form", "OAuth form flows"],
             ]}
           />
         </div>
         <Divider />
 
-        {/* AUDIT LOG */}
+        {/* AUDIT LOG SCHEMA */}
         <div id="doc-audit" style={{ marginBottom: 72 }}>
           <Breadcrumb items={["Reference", "Audit Log Schema"]} />
           <H1>Audit Log Schema</H1>
-          <P>Every call writes a JSONL entry. The schema intentionally omits a value field — it was never designed to hold one.</P>
+          <P>Every proxied request is logged. The log struct has no value field.</P>
+          <CodeWindow title="log entry shape" lines={[
+            { t: "timestamp | method | target_url | key_name | injection_style | status_code | duration_ms", c: "c-mu" }
+          ]} />
           <CodeWindow title="~/.agentsecrets/audit.jsonl" lines={[
             { t: "{", c: "c-wh" },
-            { t: '  "ts":      "2025-03-04T12:04:11.342Z",', c: "c-sky" },
-            { t: '  "project": "my-agent",', c: "c-sky" },
-            { t: '  "key":     "STRIPE_KEY",', c: "c-am" },
-            { t: '  "method":  "GET",', c: "c-wh" },
-            { t: '  "url":     "https://api.stripe.com/v1/balance",', c: "c-wh" },
-            { t: '  "status":  200,', c: "c-em" },
-            { t: '  "ms":      143', c: "c-wh" },
+            { t: '  "ts":              "2025-03-04T12:04:11.342Z",', c: "c-sky" },
+            { t: '  "project":         "my-agent",', c: "c-sky" },
+            { t: '  "key":             "STRIPE_KEY",', c: "c-am" },
+            { t: '  "injection_style": "bearer",', c: "c-wh" },
+            { t: '  "method":          "GET",', c: "c-wh" },
+            { t: '  "url":             "https://api.stripe.com/v1/balance",', c: "c-wh" },
+            { t: '  "status":          200,', c: "c-em" },
+            { t: '  "ms":              143', c: "c-wh" },
             { t: "}", c: "c-wh" },
             { t: "", c: "" },
-            { t: "# Note: no 'value' field. It does not exist in this schema.", c: "c-re" },
+            { t: "# Note: no 'value' field. It does not exist in this schema.", c: "c-re" }
           ]} />
-          <Callout>
-            <strong style={{ color: "var(--em)" }}>Why no value field?</strong> Omission is stronger than redaction. A redacted field can potentially be un-redacted. A field that was never written cannot be recovered, subpoenaed, or leaked.
+          
+          <Callout icon="🔒">
+            Why no value field? Omission is stronger than redaction. A redacted field can potentially be un-redacted. A field that was never written cannot be recovered, subpoenaed, or leaked. You can share logs, feed them to observability tooling, or give them to an agent to reason about without any credential exposure risk.
           </Callout>
+          <P>When the proxy detects a credential echo in an API response, the audit entry gains an additional <C>injection_event</C> field with the value "credential_echo". The echoed value itself is never logged.</P>
+        </div>
+        <Divider />
+
+        {/* ARCHITECTURE */}
+        <div id="doc-architecture" style={{ marginBottom: 72 }}>
+          <Breadcrumb items={["Reference", "Architecture"]} />
+          <H1>Architecture</H1>
+          <P>How AgentSecrets keeps credential values out of agent memory at every layer.</P>
+          <P>The credential value should have nowhere to go except into the outbound HTTP request. Everything in the architecture follows from this.</P>
+          
+          <H2>The Proxy Model</H2>
+          <CodeWindow title="proxy flow" lines={[
+            { t: "Your code", c: "c-wh" },
+            { t: "    sends key name to proxy", c: "c-mu" },
+            { t: "    proxy resolves value from OS keychain", c: "c-am" },
+            { t: "    proxy injects value into outbound request", c: "c-vi" },
+            { t: "    upstream API responds", c: "c-sky" },
+            { t: "    proxy returns API response to your code", c: "c-em" },
+            { t: "", c: "" },
+            { t: "# Your code never held the value.", c: "c-di" }
+          ]} />
+          
+          <H2>Credential Storage</H2>
+          <P>Credentials never hit the disk in plaintext.</P>
+          <DocTable
+            headers={["Platform", "Storage Backend"]}
+            rows={[
+              ["macOS", "macOS Keychain (Security framework)"],
+              ["Linux", "libsecret / Secret Service API"],
+              ["Windows", "Windows Credential Manager"],
+            ]}
+          />
+          
+          <H2>Encryption</H2>
+          <DocTable
+            headers={["Layer", "Implementation"]}
+            rows={[
+              ["Key exchange", "X25519 (NaCl SealedBox)"],
+              ["Secret encryption", "AES-256-GCM"],
+              ["Key derivation", "Argon2id"],
+              ["Key storage", "OS keychain"],
+              ["Transport", "HTTPS / TLS"],
+              ["Server storage", "Encrypted blobs only"],
+            ]}
+          />
+          
+          <H2>Injection Headers</H2>
+          <DocTable
+            headers={["Style", "Header sent to proxy", "What proxy injects"]}
+            rows={[
+              ["Bearer token", "X-AS-Inject-Bearer", "Authorization: Bearer value"],
+              ["HTTP Basic", "X-AS-Inject-Basic", "Authorization: Basic base64"],
+              ["Custom Header", "X-AS-Inject-Header-Name", "Name: value"],
+              ["Query Param", "X-AS-Inject-Query-key", "?key=value"],
+              ["JSON Body", "X-AS-Inject-Body-path", "JSON mutation mapping value"],
+              ["Form field", "X-AS-Inject-Form-field", "Form encoding field=value"],
+            ]}
+          />
+          <P>The key name travels over localhost. The value never does.</P>
+          
+          <H2>The Domain Allowlist</H2>
+          <P>AgentSecrets enforces a deny-by-default domain allowlist. This closes SSRF attacks, prompt injection exfiltration, and misconfiguration errors.</P>
+          
+          <H2>Response Body Redaction</H2>
+          <P>Every response is scanned. If the exact value is echoed back, it is replaced stringently.</P>
+          <CodeWindow title="credential echo" lines={[
+            { t: "14:23:01  GET  api.example.com  KEY  bearer  200  credential_echo  245ms", c: "c-am" }
+          ]} />
+          
+          <H2>The Audit Log</H2>
+          <P>The log schema does not have a value field. Value omission is structurally enforced by Go struct definition.</P>
+          
+          <H2>The SDK Layer</H2>
+          <P>Auth resolution order: 1. proxy, 2. env token, 3. raises error.</P>
+          <P>The SDK accepts no credentials as constructor parameters. This is intentional.</P>
+          
+          <H2>The Structural Guarantee</H2>
+          <P>A policy-based guarantee says we recommend not logging credential values. The system could log them. Whether it does depends on configuration and discipline. A structural guarantee says the log struct has no value field. The system cannot log a credential value regardless of configuration or intent. AgentSecrets makes the zero-knowledge guarantee structural at every layer.</P>
         </div>
         <Divider />
 
@@ -530,26 +958,78 @@ export default function DocsPage() {
         <div id="doc-security" style={{ marginBottom: 72 }}>
           <Breadcrumb items={["Reference", "Security Model"]} />
           <H1>Security Model</H1>
-          <P>AgentSecrets is designed around <strong style={{ color: "var(--text)" }}>structural impossibility</strong> rather than policy enforcement.</P>
+          <P>AgentSecrets is designed around the principle of structural impossibility rather than policy enforcement. Each threat is mitigated architecturally.</P>
           <DocTable
             headers={["Threat", "Mitigation"]}
             rows={[
               ["Agent reads .env file", "No .env file — secrets in OS keychain only"],
               ["Agent logs credential in output", "Value never enters agent context — nothing to log"],
-              ["Malicious MCP skill intercepts", "Injection happens at transport, after skill boundary"],
-              ["Server-side breach", "Server holds AES-256-GCM ciphertext — undecryptable without your keychain key"],
-              ["Memory scraping", "Decrypted value held in memory for <1ms, then cleared"],
+              ["Prompt injection exfiltration", "Domain allowlist blocks outbound requests to unknown domains"],
+              ["Credential echo in API response", "Proxy scans responses and redacts matching patterns before return"],
+              ["Malicious MCP skill intercepts", "Injection happens at transport, after the skill boundary"],
+              ["Server-side breach", "Server holds AES-256-GCM ciphertext — undecryptable without keychain key"],
+              ["Memory scraping", "Decrypted value held in memory for under 1ms, then cleared"],
               ["Audit log leak", "Value field does not exist in schema — cannot be present"],
-              ["Prompt injection exfiltration", "Response body redaction scans for credential patterns before returning to agent"],
-              ["Unauthorized domain", "Domain allowlist enforcement — deny-by-default at proxy level"],
               ["Replay attack", "Each call uses a fresh nonce; TLS session prevents replay"],
+              ["SSRF", "Domain allowlist enforced before any credential is injected"],
             ]}
           />
-          <Callout warn>
-            <strong style={{ color: "var(--am)" }}>Responsible disclosure:</strong> Please report security vulnerabilities to{" "}
-            <a href="mailto:hello@theseventeen.co" style={{ color: "var(--am)" }}>hello@theseventeen.co</a>{" "}
-            — do not open public GitHub issues for security findings.
+          <Callout warn icon="⚠️">
+            Responsible disclosure: Please report security vulnerabilities to hello@theseventeen.co — do not open public GitHub issues for security findings.
           </Callout>
+        </div>
+        <Divider />
+
+        {/* PRICING */}
+        <div id="doc-pricing" style={{ marginBottom: 72 }}>
+          <Breadcrumb items={["Reference", "Pricing"]} />
+          <H1>Free and open source.</H1>
+          <P>No tiers. No usage limits. No vendor lock-in.</P>
+          <P>AgentSecrets is MIT licensed. The CLI, the proxy, the SDK, and the MCP template are all open source. Fork them, modify them, self-host them. The cloud sync feature — encrypted secret backup and team sharing — runs on AgentSecrets servers and is free.</P>
+          
+          <H2>What is free</H2>
+          <DocTable
+            headers={["Feature", "Status"]}
+            rows={[
+              ["CLI and local proxy", "Free, open source"],
+              ["OS keychain storage", "Free, open source"],
+              ["Six auth injection styles", "Free, open source"],
+              ["Domain allowlist enforcement", "Free, open source"],
+              ["Response body redaction", "Free, open source"],
+              ["MCP server integration", "Free, open source"],
+              ["OpenClaw integration", "Free, open source"],
+              ["Team workspaces", "Free"],
+              ["Cloud sync (encrypted)", "Free"],
+              ["Audit logging", "Free"],
+              ["Python SDK", "Free, open source"],
+              ["Zero-Knowledge MCP template", "Free, open source"],
+            ]}
+          />
+          
+          <H2>Source code</H2>
+          <DocTable
+            headers={["Repository", "What it is"]}
+            rows={[
+              ["agentsecrets", "CLI and proxy, written in Go"],
+              ["agentsecrets-sdk", "Python SDK"],
+              ["zero-knowledge-mcp", "MCP server template"],
+            ]}
+          />
+          <P>MIT License on all three.</P>
+          
+          <H2>Self-hosting</H2>
+          <P>The local proxy runs entirely on your machine. Your credentials never leave your OS keychain unless you explicitly push them to cloud sync. If you choose not to use cloud sync, AgentSecrets works fully offline.</P>
+          
+          <H2>What comes next</H2>
+          <P>Two features on the roadmap will have pricing when they ship.</P>
+          <P><strong style={{ color: "var(--text)" }}>Cloud Resolver.</strong> Credential injection for serverless and cloud environments where a persistent local proxy cannot run. Lambda, Vercel, Cloudflare Workers. Pricing will be usage-based.</P>
+          <P><strong style={{ color: "var(--text)" }}>AgentSecrets Connect.</strong> Multi-tenant credential delegation for platforms. Lets products provision AgentSecrets workspaces for their users during onboarding. Pricing will be usage-based.</P>
+          <P>Everything that exists today remains free when they ship.</P>
+
+          <CodeWindow title="get started" lines={[
+            { t: "$ brew install The-17/tap/agentsecrets", c: "c-em" },
+            { t: "$ agentsecrets init", c: "c-sky" },
+          ]} />
         </div>
 
       </main>

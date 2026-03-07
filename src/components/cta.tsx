@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function CTA({ onDocs }: { onDocs: () => void }) {
   const [copied, setCopied] = useState(false);
-  const cmd = "npx @the-17/agentsecrets init";
+  const cmd = "brew install The-17/tap/agentsecrets";
 
   return (
     <section
@@ -90,8 +90,9 @@ export default function CTA({ onDocs }: { onDocs: () => void }) {
           lineHeight: 2,
         }}
       >
-        AgentSecrets is open source, MIT licensed, and available right now.
-        Get running in under a minute.
+        MIT licensed. No account required. Works with Claude Desktop, Cursor, OpenClaw,
+        LangChain, or any subprocess-based agent. The local proxy runs entirely offline —
+        your credentials never leave your machine unless you explicitly enable cloud sync.
       </motion.p>
 
       <motion.div

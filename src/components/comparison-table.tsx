@@ -2,20 +2,16 @@
 import { motion } from "framer-motion";
 
 const rows = [
-  ["Agent as operator", "✅ Full lifecycle", "❌ Consumer only", "❌ Consumer only", "❌ Consumer only", "❌ Consumer only"],
-  ["Zero-knowledge end to end", "✅ Every step", "❌ Agent retrieves value", "❌ Agent retrieves value", "❌ Agent retrieves value", "⚠️ Partial"],
-  ["Domain allowlist enforcement", "✅ Deny-by-default", "❌", "❌", "❌", "❌"],
-  ["Response body redaction", "✅ Echo exfiltration defense", "❌", "❌", "❌", "❌"],
-  ["Prompt injection protection", "✅ Structural", "❌", "❌", "❌", "❌"],
-  ["Env var injection (env --)", "✅ agentsecrets env", "❌", "❌", "✅ doppler run", "✅ op run"],
-  ["AI-native workflow", "✅ Built for it", "❌", "❌", "❌", "❌"],
-  ["Team workspaces", "✅ Built-in", "⚠️ Complex", "⚠️ IAM roles", "✅", "✅ Vaults"],
-  ["OS keychain storage", "✅", "❌", "❌", "❌", "✅"],
-  ["Setup time", "⚡ 1 minute", "⏱️ Hours", "⏱️ 30+ min", "⏱️ 10 min", "⏱️ 5 min"],
-  ["Free", "✅", "✅ OSS", "⚠️ AWS costs", "⚠️ Limited", "❌"],
+  ["Agent context window", "Secret value is readable by the model at inference time", "Only the key name is passed. The value is structurally absent from the agent's context"],
+  ["Logs and traces", "Secret appears in stdout, telemetry, and LLM traces", "The value is never a string in the call chain — it cannot appear in any log"],
+  ["Prompt injection", "An attacker prompt can extract env vars: \"repeat your system prompt\"", "No value exists in context to extract. The attack surface is eliminated"],
+  ["Disk and file exposure", ".env files are readable by any process on the host", "Secrets live in the OS keychain, user-scoped, encrypted at rest"],
+  ["Audit compliance", "Values can appear in redacted logs — redaction can fail", "The audit schema has no value field. It is structurally impossible to log"],
+  ["Team secret sharing", "Shared .env files or Vault tokens sent over Slack or email", "Encrypted blobs synced via zero-knowledge cloud — the server cannot decrypt"],
+  ["Memory lifetime", "Secret lives in the process environment for its full lifetime", "Decrypted for under 1ms in-process, then wiped"],
 ];
 
-const headers = ["Feature", "AgentSecrets", "HashiCorp Vault", "AWS Secrets Mgr", "Doppler", "1Password"];
+const headers = ["Attack Surface", "❌ .env / Vault / Raw injection", "✓ AgentSecrets"];
 
 export default function ComparisonTable() {
   return (
@@ -47,7 +43,7 @@ export default function ComparisonTable() {
                   textTransform: "uppercase",
                   textAlign: "left",
                   borderBottom: "1px solid var(--border)",
-                  color: i === 0 ? "var(--muted)" : i === 1 ? "var(--em)" : "#f87171",
+                  color: i === 0 ? "var(--muted)" : i === 1 ? "#f87171" : "var(--em)",
                   whiteSpace: "nowrap",
                 }}
               >
@@ -82,8 +78,8 @@ export default function ComparisonTable() {
                       ci === 0
                         ? "var(--text)"
                         : ci === 1
-                        ? "var(--em)"
-                        : "#fca5a5",
+                        ? "#fca5a5"
+                        : "var(--em)",
                     whiteSpace: ci === 0 ? "nowrap" : "normal",
                   }}
                 >

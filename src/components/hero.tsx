@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function Hero({ onDocs }: { onDocs: () => void }) {
   const [copied, setCopied] = useState(false);
-  const cmd = "npx @the-17/agentsecrets init";
+  const cmd = "brew install The-17/tap/agentsecrets";
 
   const copy = () => {
     navigator.clipboard?.writeText(cmd);
@@ -55,7 +55,7 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
             boxShadow: "0 0 6px var(--em)",
           }}
         />
-        ZERO-KNOWLEDGE SECRETS FOR AI AGENTS
+        MIT Licensed · Zero-Knowledge · MCP + OpenClaw + SDK
       </motion.div>
 
       {/* Headline */}
@@ -85,9 +85,10 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
           margin: "0 auto 40px",
         }}
       >
-        Store credentials in your OS keychain. Inject them at the transport
-        layer — not the agent layer. The secret value is never in agent memory,
-        logs, or context. Not at any point.
+        AgentSecrets is a zero-knowledge credential proxy. Your agent calls any
+        authenticated API using a key name. The value is resolved from your OS
+        keychain and injected at the transport layer. The agent receives the API
+        response. It never sees the secret.
       </motion.p>
 
       {/* Buttons */}
@@ -164,7 +165,7 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
       </motion.div>
 
       {/* Stats */}
-      {/* <motion.div
+      <motion.div
         {...fadeUp(0.46)}
         style={{
           display: "grid", gridTemplateColumns: "repeat(3,1fr)",
@@ -173,9 +174,9 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
         }}
       >
         {[
-          { v: "AES-256-GCM", l: "Encryption" },
-          { v: "5", l: "OS platforms" },
-          { v: "6", l: "Auth styles" },
+          { v: "ZERO", l: "secrets in agent context — ever" },
+          { v: "MIT", l: "open source, all repos" },
+          { v: "6", l: "auth injection styles" },
         ].map(({ v, l }, i) => (
           <div key={l} style={{
             padding: "18px", textAlign: "center",
@@ -185,7 +186,7 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
             <div style={{ fontSize: 10, color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em" }}>{l}</div>
           </div>
         ))}
-      </motion.div> */}
+      </motion.div>
 
       {/* Scroll hint */}
       {/* <motion.div

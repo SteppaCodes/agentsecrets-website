@@ -1,51 +1,72 @@
 "use client";
 import { motion } from "framer-motion";
 import {
-  Shield, Key, Zap, Users, Lock, Eye,
+  Key, Zap, Shield, Search, Globe, Users, FileText, Bot, Terminal
 } from "lucide-react";
 
 const features = [
   {
-    Icon: Shield,
-    title: "Zero-Knowledge Architecture",
-    desc: "The secret value is decrypted in-process, injected at the transport layer, and cleared from memory. The agent never receives or stores the plaintext. Not at any step.",
+    Icon: Key,
+    title: "OS Keychain Storage",
+    desc: "Secrets live in macOS Keychain, Linux Secret Service, or Windows Credential Manager. Never on disk as plaintext. Never in environment variables. The OS enforces access control — other processes cannot read your credentials.",
     badge: null,
     color: "var(--em)",
   },
   {
-    Icon: Key,
-    title: "OS Keychain Storage",
-    desc: "macOS Keychain, Linux Secret Service, and Windows Credential Manager. Not a .env file. Not an environment variable. A cryptographically secured OS credential store.",
-    badge: null,
-    color: "var(--sky)",
-  },
-  {
     Icon: Zap,
-    title: "6 Auth Injection Styles",
-    desc: "Bearer token, API key header, Basic auth, query parameter, JSON body injection, and form field injection. Covers every REST and OAuth pattern.",
+    title: "Transport-Layer Injection",
+    desc: "The credential value is resolved inside the proxy and injected at the HTTP transport layer — after the agent boundary. It never appears in any MCP tool call, SDK method signature, or subprocess argument.",
     badge: null,
     color: "var(--am)",
   },
   {
-    Icon: Users,
-    title: "Team Workspaces & Cloud Sync",
-    desc: "Share credentials across a team — encrypted client-side before upload. The server holds only ciphertext and cannot decrypt your secrets. New devs onboard in seconds.",
+    Icon: Shield,
+    title: "Domain Allowlist",
+    desc: "The proxy is deny-by-default. Every domain must be explicitly authorized. SSRF attacks and prompt injection exfiltration attempts are blocked before any credential is injected. Allowlist changes require admin role and password.",
     badge: null,
-    color: "var(--vi)",
-  },
-  {
-    Icon: Lock,
-    title: "Domain Allowlist Enforcement",
-    desc: "Authorize the exact domains your agents can reach. Deny-by-default posture — any unapproved endpoint is blocked at the proxy level, not by policy.",
-    badge: "NEW",
     color: "var(--em)",
   },
   {
-    Icon: Eye,
+    Icon: Search,
     title: "Response Body Redaction",
-    desc: "AgentSecrets scans API responses for patterns that look like credential values and redacts them before returning to the agent — echo exfiltration defense built in.",
-    badge: "NEW",
+    desc: "The proxy scans every API response for patterns matching the injected value. If a credential echo is detected, it is replaced with [REDACTED_BY_AGENTSECRETS] before the response reaches your code. The attempt is logged.",
+    badge: null,
     color: "var(--re)",
+  },
+  {
+    Icon: Globe,
+    title: "Zero-Knowledge Cloud Sync",
+    desc: "X25519 key exchange plus AES-256-GCM with Argon2id key derivation. The server stores only ciphertext. It holds no encryption keys and cannot decrypt your secrets. Share across machines and teammates without any plaintext leaving your device.",
+    badge: "SOON",
+    color: "var(--sky)",
+  },
+  {
+    Icon: Users,
+    title: "Team Workspaces",
+    desc: "Multiple members share a project's encrypted secret store. Role-based access control per key. Admins manage the domain allowlist. Every access is logged by key name — never by value.",
+    badge: "SOON",
+    color: "var(--vi)",
+  },
+  {
+    Icon: FileText,
+    title: "Structural Audit Log",
+    desc: "JSONL entries after every proxied request: timestamp, key name, endpoint, status, latency. The value column does not exist in the schema. Omission is stronger than redaction — what was never written cannot be leaked.",
+    badge: null,
+    color: "var(--sky)",
+  },
+  {
+    Icon: Bot,
+    title: "MCP Native",
+    desc: "First-class Claude Desktop and Cursor integration via Model Context Protocol. One command auto-configures your client. Claude can call any authenticated API — it never sees a credential value.",
+    badge: null,
+    color: "var(--em)",
+  },
+  {
+    Icon: Terminal,
+    title: "Python SDK",
+    desc: "The SDK has no get() method. The only way to use a credential is to make the call or spawn the process. client.call(), client.spawn(), and the full management layer — workspaces, projects, allowlist, audit log — all from Python.",
+    badge: null,
+    color: "var(--am)",
   },
 ];
 
