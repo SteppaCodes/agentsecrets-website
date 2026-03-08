@@ -8,9 +8,10 @@ export default function CTA({ onDocs }: { onDocs: () => void }) {
 
   return (
     <section
+      className="cta"
       style={{
         textAlign: "center",
-        padding: "110px 40px",
+        padding: "110px 15px",
         position: "relative",
         zIndex: 1,
         borderTop: "1px solid var(--border)",
@@ -23,7 +24,7 @@ export default function CTA({ onDocs }: { onDocs: () => void }) {
           left: "50%",
           top: 0,
           transform: "translateX(-50%)",
-          width: 650,
+          width: "min(650px, 100%)",
           height: 320,
           pointerEvents: "none",
           background: "radial-gradient(ellipse,rgba(0,255,135,0.07) 0%,transparent 70%)",
@@ -146,6 +147,7 @@ export default function CTA({ onDocs }: { onDocs: () => void }) {
 
       {/* Install bar */}
       <motion.div
+        className="hero-install-bar"
         initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -170,6 +172,7 @@ export default function CTA({ onDocs }: { onDocs: () => void }) {
         }}
       >
         <div
+          className="prompt-col"
           style={{
             padding: "13px 15px",
             color: "var(--text)",
@@ -182,10 +185,11 @@ export default function CTA({ onDocs }: { onDocs: () => void }) {
         >
           $
         </div>
-        <div style={{ flex: 1, padding: "13px 15px", fontSize: 12, color: "var(--text)", textAlign: "left" }}>
+        <div className="cmd-text" style={{ flex: 1, padding: "13px 15px", fontSize: 12, color: "var(--text)", textAlign: "left", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} title={cmd}>
           {cmd}
         </div>
         <motion.div
+          className="copy-col"
           animate={{ color: copied ? "var(--em)" : "var(--muted)" }}
           style={{
             padding: "13px 15px",

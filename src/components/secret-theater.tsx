@@ -138,6 +138,7 @@ export default function SecretTheater() {
     <div className="rv" style={{ marginTop: 56 }}>
       {/* ── Header row ── */}
       <div
+        className="theater-title-row"
         style={{
           display: "flex",
           alignItems: "flex-end",
@@ -180,6 +181,7 @@ export default function SecretTheater() {
           </p>
         </div>
         <button
+          className="theater-trigger"
           onClick={running ? undefined : done ? reset : runTheater}
           disabled={running}
           style={{
@@ -206,7 +208,12 @@ export default function SecretTheater() {
             (e.currentTarget as HTMLElement).style.background = "rgba(0,255,135,0.06)";
           }}
         >
-          {running ? "⏳ intercepting..." : done ? "↺ run again" : "▶ simulate 4 API calls"}
+          <span className="theater-trigger-full">
+            {running ? "⏳ intercepting..." : done ? "↺ run again" : "▶ simulate 4 API calls"}
+          </span>
+          <span className="theater-trigger-short">
+            {running ? "⏳ running..." : done ? "↺ again" : "▶ simulate"}
+          </span>
         </button>
       </div>
 
@@ -214,6 +221,7 @@ export default function SecretTheater() {
       <AnimatePresence>
         {(running || done) && (
           <motion.div
+            className="theater-banner"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
@@ -240,6 +248,7 @@ export default function SecretTheater() {
               Secrets exposed to agent
             </span>
             <motion.span
+              className="tbanner-val"
               key={leakCount}
               initial={{ scale: 1.4, color: "#00ff87" }}
               animate={{ scale: 1 }}
@@ -256,8 +265,9 @@ export default function SecretTheater() {
             <span style={{ fontSize: 11, color: "var(--em)" }}>
               — zero now, zero always, by design
             </span>
-            <div style={{ flex: 1 }} />
+            <div className="tbanner-sep" style={{ flex: 1 }} />
             <span
+              className="tbanner-item"
               style={{
                 fontSize: 10,
                 color: calls.length > 0 ? "var(--em)" : "var(--muted)",
@@ -274,17 +284,25 @@ export default function SecretTheater() {
       </AnimatePresence>
 
       {/* ── Split pane ── */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 60px 1fr",
-          border: "1px solid var(--border-em)",
-          borderRadius: 16,
-          overflow: "hidden",
-          background: "var(--code-bg)",
-          boxShadow: "0 0 60px rgba(0,255,135,0.05)",
+      <div 
+        className="theater-scroll-wrapper" 
+        style={{ 
+          overflowX: "auto", 
+          maxWidth: "100%", 
+          paddingBottom: 4,
+          WebkitOverflowScrolling: "touch"
         }}
       >
+        <div
+          className="theater-grid scroll-block"
+          style={{
+            border: "1px solid var(--border-em)",
+            borderRadius: 16,
+            overflow: "hidden",
+            background: "var(--code-bg)",
+            boxShadow: "0 0 60px rgba(0,255,135,0.05)",
+          }}
+        >
         {/* LEFT: what agent sees */}
         <div>
           {/* pane header */}
@@ -333,7 +351,7 @@ export default function SecretTheater() {
             </div>
           </div>
 
-          <div style={{ padding: "20px", minHeight: 340 }}>
+          <div className="pane-body" style={{ padding: "20px", minHeight: 340 }}>
             {calls.length === 0 && (
               <div
                 style={{
@@ -467,6 +485,7 @@ export default function SecretTheater() {
 
         {/* SPINE — interceptor */}
         <div
+          className="spine"
           style={{
             display: "flex",
             flexDirection: "column",
@@ -524,7 +543,7 @@ export default function SecretTheater() {
         </div>
 
         {/* RIGHT: what actually happens */}
-        <div style={{ borderLeft: "1px solid var(--border)" }}>
+        <div className="pane-right" style={{ borderLeft: "1px solid var(--border)" }}>
           <div
             style={{
               padding: "12px 20px",
@@ -569,7 +588,7 @@ export default function SecretTheater() {
             </div>
           </div>
 
-          <div style={{ padding: "20px", minHeight: 340 }}>
+          <div className="pane-body" style={{ padding: "20px", minHeight: 340 }}>
             {calls.length === 0 && (
               <div
                 style={{
@@ -701,13 +720,12 @@ export default function SecretTheater() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
+            className="theater-proof-footer scroll-block"
             style={{
               marginTop: -1,
               border: "1px solid var(--border-em)",
               borderTop: "none",
               borderRadius: "0 0 16px 16px",
-              display: "grid",
-              gridTemplateColumns: "1fr auto 1fr",
               background: "rgba(0,255,135,0.02)",
             }}
           >
@@ -729,6 +747,7 @@ export default function SecretTheater() {
               </div>
             </div>
             <div
+              className="proof-sep"
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -762,6 +781,7 @@ export default function SecretTheater() {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
 
       {/* ── AUDIT LOG ── */}
       <AnimatePresence>
@@ -809,9 +829,9 @@ export default function SecretTheater() {
 
             {/* table header */}
             <div
+              className="call-log-head"
               style={{
                 display: "grid",
-                gridTemplateColumns: "80px 120px 1fr 70px 100px",
                 padding: "10px 20px",
                 borderBottom: "1px solid var(--border)",
                 background: "var(--bg2)",
@@ -836,9 +856,9 @@ export default function SecretTheater() {
                   initial={{ opacity: 0, y: -8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                  className="call-log-row"
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "80px 120px 1fr 70px 100px",
                     padding: "12px 20px",
                     borderBottom: "1px solid var(--overlay)",
                     fontSize: 11,

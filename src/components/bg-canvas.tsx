@@ -21,7 +21,8 @@ export default function BgCanvas() {
     const resize = () => {
       W = c.width = window.innerWidth;
       H = c.height = window.innerHeight;
-      pts = Array.from({ length: 55 }, () => ({
+      const isMobile = W < 768;
+      pts = Array.from({ length: isMobile ? 25 : 55 }, () => ({
         x: Math.random() * W,
         y: Math.random() * H,
         vx: (Math.random() - 0.5) * 0.22,
@@ -46,16 +47,19 @@ export default function BgCanvas() {
         ctx.fill();
       });
 
+      const isMobile = window.innerWidth < 768;
+      const threshold = isMobile ? 60 : 90;
+
       for (let i = 0; i < pts.length; i++) {
         for (let j = i + 1; j < pts.length; j++) {
           const dx = pts[i].x - pts[j].x;
           const dy = pts[i].y - pts[j].y;
           const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 90) {
+          if (d < threshold) {
             ctx.beginPath();
             ctx.moveTo(pts[i].x, pts[i].y);
             ctx.lineTo(pts[j].x, pts[j].y);
-            ctx.strokeStyle = `rgba(0,255,135,${0.065 * (1 - d / 90)})`;
+            ctx.strokeStyle = `rgba(0,255,135,${0.065 * (1 - d / threshold)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }

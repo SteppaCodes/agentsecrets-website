@@ -81,6 +81,7 @@ function FeatureCard({
 
   return (
     <motion.div
+      className="feat-card"
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
@@ -161,10 +162,10 @@ function FeatureCard({
         <Icon size={17} color={color} strokeWidth={1.6} />
       </motion.div>
 
-      <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 7, position: "relative" }}>
+      <div className="feat-title" style={{ fontSize: 13, fontWeight: 700, marginBottom: 7, position: "relative" }}>
         {title}
       </div>
-      <div style={{ fontSize: 11, color: "var(--muted)", lineHeight: 1.9, position: "relative" }}>
+      <div className="feat-desc" style={{ fontSize: 11, color: "var(--muted)", lineHeight: 1.9, position: "relative" }}>
         {desc}
       </div>
     </motion.div>
@@ -175,9 +176,9 @@ export default function FeaturesGrid() {
   return (
     <div
       id="features"
+      className="feat-grid"
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
         gap: 10,
         marginTop: 48,
       }}

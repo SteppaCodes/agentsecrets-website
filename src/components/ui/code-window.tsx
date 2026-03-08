@@ -17,7 +17,7 @@ const STYLES = {
   container: {
     border: "1px solid var(--border)",
     borderRadius: 12,
-    overflow: "hidden" as const,
+    overflow: "clip" as const,
     background: "var(--code-bg)",
   },
   header: {
@@ -34,6 +34,7 @@ const STYLES = {
   },
   content: {
     padding: 20,
+    overflowX: "auto" as const,
   },
   line: {
     fontSize: 12,
@@ -87,7 +88,7 @@ export function CodeWindow({ title, lines, className = "" }: CodeWindowProps) {
         <span style={STYLES.title}>{title}</span>
         <CopyButton text={rawText} />
       </div>
-      <div style={STYLES.content}>
+      <div className="cwin-body" style={STYLES.content}>
         {lines.map((line, i) => (
           <CodeLine key={i} line={line} />
         ))}
@@ -153,7 +154,7 @@ export function McpJsonWindow() {
         <span style={STYLES.title}>claude_desktop_config.json</span>
         <CopyButton text={raw} />
       </div>
-      <div style={STYLES.content}>
+      <div className="cwin-body" style={STYLES.content}>
         {rows.map((row, i) => (
           <div
             key={i}

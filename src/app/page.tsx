@@ -29,12 +29,14 @@ function Section({
   return (
     <section
       id={id}
+      className="page-section"
       style={{
         position: "relative",
         zIndex: 1,
         padding: "96px 40px",
         maxWidth: 1160,
         margin: "0 auto",
+        overflow: "hidden",
       }}
     >
       <motion.div
@@ -123,7 +125,7 @@ export default function Home() {
 
       {/* Secret theater */}
       <Section
-        tag="Showmanship"
+        tag="Live Demonstration"
         title="Side-by-side: agent view vs. reality"
         sub="This is the moment where other tools fail. Here's what makes AgentSecrets different — visualized in real time."
       >

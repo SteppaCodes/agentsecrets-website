@@ -41,7 +41,6 @@ export default function Nav({ page, onNavigate }: NavProps) {
           zIndex: 100, height: 60,
           display: "flex",
           alignItems: "center",
-          padding: "0 40px",
           justifyContent: "space-between",
           borderBottom: "1px solid var(--border)",
           background: "var(--nav-bg)",
@@ -83,7 +82,7 @@ export default function Nav({ page, onNavigate }: NavProps) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
             </svg>
           </div>
-          <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text)", fontFamily: "inherit" }}>
+          <span className="logo-text" style={{ fontSize: 14, fontWeight: 700, color: "var(--text)", fontFamily: "inherit" }}>
             agent<span style={{ color: "var(--em)" }}>secrets</span>
           </span>
         </motion.button>
@@ -109,6 +108,7 @@ export default function Nav({ page, onNavigate }: NavProps) {
         {/* Right actions */}
         <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
           <motion.button
+            // className="nav-docs-btn"
             whileHover={{ borderColor: "var(--border-em)", color: "var(--em)", background: "rgba(0,255,135,0.05)" }}
             whileTap={{ scale: 0.96 }}
             onClick={() => onNavigate(page === "docs" ? "home" : "docs")}
@@ -123,6 +123,7 @@ export default function Nav({ page, onNavigate }: NavProps) {
             {page === "docs" ? "← Site" : "Docs"}
           </motion.button>
           <motion.a
+            className="nav-gh"
             whileHover={{ background: "var(--text)", y: -1, boxShadow: "0 6px 20px rgba(0,255,135,0.25)" }}
             whileTap={{ scale: 0.96 }}
             href="https://github.com/The-17/agentsecrets"
@@ -150,7 +151,7 @@ export default function Nav({ page, onNavigate }: NavProps) {
               background: "none",
               border: "1px solid var(--border)",
               borderRadius: 7,
-              padding: "7px 9px",
+              padding: "9px 11px",
               cursor: "pointer",
               color: "var(--muted)",
               alignItems: "center",
@@ -178,6 +179,8 @@ export default function Nav({ page, onNavigate }: NavProps) {
               backdropFilter: "blur(24px)",
               borderBottom: "1px solid var(--border)",
               padding: "16px 24px 20px",
+              maxHeight: "calc(100vh - 60px)",
+              overflowY: "auto",
             }}
           >
             {page === "home" && NAV_LINKS.map(({ label, id }, i) => (
@@ -226,13 +229,6 @@ export default function Nav({ page, onNavigate }: NavProps) {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .nav-links-desktop { display: none !important; }
-          .nav-hamburger { display: flex !important; }
-        }
-      `}</style>
     </>
   );
 }

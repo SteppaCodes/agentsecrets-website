@@ -20,13 +20,16 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
 
   return (
     <section
+      className="hero-section"
       style={{
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: "0 40px",
+        padding: "0 15px",
+        paddingTop: "max(0px, env(safe-area-inset-top))",
+        paddingBottom: "max(0px, env(safe-area-inset-bottom))",
         textAlign: "center",
         position: "relative",
         zIndex: 1,
@@ -76,6 +79,7 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
 
       {/* Subtext */}
       <motion.p
+        className="hero-sub"
         {...fadeUp(0.2)}
         style={{
           fontSize: 13,
@@ -85,10 +89,16 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
           margin: "0 auto 40px",
         }}
       >
-        AgentSecrets is a zero-knowledge credential proxy. Your agent calls any
-        authenticated API using a key name. The value is resolved from your OS
-        keychain and injected at the transport layer. The agent receives the API
-        response. It never sees the secret.
+        <span className="hero-sub-full">
+          AgentSecrets is a zero-knowledge credential proxy. Your agent calls any
+          authenticated API using a key name. The value is resolved from your OS
+          keychain and injected at the transport layer. The agent receives the API
+          response. It never sees the secret.
+        </span>
+        <span className="hero-sub-short">
+          Zero-knowledge credential proxy. Your agent calls APIs using a key name.
+          The secret value is never exposed to the agent.
+        </span>
       </motion.p>
 
       {/* Buttons */}
@@ -130,6 +140,7 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
 
       {/* Install bar */}
       <motion.div
+        className="hero-install-bar"
         {...fadeUp(0.38)}
         onClick={copy}
         whileHover={{ boxShadow: "0 0 32px rgba(0,255,135,0.12)" }}
@@ -141,19 +152,20 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
           transition: "box-shadow 0.25s",
         }}
       >
-        <div style={{
+        <div className="prompt-col" style={{
           padding: "13px 15px", color: "var(--text)", fontSize: 13, fontWeight: 700,
           borderRight: "1px solid var(--border)", background: "rgba(0,255,135,0.04)", flexShrink: 0,
         }}>
           $
         </div>
-        <div style={{
+        <div className="cmd-text" style={{
           flex: 1, padding: "13px 15px", fontSize: 12, color: "var(--text)",
           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", textAlign: "left",
         }}>
           {cmd}
         </div>
         <motion.div
+          className="copy-col"
           animate={copied ? { color: "var(--em)" } : { color: "var(--muted)" }}
           style={{
             padding: "13px 15px", borderLeft: "1px solid var(--border)",
@@ -166,6 +178,7 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
 
       {/* Stats */}
       <motion.div
+        className="hero-stats"
         {...fadeUp(0.46)}
         style={{
           display: "grid", gridTemplateColumns: "repeat(3,1fr)",
@@ -178,12 +191,12 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
           { v: "MIT", l: "open source, all repos" },
           { v: "6", l: "auth injection styles" },
         ].map(({ v, l }, i) => (
-          <div key={l} style={{
+          <div className="hero-stat-item" key={l} style={{
             padding: "18px", textAlign: "center",
             borderRight: i < 2 ? "1px solid var(--border)" : "none",
           }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: "var(--em)" }}>{v}</div>
-            <div style={{ fontSize: 10, color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em" }}>{l}</div>
+            <div className="hero-stat-label" style={{ fontSize: 10, color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em" }}>{l}</div>
           </div>
         ))}
       </motion.div>

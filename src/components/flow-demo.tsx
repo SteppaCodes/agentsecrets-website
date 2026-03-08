@@ -163,14 +163,23 @@ export default function FlowDemo() {
     doneSteps.includes(i) ? "var(--em2)" : i === activeStep ? "var(--em)" : "var(--overlay-hover)";
 
   return (
-    <div id="how-it-works" className="rv" style={{
-      border: "1px solid var(--border-em)",
-      borderRadius: 16,
-      background: "var(--code-bg)",
-      overflow: "hidden",
-      marginTop: 48,
-      boxShadow: "0 0 80px rgba(0,255,135,0.04),0 40px 80px var(--shadow)",
-    }}>
+    <div 
+      className="flow-scroll-wrapper" 
+      style={{ 
+        overflowX: "auto", 
+        maxWidth: "100%", 
+        paddingBottom: 4,
+        WebkitOverflowScrolling: "touch"
+      }}
+    >
+      <div id="how-it-works" className="rv scroll-block" style={{
+        border: "1px solid var(--border-em)",
+        borderRadius: 16,
+        background: "var(--code-bg)",
+        overflow: "hidden",
+        marginTop: 48,
+        boxShadow: "0 0 80px rgba(0,255,135,0.04),0 40px 80px var(--shadow)",
+      }}>
       {/* Title bar */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -204,9 +213,18 @@ export default function FlowDemo() {
 
       {/* Flow track */}
       <div style={{
-        display: "flex", alignItems: "center", padding: "28px 36px",
-        borderBottom: "1px solid var(--border)", overflowX: "auto",
+        position: "relative",
+        overflow: "hidden",
       }}>
+        <div
+          className="flow-track"
+          style={{
+            display: "flex", alignItems: "center", padding: "28px 36px",
+            borderBottom: "1px solid var(--border)", overflowX: "auto",
+            WebkitOverflowScrolling: "touch",
+            scrollbarWidth: "none",
+          }}
+        >
         {STEPS.map((s, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", flex: 1 }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 7, flexShrink: 0 }}>
@@ -222,13 +240,14 @@ export default function FlowDemo() {
                 {doneSteps.includes(i) ? "✓" : s.icon}
               </motion.div>
               <motion.div
+                className="fnode-label"
                 animate={{ color: labelColor(i), fontWeight: i === activeStep ? 700 : 400 }}
                 transition={{ duration: 0.3 }}
                 style={{ fontSize: 10, textAlign: "center", maxWidth: 70, lineHeight: 1.4, whiteSpace: "pre-line" }}
               >
                 {s.label}
               </motion.div>
-              <div style={{ fontSize: 9, color: "var(--muted)", textAlign: "center", maxWidth: 70 }}>
+              <div className="fnode-sub" style={{ fontSize: 9, color: "var(--muted)", textAlign: "center", maxWidth: 70 }}>
                 {s.sub}
               </div>
             </div>
@@ -257,14 +276,19 @@ export default function FlowDemo() {
             )}
           </div>
         ))}
+        </div>
+        <div className="scroll-hint-overlay" />
       </div>
 
       {/* Terminal */}
       <div style={{
         padding: "24px 28px", minHeight: 220,
         background: "linear-gradient(180deg,var(--code-bg) 0%,rgba(3,5,10,0.98) 100%)",
+        overflowX: "auto",
+        WebkitOverflowScrolling: "touch",
       }}>
-        <AnimatePresence mode="wait">
+        <div style={{ minWidth: "max-content" }}>
+          <AnimatePresence mode="wait">
           {phase === "idle" ? (
             <motion.div
               key="idle"
@@ -308,10 +332,11 @@ export default function FlowDemo() {
             </motion.div>
           )}
         </AnimatePresence>
+        </div>
       </div>
 
       {/* Info row */}
-      <div style={{
+      <div className="flow-info-row" style={{
         borderTop: "1px solid var(--border)",
         display: "grid", gridTemplateColumns: "repeat(3,1fr)",
         background: "rgba(0,255,135,0.015)",
@@ -339,6 +364,7 @@ export default function FlowDemo() {
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 }

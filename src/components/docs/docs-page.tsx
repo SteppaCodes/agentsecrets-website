@@ -26,7 +26,7 @@ const DOCS_SECTIONS = [
 
 function Breadcrumb({ items }: { items: string[] }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, color: "var(--muted)", marginBottom: 28 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, color: "var(--muted)", marginBottom: 28, flexWrap: "wrap" }}>
       {items.map((item, i) => (
         <span key={i} style={{ color: i === items.length - 1 ? "var(--em)" : "var(--muted)" }}>
           {i > 0 && <span style={{ marginRight: 8, color: "var(--muted)" }}>›</span>}
@@ -170,9 +170,9 @@ export default function DocsPage() {
 
   return (
     <div
+      className="docs-layout"
       style={{
         display: "grid",
-        gridTemplateColumns: "240px 1fr",
         minHeight: "100vh",
         paddingTop: 60,
         position: "relative",
@@ -181,6 +181,7 @@ export default function DocsPage() {
     >
       {/* Sidebar */}
       <aside
+        className="docs-sidebar"
         style={{
           position: "sticky",
           top: 60,
@@ -188,6 +189,7 @@ export default function DocsPage() {
           overflowY: "auto",
           borderRight: "1px solid var(--border)",
           padding: "32px 20px",
+          paddingBottom: "max(32px, env(safe-area-inset-bottom))",
           background: "var(--nav-bg)",
           backdropFilter: "blur(12px)",
         }}
