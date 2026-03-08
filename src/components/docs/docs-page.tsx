@@ -478,9 +478,6 @@ export default function DocsPage() {
             <Step n={8} title="Connect to Claude Desktop" desc="Writes your Claude Desktop config automatically. No env block, no credential values. Restart Claude Desktop and ask it to check your Stripe balance." code={{ t: "$ agentsecrets mcp install", c: "c-em" }} />
             <McpJsonWindow />
 
-            <Callout warn icon="⚠️">
-              Alpha status: The CLI surface and MCP schema are stable. Cloud sync and team workspaces are in active development. Pin your version in production.
-            </Callout>
           </div>
           <Divider />
 
