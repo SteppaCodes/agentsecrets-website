@@ -37,14 +37,12 @@ const features = [
     Icon: Globe,
     title: "Zero-Knowledge Cloud Sync",
     desc: "X25519 key exchange plus AES-256-GCM with Argon2id key derivation. The server stores only ciphertext. It holds no encryption keys and cannot decrypt your secrets. Share across machines and teammates without any plaintext leaving your device.",
-    badge: "SOON",
     color: "var(--sky)",
   },
   {
     Icon: Users,
     title: "Team Workspaces",
     desc: "Multiple members share a project's encrypted secret store. Role-based access control per key. Admins manage the domain allowlist. Every access is logged by key name — never by value.",
-    badge: "SOON",
     color: "var(--vi)",
   },
   {
