@@ -37,8 +37,6 @@ const STYLES = {
     overflowX: "auto" as const,
   },
   line: {
-    fontSize: 12,
-    lineHeight: "2.1" as const,
     display: "flex" as const,
   },
   prompt: {

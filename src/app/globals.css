@@ -180,6 +180,7 @@ body {
 ═══════════════════════════════════════ */
 .docs-table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; width:100%; }
 .cwin-body { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.cline { font-size: 12px; line-height: 2.1; }
 .docs-mobile-nav { display:none; flex-wrap:nowrap; overflow-x:auto; gap:6px; padding-bottom:20px; margin-bottom:8px; border-bottom:1px solid var(--border); scrollbar-width:none; }
 .docs-mobile-nav::-webkit-scrollbar { display:none; }
 .docs-mobile-nav-pill { flex-shrink:0; font-size:10px; font-weight:700; padding:6px 12px; border-radius:100px; border:1px solid var(--border); color:var(--muted); background:transparent; cursor:pointer; white-space:nowrap; font-family:'Space Mono',monospace; transition:all 0.15s; }
@@ -489,4 +490,106 @@ body {
   .docs-step-num { width:24px; height:24px; font-size:10px; }
   .docs-table { overflow-x:auto; display:block; }
   .docs-mobile-nav-pill { font-size:9px; padding:5px 10px; }
+}
+
+
+/* ── Docs layout — desktop ─────────────────────────────────── */
+.docs-layout {
+  grid-template-columns: 240px 1fr;
+}
+
+.docs-sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--em2) transparent;
+}
+.docs-sidebar::-webkit-scrollbar { width: 3px; }
+.docs-sidebar::-webkit-scrollbar-thumb { background: var(--em2); border-radius: 2px; }
+
+.docs-content {
+  padding: 48px 56px;
+  max-width: 860px;
+}
+
+/* ── Docs typography defaults (mobile breakpoints override) ─── */
+.docs-section   { margin-bottom: 72px; }
+.docs-divider   { margin: 48px 0; }
+.docs-h1        { font-size: clamp(22px, 3vw, 36px); }
+.docs-h2        { font-size: 20px; }
+.docs-h3        { font-size: 14px; }
+.docs-p         { font-size: 13px; }
+.docs-callout   { padding: 16px 20px; display: flex; gap: 12px; align-items: flex-start; }
+.docs-callout-icon { font-size: 16px; }
+.docs-step      { display: flex; gap: 16px; }
+.docs-step-num  {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1.5px solid var(--border-em);
+  background: rgba(0, 255, 135, 0.07);
+  color: var(--em); font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Mobile drawer (hidden on desktop) ─────────────────────── */
+.docs-drawer {
+  /* rendered in the DOM always; transform handles show/hide     */
+  /* shown via JS state — no CSS display toggle needed           */
+}
+
+/* ── Mobile FAB — hidden on desktop, shown at ≤900px ─────── */
+.docs-fab {
+  display: none;
+}
+
+/* ── Remove old mobile nav pills — no longer used ────────── */
+.docs-mobile-nav { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+═══════════════════════════════════════════════════════════ */
+
+/* ── ≤ 900px: sidebar collapses, FAB appears ─────────────── */
+@media (max-width: 900px) {
+  .docs-layout          { grid-template-columns: 1fr; }
+  .docs-sidebar         { display: none; }
+  .docs-content         { padding: 32px 28px; max-width: 100%; }
+  .docs-fab             { display: flex; }
+}
+
+/* ── ≤ 768px ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .docs-content         { padding: 28px 20px; }
+  .docs-h2              { font-size: 18px; }
+  .docs-section         { margin-bottom: 60px; }
+  .docs-divider         { margin: 36px 0; }
+}
+
+/* ── ≤ 640px ──────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .docs-content         { padding: 24px 16px; }
+  .docs-h1              { font-size: clamp(20px, 6vw, 30px); }
+  .docs-h2              { font-size: 17px; }
+  .docs-h3              { font-size: 12px; }
+  .docs-p               { font-size: 12px; }
+  .docs-callout         { padding: 12px 14px; gap: 10px; }
+  .docs-step            { gap: 12px; }
+  .docs-divider         { margin: 28px 0; }
+  .docs-section         { margin-bottom: 52px; }
+  .docs-table th        { padding: 8px 12px; font-size: 9px; }
+  .docs-table td        { padding: 9px 12px; font-size: 11px; }
+  /* FAB sits a little higher so it clears the bottom safe area */
+  .docs-fab             { font-size: 10px; padding: 9px 16px; }
+}
+
+/* ── ≤ 480px ──────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .docs-content         { padding: 20px 14px; }
+  .docs-h1              { font-size: clamp(18px, 7vw, 26px); }
+  .docs-h2              { font-size: 16px; margin-top: 32px; }
+  .docs-callout         { flex-direction: column; gap: 8px; }
+  .docs-callout-icon    { font-size: 14px; }
+  .docs-step-num        { width: 24px; height: 24px; font-size: 10px; }
+  .docs-section         { margin-bottom: 44px; }
+  .docs-divider         { margin: 24px 0; }
+  /* Drawer takes full width on very small phones */
+  .docs-drawer          { width: 100% !important; }
 }
