@@ -165,7 +165,7 @@ export default function Home() {
       <Section
         tag="Get Started"
         title="Install in under a minute"
-        sub="Available via npm, pip, Homebrew, and Go. No account required to get started locally."
+        sub="Available via npm, pip, Homebrew, and Go."
       >
         <InstallSection />
       </Section>

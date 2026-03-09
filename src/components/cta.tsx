@@ -91,7 +91,7 @@ export default function CTA({ onDocs }: { onDocs: () => void }) {
           lineHeight: 2,
         }}
       >
-        MIT licensed. No account required. Works with Claude Desktop, Cursor, OpenClaw,
+        MIT licensed. Works with Claude Desktop, Cursor, OpenClaw,
         LangChain, or any subprocess-based agent. The local proxy runs entirely offline —
         your credentials never leave your machine unless you explicitly enable cloud sync.
       </motion.p>
