@@ -3,11 +3,11 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const STEPS = [
-  { label: "AI Agent\nRequest", sub: "key name only", icon: "🤖", warn: false },
-  { label: "OS Keychain\nLookup", sub: "secure OS store", icon: "🔐", warn: true },
-  { label: "Transport\nInjection", sub: "value never exposed", icon: "⚡", warn: false },
-  { label: "API\nCall", sub: "HTTP w/ real bearer", icon: "🌐", warn: false },
-  { label: "Response\nReturned", sub: "key never in scope", icon: "✅", warn: false },
+  { label: "Agent sends\nkey name only", sub: "name reference", icon: "🤖", warn: false },
+  { label: "Proxy resolves\nfrom OS keychain", sub: "secure OS store", icon: "🔐", warn: true },
+  { label: "Value injected\nat transport layer", sub: "value never exposed", icon: "⚡", warn: false },
+  { label: "API receives\nauthenticated request", sub: "HTTP w/ real bearer", icon: "🌐", warn: false },
+  { label: "Response returned\nkey never in scope", sub: "agent gets data only", icon: "✅", warn: false },
 ];
 
 const TLINES = [

@@ -1,70 +1,50 @@
 "use client";
 import { motion } from "framer-motion";
 import {
-  Key, Zap, Shield, Search, Globe, Users, FileText, Bot, Terminal
+  Key, Zap, Shield, Search, Users, FileText
 } from "lucide-react";
 
 const features = [
   {
     Icon: Key,
     title: "OS Keychain Storage",
-    desc: "Secrets live in macOS Keychain, Linux Secret Service, or Windows Credential Manager. Never on disk as plaintext. Never in environment variables. The OS enforces access control — other processes cannot read your credentials.",
+    desc: "Credentials live in the OS keychain. macOS Keychain, Linux Secret Service, Windows Credential Manager. No plaintext on disk, no environment variable exposed to neighboring processes.",
     badge: null,
     color: "var(--em)",
   },
   {
     Icon: Zap,
-    title: "Transport-Layer Injection",
-    desc: "The credential value is resolved inside the proxy and injected at the HTTP transport layer — after the agent boundary. It never appears in any MCP tool call, SDK method signature, or subprocess argument.",
+    title: "Six Auth Styles",
+    desc: "Bearer, Basic, custom header, query param, JSON body, form field. Every REST and OAuth pattern has a corresponding injection style.",
     badge: null,
     color: "var(--am)",
   },
   {
     Icon: Shield,
     title: "Domain Allowlist",
-    desc: "The proxy is deny-by-default. Every domain must be explicitly authorized. SSRF attacks and prompt injection exfiltration attempts are blocked before any credential is injected. Allowlist changes require admin role and password.",
+    desc: "Deny-by-default. Every outbound request must target an authorized domain. Unauthorized attempts are blocked and logged before injection happens.",
     badge: null,
     color: "var(--em)",
   },
   {
     Icon: Search,
-    title: "Response Body Redaction",
-    desc: "The proxy scans every API response for patterns matching the injected value. If a credential echo is detected, it is replaced with [REDACTED_BY_AGENTSECRETS] before the response reaches your code. The attempt is logged.",
+    title: "Response Redaction",
+    desc: "If an API echoes a credential back in its response, the proxy catches and redacts it before the agent sees the response.",
     badge: null,
     color: "var(--re)",
   },
   {
-    Icon: Globe,
-    title: "Zero-Knowledge Cloud Sync",
-    desc: "X25519 key exchange plus AES-256-GCM with Argon2id key derivation. The server stores only ciphertext. It holds no encryption keys and cannot decrypt your secrets. Share across machines and teammates without any plaintext leaving your device.",
-    color: "var(--sky)",
-  },
-  {
     Icon: Users,
     title: "Team Workspaces",
-    desc: "Multiple members share a project's encrypted secret store. Role-based access control per key. Admins manage the domain allowlist. Every access is logged by key name — never by value.",
+    desc: "Secrets encrypted client-side before upload. The server holds ciphertext. A new developer onboards without anyone sharing credentials over Slack.",
     color: "var(--vi)",
   },
   {
     Icon: FileText,
-    title: "Structural Audit Log",
-    desc: "JSONL entries after every proxied request: timestamp, key name, endpoint, status, latency. The value column does not exist in the schema. Omission is stronger than redaction — what was never written cannot be leaked.",
+    title: "Audit Log",
+    desc: "Every proxied request logged. Key name, endpoint, status, timing. No value field, because there is nowhere to put one.",
     badge: null,
     color: "var(--sky)",
-  },
-  {
-    Icon: Bot,
-    title: "MCP Native",
-    desc: "First-class Claude Desktop and Cursor integration via Model Context Protocol. One command auto-configures your client. Claude can call any authenticated API — it never sees a credential value.",
-    badge: null,
-    color: "var(--em)",
-  },
-  {
-    Icon: Terminal,
-    title: "Python SDK",
-    desc: "The SDK has no get() method. The only way to use a credential is to make the call or spawn the process. client.call(), client.spawn(), and the full management layer — workspaces, projects, allowlist, audit log — all from Python.",
-    badge: null,
-    color: "var(--am)",
   },
 ];
 

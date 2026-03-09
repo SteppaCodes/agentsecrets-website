@@ -116,17 +116,17 @@ export default function Home() {
 
       {/* Live protocol demo */}
       <Section
-        tag="Security Protocol"
-        title="Watch the zero-knowledge protocol execute"
-        sub="Click run to watch AgentSecrets handle a real Stripe API call. The terminal shows exactly what happens — and what never does."
+        tag="HOW IT WORKS"
+        title="Watch it execute."
+        sub="Click run and watch a real Stripe API call go through the protocol. The terminal shows exactly what happens and what never does."
       >
         <FlowDemo />
       </Section>
 
       {/* Secret theater */}
       <Section
-        tag="Live Demonstration"
-        title="Side-by-side: agent view vs. reality"
+        tag="THE MODEL"
+        title="Injection at the right layer."
         sub="This is the moment where other tools fail. Here's what makes AgentSecrets different — visualized in real time."
       >
         <SecretTheater />
@@ -135,37 +135,37 @@ export default function Home() {
       {/* Features */}
       <Section
         id="features"
-        tag="Features"
-        title="Everything an agent needs to operate securely"
-        sub="Zero-knowledge at every layer — not just at the point of API injection."
+        tag="FEATURES"
+        title="Everything that needed to exist."
       >
         <FeaturesGrid />
       </Section>
 
-      {/* Integrations */}
+      {/* Integrations / Build on It */}
+      <div id="build-on-it" />
       <Section
         id="integrations"
-        tag="Integrations"
-        title="Works with every AI tool you use"
-        sub="MCP for Claude Desktop and Cursor. HTTP proxy for any agent framework. CLI for scripts and CI/CD. Env injection for any process."
+        tag="INTEGRATIONS"
+        title="Works where you already work."
+        sub="MCP for Claude Desktop and Cursor. HTTP proxy for any agent framework. Env injection for tools that read from environment variables."
       >
         <Integrations />
       </Section>
 
       {/* Comparison */}
       <Section
-        tag="Comparison"
-        title="vs. Traditional secrets management"
-        sub="Every other tool treats agents as consumers. AgentSecrets treats them as operators — agents that manage their own credentials end to end."
+        tag="VS."
+        title="Built for agents. The rest were not."
+        sub="Other tools protect credentials at rest. AgentSecrets protects them in use, which is the only moment that matters when an agent is running."
       >
         <ComparisonTable />
       </Section>
 
       {/* Install */}
       <Section
-        tag="Get Started"
-        title="Install in under a minute"
-        sub="Available via npm, pip, Homebrew, and Go."
+        tag="GET STARTED"
+        title="One command."
+        sub="Free and open source. No usage limits."
       >
         <InstallSection />
       </Section>
@@ -234,7 +234,7 @@ export default function Home() {
           </a>
         </div>
         <span style={{ fontSize: 11, color: "var(--muted)" }}>
-          MIT License · open source · zero secrets. structurally.
+          © 2026 The Seventeen · You cannot steal what was never there.
         </span>
       </footer>
     </>

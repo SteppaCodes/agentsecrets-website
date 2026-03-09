@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function Hero({ onDocs }: { onDocs: () => void }) {
   const [copied, setCopied] = useState(false);
-  const cmd = "brew install The-17/tap/agentsecrets";
+  const cmd = "npx @the-17/agentsecrets init";
 
   const copy = () => {
     navigator.clipboard?.writeText(cmd);
@@ -58,7 +58,7 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
             boxShadow: "0 0 6px var(--em)",
           }}
         />
-        MIT Licensed · Zero-Knowledge · MCP + OpenClaw + SDK
+        Zero-knowledge secrets infrastructure
       </motion.div>
 
       {/* Headline */}
@@ -72,9 +72,9 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
           marginBottom: 24,
         }}
       >
-        Your agent calls APIs.
+        Your agent uses the credential.
         <br />
-        <span style={{ color: "var(--em)" }}>It never sees the key.</span>
+        <span style={{ color: "var(--em)" }}>It never holds it.</span>
       </motion.h1>
 
       {/* Subtext */}
@@ -90,14 +90,13 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
         }}
       >
         <span className="hero-sub-full">
-          AgentSecrets is a zero-knowledge credential proxy. Your agent calls any
-          authenticated API using a key name. The value is resolved from your OS
-          keychain and injected at the transport layer. The agent receives the API
-          response. It never sees the secret.
+          Most secrets tools protect keys at rest. The moment your agent retrieves one
+          to use it, that protection ends. AgentSecrets changes where injection happens
+          and what the agent is allowed to see.
         </span>
         <span className="hero-sub-short">
-          Zero-knowledge credential proxy. Your agent calls APIs using a key name.
-          The secret value is never exposed to the agent.
+          Most secrets tools protect keys at rest. AgentSecrets changes where
+          injection happens and what the agent is allowed to see.
         </span>
       </motion.p>
 
@@ -134,7 +133,7 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
             transition: "all 0.25s",
           }}
         >
-          View on GitHub
+          GitHub
         </motion.a>
       </motion.div>
 

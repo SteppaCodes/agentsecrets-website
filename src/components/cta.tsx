@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function CTA({ onDocs }: { onDocs: () => void }) {
   const [copied, setCopied] = useState(false);
-  const cmd = "brew install The-17/tap/agentsecrets";
+  const cmd = "npx @the-17/agentsecrets init";
 
   return (
     <section
@@ -73,9 +73,9 @@ export default function CTA({ onDocs }: { onDocs: () => void }) {
           lineHeight: 1.1,
         }}
       >
-        Your agents are ready.
+        The agent uses the key.
         <br />
-        <span style={{ color: "var(--em)" }}>The secrets are not their problem.</span>
+        <span style={{ color: "var(--em)" }}>It never sees it.</span>
       </motion.h2>
 
       <motion.p
@@ -91,9 +91,7 @@ export default function CTA({ onDocs }: { onDocs: () => void }) {
           lineHeight: 2,
         }}
       >
-        MIT licensed. Works with Claude Desktop, Cursor, OpenClaw,
-        LangChain, or any subprocess-based agent. The local proxy runs entirely offline —
-        your credentials never leave your machine unless you explicitly enable cloud sync.
+        MIT licensed. Open source. Available now.
       </motion.p>
 
       <motion.div

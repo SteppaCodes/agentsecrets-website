@@ -10,8 +10,7 @@ interface NavProps {
 
 const NAV_LINKS = [
   { label: "How it works", id: "how-it-works" },
-  { label: "Features", id: "features" },
-  { label: "Integrations", id: "integrations" },
+  { label: "Build on It", id: "build-on-it" },
 ];
 
 export default function Nav({ page, onNavigate }: NavProps) {

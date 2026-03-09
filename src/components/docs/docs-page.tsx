@@ -156,10 +156,7 @@ function SidebarContent({
       {/* Brand */}
       <div style={{ marginBottom: 28, paddingBottom: 20, borderBottom: "1px solid var(--border)" }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text)", marginBottom: 4 }}>AgentSecrets</div>
-        <div style={{ fontSize: 10, color: "var(--muted)" }}>
-          Documentation{" "}
-          <span style={{ color: "var(--am)", border: "1px solid rgba(255,184,0,0.3)", padding: "1px 6px", borderRadius: 4, fontSize: 9 }}>alpha</span>
-        </div>
+        
       </div>
 
       {/* Nav groups */}
@@ -411,7 +408,7 @@ export default function DocsPage() {
           ───────────────────────────────────────────────── */}
           <div id="doc-overview" className="docs-section">
             <Breadcrumb items={["Introduction", "Overview"]} />
-            <H1>AgentSecrets <span style={{ fontSize: 12, fontWeight: 700, border: "1px solid rgba(255,184,0,0.4)", color: "var(--am)", background: "rgba(255,184,0,0.08)", padding: "2px 8px", borderRadius: 4, marginLeft: 8, verticalAlign: "middle" }}>Alpha</span></H1>
+            <H1>AgentSecrets</H1>
             <P>AgentSecrets is a zero-knowledge credential proxy for AI agents. It lets your agent call any authenticated API — Stripe, OpenAI, GitHub, Slack — without the agent ever seeing the actual secret value. The credential lives in your OS keychain and is injected at the HTTP transport layer, never entering the agent's context window, memory, or logs.</P>
             <Callout icon="🔐">
               <strong style={{ color: "var(--text)" }}>Core guarantee:</strong> The key value is never passed to, logged by, or accessible to the AI agent at any point in the call lifecycle. Not as an argument. Not in the response. Not in the audit log.
