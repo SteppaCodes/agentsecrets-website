@@ -151,20 +151,48 @@ export default function Home() {
       {/* CTA */}
       <CTA />
 
+      {/* TheSeventeen Banner */}
+      <div className="ts-banner-outer">
+        <div className="ts-banner-inner">
+          <div>
+            <div style={{ fontSize: 10, color: "var(--em)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 6 }}>
+              Built by
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ fontSize: 20, fontWeight: 800, color: "var(--text)", letterSpacing: "-0.5px" }}>
+                The<span style={{ color: "var(--em)" }}>Seventeen</span>
+              </span>
+              <span style={{ fontSize: 10, color: "var(--muted)", padding: "2px 8px", border: "1px solid var(--border)", borderRadius: 4 }}>
+                studio
+              </span>
+            </div>
+            <p style={{ fontSize: 11, color: "var(--muted)", marginTop: 6, lineHeight: 1.6, maxWidth: 360 }}>
+              We build tools for the agentic era. AgentSecrets is one of them.
+            </p>
+          </div>
+          <div className="ts-banner-links">
+            <a
+              href="https://theseventeen.co"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ts-banner-link primary"
+            >
+              🌐 theseventeen.co
+            </a>
+            <a
+              href="https://engineering.theseventeen.co"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ts-banner-link secondary"
+            >
+              ✍️ Our Blog
+            </a>
+          </div>
+        </div>
+      </div>
+
       {/* Footer */}
-      <footer
-        style={{
-          borderTop: "1px solid var(--border)",
-          padding: "22px 40px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          position: "relative",
-          zIndex: 1,
-          flexWrap: "wrap",
-          gap: 12,
-        }}
-      >
+      <footer>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div
             style={{
@@ -181,7 +209,7 @@ export default function Home() {
             agent<span style={{ color: "var(--em)" }}>secrets</span>
           </span>
         </div>
-        <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
+        <div className="footer-links-row">
           <a
             href="https://github.com/The-17/agentsecrets"
             target="_blank"

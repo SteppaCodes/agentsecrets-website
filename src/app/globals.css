@@ -206,6 +206,63 @@ body {
 .integrations-tab-bar::-webkit-scrollbar { display: none; }
 .scroll-block { min-width: 700px; }
 
+/* TheSeventeen Banner */
+.ts-banner-outer {
+  border-top: 1px solid var(--border);
+  padding: 28px 40px;
+  position: relative;
+  z-index: 1;
+  background: rgba(0,255,135,0.03);
+}
+.ts-banner-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.ts-banner-links {
+  display: flex;
+  gap: 12px;
+}
+.ts-banner-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-weight: 700;
+  font-size: 12px;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: opacity 0.2s, transform 0.2s, border-color 0.2s, color 0.2s;
+  letter-spacing: 0.02em;
+}
+.ts-banner-link.primary {
+  background: var(--em);
+  color: #000;
+}
+.ts-banner-link.primary:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+.ts-banner-link.secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border-em);
+}
+.ts-banner-link.secondary:hover {
+  border-color: var(--em);
+  color: var(--em);
+  transform: translateY(-1px);
+}
+.footer-links-row {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 @supports (padding: env(safe-area-inset-top)) {
   .hero-section {
     padding-top: max(80px, env(safe-area-inset-top));
@@ -293,6 +350,13 @@ body {
 
   /* footer */
   footer { flex-direction:column; align-items:center; gap:10px; padding:22px 24px; text-align:center; }
+  .footer-links-row { justify-content: center; }
+
+  /* ts-banner */
+  .ts-banner-outer { padding: 24px 24px; }
+  .ts-banner-inner { flex-direction: column; align-items: flex-start; gap: 18px; }
+  .ts-banner-links { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ts-banner-link { justify-content: center; padding: 10px 12px; font-size: 11px; }
 
   /* docs content */
   .docs-content { padding:28px 20px; }
@@ -479,6 +543,10 @@ body {
   /* footer */
   footer { padding:18px 16px; gap:8px; }
   footer span { font-size:10px; text-align:center; }
+
+  /* ts-banner */
+  .ts-banner-outer { padding: 20px 16px; }
+  .ts-banner-links { grid-template-columns: 1fr; }
 
   /* docs */
   .docs-content { padding:20px 14px; }

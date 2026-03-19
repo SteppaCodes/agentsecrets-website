@@ -1230,6 +1230,99 @@ export default function DocsPage() {
 
           {/* Bottom padding so last section isn't flush against viewport edge */}
           <div style={{ height: 80 }} />
+          
+          {/* TheSeventeen Banner */}
+          <div className="ts-banner-outer">
+            <div className="ts-banner-inner">
+              <div>
+                <div style={{ fontSize: 10, color: "var(--em)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 6 }}>
+                  Built by
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ fontSize: 20, fontWeight: 800, color: "var(--text)", letterSpacing: "-0.5px" }}>
+                    The<span style={{ color: "var(--em)" }}>Seventeen</span>
+                  </span>
+                  <span style={{ fontSize: 10, color: "var(--muted)", padding: "2px 8px", border: "1px solid var(--border)", borderRadius: 4 }}>
+                    studio
+                  </span>
+                </div>
+                <p style={{ fontSize: 11, color: "var(--muted)", marginTop: 6, lineHeight: 1.6, maxWidth: 360 }}>
+                  We build tools for the agentic era. AgentSecrets is one of them.
+                </p>
+              </div>
+              <div className="ts-banner-links">
+                <a
+                  href="https://theseventeen.co"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ts-banner-link primary"
+                >
+                  🌐 theseventeen.co
+                </a>
+                <a
+                  href="https://engineering.theseventeen.co"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ts-banner-link secondary"
+                >
+                  ✍️ Our Blog
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <footer>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div
+                style={{
+                  width: 26, height: 26, borderRadius: 6,
+                  border: "1px solid var(--border-em)",
+                  background: "rgba(0,255,135,0.07)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 11,
+                }}
+              >
+                🔐
+              </div>
+              <span style={{ fontSize: 12, fontWeight: 700, color: "var(--text)" }}>
+                agent<span style={{ color: "var(--em)" }}>secrets</span>
+              </span>
+            </div>
+            <div className="footer-links-row">
+              <a
+                href="https://github.com/The-17/agentsecrets"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: 11, color: "var(--muted)", textDecoration: "none", transition: "color 0.2s" }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--em)")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--muted)")}
+              >
+                GitHub
+              </a>
+              <a
+                href="/"
+                style={{ fontSize: 11, color: "var(--muted)", textDecoration: "none", transition: "color 0.2s" }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--em)")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--muted)")}
+              >
+                Home
+              </a>
+              <a
+                href="https://github.com/The-17/agentsecrets/blob/main/LICENSE"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: 11, color: "var(--muted)", textDecoration: "none", transition: "color 0.2s" }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--em)")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--muted)")}
+              >
+                MIT License
+              </a>
+            </div>
+            <span style={{ fontSize: 11, color: "var(--muted)" }}>
+              © 2026 The Seventeen · You cannot steal what was never there.
+            </span>
+          </footer>
         </main>
       </div>
     </>
