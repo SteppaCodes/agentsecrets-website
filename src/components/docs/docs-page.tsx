@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { CodeWindow, McpJsonWindow } from "@/components/ui/code-window";
 
 const DOCS_SECTIONS = [
@@ -215,19 +216,58 @@ export default function DocsPage() {
   const [active, setActive] = useState("overview");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const searchParams = useSearchParams();
 
-  // Intersection observer — tracks which section is in view
+  // Helper: build the URL string for a given section id
+  const buildUrl = (id: string) => {
+    const section = DOCS_SECTIONS.find((s) => s.id === id);
+    const group = section?.group.toLowerCase().replace(/\s+/g, "-") ?? "";
+    return `/docs?q=${encodeURIComponent(group)}#${id}`;
+  };
+
+  // On mount: resolve section from ?q= + hash, then scroll to it
+  useEffect(() => {
+    const hash = window.location.hash.replace("#", "");
+    const q = searchParams?.get("q") ?? "";
+
+    // Hash takes priority over ?q= for the exact section
+    let targetId = "overview";
+    if (hash && DOCS_SECTIONS.find((s) => s.id === hash)) {
+      targetId = hash;
+    } else if (q) {
+      // Find first section in matching group
+      const matchedGroup = DOCS_SECTIONS.find(
+        (s) => s.group.toLowerCase().replace(/\s+/g, "-") === q.toLowerCase()
+      );
+      if (matchedGroup) targetId = matchedGroup.id;
+    }
+
+    setActive(targetId);
+    // Small delay to ensure the page has rendered
+    setTimeout(() => {
+      document.getElementById("doc-" + targetId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Intersection observer — tracks which section is in view and updates URL
   useEffect(() => {
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
-          if (e.isIntersecting) setActive(e.target.id.replace("doc-", ""));
+          if (e.isIntersecting) {
+            const id = e.target.id.replace("doc-", "");
+            setActive(id);
+            // Update URL without triggering a navigation/re-render
+            window.history.replaceState(null, "", buildUrl(id));
+          }
         });
       },
       { threshold: 0.2, rootMargin: "-60px 0px -45% 0px" }
     );
     document.querySelectorAll("[id^='doc-']").forEach((el) => obs.observe(el));
     return () => obs.disconnect();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Lock body scroll when drawer is open
@@ -243,6 +283,8 @@ export default function DocsPage() {
   const jump = (id: string) => {
     setActive(id);
     setDrawerOpen(false);
+    // Update URL to reflect the section being navigated to
+    window.history.replaceState(null, "", buildUrl(id));
     // Small delay so the drawer close animation doesn't fight the scroll
     setTimeout(() => {
       document.getElementById("doc-" + id)?.scrollIntoView({ behavior: "smooth", block: "start" });

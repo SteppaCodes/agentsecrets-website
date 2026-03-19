@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
-export default function CTA({ onDocs }: { onDocs: () => void }) {
+export default function CTA() {
   const [copied, setCopied] = useState(false);
   const cmd = "npx @the-17/agentsecrets init";
 
@@ -101,10 +102,10 @@ export default function CTA({ onDocs }: { onDocs: () => void }) {
         transition={{ duration: 0.5, delay: 0.24 }}
         style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginBottom: 24 }}
       >
+        <Link href="/docs" style={{ textDecoration: "none" }}>
         <motion.button
           whileHover={{ background: "var(--text)", y: -2, boxShadow: "0 14px 36px rgba(0,255,135,0.32)" }}
           whileTap={{ scale: 0.97 }}
-          onClick={onDocs}
           style={{
             padding: "12px 26px",
             background: "var(--em)",
@@ -120,6 +121,7 @@ export default function CTA({ onDocs }: { onDocs: () => void }) {
         >
           Read the docs →
         </motion.button>
+        </Link>
         <motion.a
           whileHover={{ borderColor: "var(--border)", background: "var(--overlay)" }}
           whileTap={{ scale: 0.97 }}

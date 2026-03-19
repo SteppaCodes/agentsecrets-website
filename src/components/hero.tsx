@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
-export default function Hero({ onDocs }: { onDocs: () => void }) {
+export default function Hero() {
   const [copied, setCopied] = useState(false);
   const cmd = "npx @the-17/agentsecrets init";
 
@@ -107,11 +108,11 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
           display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap",
         }}
       >
+        <Link href="/docs" style={{ textDecoration: "none" }}>
         <motion.button
           whileHover={{ scale: 1.03, y: -2, boxShadow: "0 14px 36px var(--border-em)", background: "var(--text)" }}
           whileTap={{ scale: 0.97 }}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
-          onClick={onDocs}
           style={{
             padding: "12px 26px", background: "var(--em)", color: "var(--bg)",
             fontWeight: 700, fontSize: 12, borderRadius: 9, border: "none",
@@ -120,6 +121,7 @@ export default function Hero({ onDocs }: { onDocs: () => void }) {
         >
           Read the docs →
         </motion.button>
+        </Link>
         <motion.a
           whileHover={{ borderColor: "var(--border)", background: "var(--overlay)" }}
           whileTap={{ scale: 0.97 }}

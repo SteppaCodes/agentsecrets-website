@@ -2,10 +2,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import Link from "next/link";
 
 interface NavProps {
   page: "home" | "docs";
-  onNavigate: (page: "home" | "docs") => void;
 }
 
 const NAV_LINKS = [
@@ -13,19 +13,12 @@ const NAV_LINKS = [
   { label: "Build on It", id: "build-on-it" },
 ];
 
-export default function Nav({ page, onNavigate }: NavProps) {
+export default function Nav({ page }: NavProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const scrollTo = (id: string) => {
     setMenuOpen(false);
-    if (page !== "home") {
-      onNavigate("home");
-      setTimeout(() => {
-        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-      }, 120);
-    } else {
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    }
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -48,8 +41,8 @@ export default function Nav({ page, onNavigate }: NavProps) {
         }}
       >
         {/* Logo */}
+        <Link href="/" style={{ textDecoration: "none" }}>
         <motion.button
-          onClick={() => onNavigate("home")}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
           style={{
@@ -85,6 +78,7 @@ export default function Nav({ page, onNavigate }: NavProps) {
             agent<span style={{ color: "var(--em)" }}>secrets</span>
           </span>
         </motion.button>
+        </Link>
 
         {/* Desktop nav links */}
         <div style={{ display: "flex", gap: 24, alignItems: "center" }} className="nav-links-desktop">
@@ -106,11 +100,10 @@ export default function Nav({ page, onNavigate }: NavProps) {
 
         {/* Right actions */}
         <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <Link href={page === "docs" ? "/" : "/docs"} style={{ textDecoration: "none" }}>
           <motion.button
-            // className="nav-docs-btn"
             whileHover={{ borderColor: "var(--border-em)", color: "var(--em)", background: "rgba(0,255,135,0.05)" }}
             whileTap={{ scale: 0.96 }}
-            onClick={() => onNavigate(page === "docs" ? "home" : "docs")}
             style={{
               fontSize: 11, fontWeight: 700, padding: "7px 16px", borderRadius: 7,
               border: `1px solid ${page === "docs" ? "var(--border-em)" : "var(--border)"}`,
@@ -121,6 +114,7 @@ export default function Nav({ page, onNavigate }: NavProps) {
           >
             {page === "docs" ? "← Site" : "Docs"}
           </motion.button>
+          </Link>
           <motion.a
             className="nav-gh"
             whileHover={{ background: "var(--text)", y: -1, boxShadow: "0 6px 20px rgba(0,255,135,0.25)" }}
@@ -201,10 +195,11 @@ export default function Nav({ page, onNavigate }: NavProps) {
               </motion.button>
             ))}
             <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+              <Link href={page === "docs" ? "/" : "/docs"} style={{ flex: 1, textDecoration: "none" }}>
               <button
-                onClick={() => { onNavigate(page === "docs" ? "home" : "docs"); setMenuOpen(false); }}
+                onClick={() => setMenuOpen(false)}
                 style={{
-                  flex: 1, padding: "10px", fontSize: 12, fontWeight: 700,
+                  width: "100%", padding: "10px", fontSize: 12, fontWeight: 700,
                   border: "1px solid var(--border-em)", borderRadius: 8,
                   color: "var(--em)", background: "rgba(0,255,135,0.06)",
                   cursor: "pointer", fontFamily: "inherit",
@@ -212,6 +207,7 @@ export default function Nav({ page, onNavigate }: NavProps) {
               >
                 {page === "docs" ? "← Site" : "Docs"}
               </button>
+              </Link>
               <a
                 href="https://github.com/The-17/agentsecrets"
                 target="_blank"

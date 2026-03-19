@@ -1,5 +1,4 @@
 "use client";
-import { useEffect, useState } from "react";
 import BgCanvas from "@/components/bg-canvas";
 import Nav from "@/components/nav";
 import Hero from "@/components/hero";
@@ -10,7 +9,6 @@ import FeaturesGrid from "@/components/features-grid";
 import Integrations from "@/components/integrations";
 import InstallSection from "@/components/install-section";
 import CTA from "@/components/cta";
-import DocsPage from "@/components/docs/docs-page";
 import { motion } from "framer-motion";
 
 function Section({
@@ -79,26 +77,6 @@ function Section({
 }
 
 export default function Home() {
-  const [page, setPage] = useState<"home" | "docs">("home");
-
-  // Keep scroll position when toggling docs
-  useEffect(() => {
-    window.scrollTo({ top: 0 });
-  }, [page]);
-
-  if (page === "docs") {
-    return (
-      <>
-        <BgCanvas />
-        <div className="grid-bg" />
-        <div className="blob" style={{ width: 500, height: 500, top: -80, left: "20%", background: "rgba(0,255,135,0.04)" }} />
-        <div className="blob" style={{ width: 380, height: 380, top: "40%", right: -80, background: "rgba(255,184,0,0.03)" }} />
-        <Nav page="docs" onNavigate={setPage} />
-        <DocsPage />
-      </>
-    );
-  }
-
   return (
     <>
       <BgCanvas />
@@ -107,11 +85,11 @@ export default function Home() {
       <div className="blob" style={{ width: 380, height: 380, top: "40%", right: -80, background: "rgba(255,184,0,0.03)" }} />
       <div className="blob" style={{ width: 500, height: 260, bottom: "15%", left: "10%", background: "rgba(0,255,135,0.03)" }} />
 
-      <Nav page="home" onNavigate={setPage} />
+      <Nav page="home" />
 
       {/* Hero */}
       <div style={{ paddingTop: 60 }}>
-        <Hero onDocs={() => setPage("docs")} />
+        <Hero />
       </div>
 
       {/* Live protocol demo */}
@@ -171,7 +149,7 @@ export default function Home() {
       </Section>
 
       {/* CTA */}
-      <CTA onDocs={() => setPage("docs")} />
+      <CTA />
 
       {/* Footer */}
       <footer
@@ -214,14 +192,14 @@ export default function Home() {
           >
             GitHub
           </a>
-          <button
-            onClick={() => setPage("docs")}
-            style={{ fontSize: 11, color: "var(--muted)", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", transition: "color 0.2s" }}
+          <a
+            href="/docs"
+            style={{ fontSize: 11, color: "var(--muted)", textDecoration: "none", transition: "color 0.2s" }}
             onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--em)")}
             onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--muted)")}
           >
             Docs
-          </button>
+          </a>
           <a
             href="https://github.com/The-17/agentsecrets/blob/main/LICENSE"
             target="_blank"
