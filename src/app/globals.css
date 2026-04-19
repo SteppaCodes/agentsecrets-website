@@ -71,3 +71,10 @@ a {
   vertical-align: middle;
   animation: blink 1s step-end infinite;
 }
+
+@media (max-width: 639px) {
+  .mobile-fade-mask {
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15px, black calc(100% - 15px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black 15px, black calc(100% - 15px), transparent 100%);
+  }
+}

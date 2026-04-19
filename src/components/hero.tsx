@@ -24,24 +24,24 @@ export default function Hero() {
     >
       <div className='w-full max-w-[1200px]'>
 
-        {/* Badge Row - ANIMATES 1ST */}
+        {/* Badge Row - ANIMATES 1ST - Increased GAP to 6 (24px) */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          className='flex flex-wrap items-center gap-2.5 mb-8'
+          className='flex flex-wrap items-center gap-6 mb-8'
         >
-          <span className='pill-badge px-3 py-1 rounded-full text-[12px] font-light tracking-tight bg-[#F5F5F7] text-[#1B1B1B]'>v1.1.2</span>
+          <span className='px-3 py-1 rounded-full text-[12px] font-light tracking-tight bg-[#F5F5F7] text-[#1B1B1B]'>v1.1.2</span>
           <a
             href='https://github.com/The-17/agentsecrets/stargazers'
             target='_blank'
             rel='noopener noreferrer'
-            className='pill-badge px-3 py-1 rounded-full text-[12px] font-light tracking-tight bg-[#F5F5F7] text-[#1B1B1B] hover:bg-[#EBEBED] transition-colors'
+            className='px-3 py-1 rounded-full text-[12px] font-light tracking-tight bg-[#F5F5F7] text-[#1B1B1B] hover:bg-[#EBEBED] transition-colors'
           >
             github: {stars} stars
           </a>
-          <span className='pill-badge px-3 py-1 rounded-full text-[12px] font-light tracking-tight bg-[#F5F5F7] text-[#1B1B1B]'>secrets stored: 500+</span>
-          <span className='pill-badge px-3 py-1 rounded-full text-[12px] font-light tracking-tight bg-[#F5F5F7] text-[#1B1B1B]'>MIT</span>
+          <span className='px-3 py-1 rounded-full text-[12px] font-light tracking-tight bg-[#F5F5F7] text-[#1B1B1B]'>secrets stored: 500+</span>
+          <span className='hidden sm:inline px-3 py-1 rounded-full text-[12px] font-light tracking-tight bg-[#F5F5F7] text-[#1B1B1B]'>MIT</span>
         </motion.div>
 
         {/* Headline Container */}

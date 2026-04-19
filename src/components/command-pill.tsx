@@ -62,8 +62,8 @@ export default function CommandPill() {
   const displayCmd = getDisplayCommand(method.command, method.label);
 
   return (
-    <div className='fixed bottom-8 left-1/2 -translate-x-1/2 z-[100]'>
-      <div ref={menuRef} className='relative flex flex-col items-center'>
+    <div className='fixed bottom-6 sm:bottom-8 left-0 right-0 z-[100] px-5 flex justify-center'>
+      <div ref={menuRef} className='relative flex flex-col items-center max-w-full'>
 
         <AnimatePresence>
           {isOpen && (
@@ -73,7 +73,7 @@ export default function CommandPill() {
               animate={{ opacity: 1, y: 0, scale: 1, width: '100%' }}
               exit={{ opacity: 0, y: 10, scale: 0.95, width: '40%', transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } }}
               transition={calmBounce}
-              className='absolute bottom-full mb-5 left-0 bg-[#1B1B1B] rounded-full p-[6px] border border-white/[0.08] shadow-2xl flex flex-row items-center justify-between'
+              className='absolute bottom-full mb-3 sm:mb-5 left-0 bg-[#1B1B1B] rounded-full p-1 sm:p-[6px] border border-white/[0.08] shadow-2xl flex flex-row items-center justify-between'
             >
               <AnimatePresence>
                 {isDropdownReady && INSTALL_METHODS.map((m, i) => (
@@ -87,7 +87,7 @@ export default function CommandPill() {
                       setMethod(m);
                       setIsOpen(false);
                     }}
-                    className={'flex flex-1 items-center justify-center h-[40px] rounded-full text-[14px] font-medium transition-colors ' +
+                    className={'flex flex-1 items-center justify-center p-1 sm:p-0 h-[32px] sm:h-[40px] rounded-full text-[12px] sm:text-[14px] font-medium transition-colors ' +
                       (method.id === m.id
                         ? 'bg-white/10 text-white'
                         : 'text-white/40 hover:bg-white/5 hover:text-white/70')
@@ -111,16 +111,17 @@ export default function CommandPill() {
             opacity: { delay: 1.8, duration: 1.2, ease: [0.16, 1, 0.3, 1] }, 
             y: { delay: 1.8, duration: 1.2, ease: [0.16, 1, 0.3, 1] } 
           }}
-          className='bg-[#1B1B1B] rounded-full shadow-lg inline-flex items-center gap-1.5 border border-white/[0.08]'
-          style={{ paddingLeft: '16px', paddingRight: isReady ? '8px' : '16px', height: '52px' }}
+          className='bg-[#1B1B1B] rounded-full shadow-lg inline-flex items-center gap-1 sm:gap-1.5 border border-white/[0.08] max-w-full h-[52px]'
+          style={{ paddingLeft: '24px', paddingRight: isReady ? '8px' : '24px' }}
         >
           
+          {/* Method Selector */}
           <motion.button
             layout
             onClick={() => setIsOpen(!isOpen)}
-            className='flex items-center justify-center gap-2.5 h-[32px] px-6 shrink-0 hover:bg-white/10 rounded-lg transition-colors'
+            className='flex items-center justify-center gap-1 sm:gap-2.5 h-[32px] px-3 sm:px-6 shrink-0 hover:bg-white/10 rounded-lg transition-colors'
           >
-            <span className='text-[14px] font-medium text-white whitespace-nowrap'>{method.label}</span>
+            <span className='text-[13px] sm:text-[14px] font-medium text-white whitespace-nowrap'>{method.label}</span>
             <ChevronDown
               size={13}
               className={'text-white/40 transition-transform duration-200 ' + (isOpen ? 'rotate-180' : '')}
@@ -130,32 +131,38 @@ export default function CommandPill() {
           <AnimatePresence>
             {isReady && (
               <>
+                {/* Inner White Pill */}
                 <motion.div 
                   layout
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ ...calmBounce, delay: 0.1 }}
-                  className='bg-white rounded-full h-[40px] flex items-center justify-center shrink-0'
-                  style={{ paddingLeft: '32px', paddingRight: '32px' }}
+                  className='relative bg-white rounded-full h-[40px] flex items-center justify-center overflow-hidden min-w-0 px-0 sm:px-[30px]'
                 >
+                  {/* Left fade overlay */}
+                  <div className='absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none sm:hidden' />
+                  {/* Right fade overlay */}
+                  <div className='absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none sm:hidden' />
+
                   <motion.span 
                     key={method.id}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.4, delay: 0.05 }}
-                    className='text-[#1B1B1B] font-mono text-[13px] whitespace-nowrap'
+                    className='text-[#1B1B1B] font-mono whitespace-nowrap text-[12px] sm:text-[13px] relative z-0'
                   >
                     {displayCmd}
                   </motion.span>
                 </motion.div>
 
+                {/* Copy Button */}
                 <motion.button
                   layout
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ ...calmBounce, delay: 0.15 }}
                   onClick={copyToClipboard}
-                  className='flex items-center justify-center w-[40px] h-[40px] shrink-0 rounded-full transition-colors text-white hover:bg-white/10'
+                  className='flex items-center justify-center shrink-0 rounded-full transition-colors w-[36px] sm:w-[40px] h-[36px] sm:h-[40px] text-white hover:bg-white/10'
                   aria-label='Copy install command'
                 >
                   {copied ? <Check size={15} className='text-[#007F6A]' /> : <Copy size={15} />}
