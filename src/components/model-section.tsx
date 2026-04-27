@@ -77,8 +77,8 @@ export default function ModelSection() {
     <section
       ref={sectionRef}
       id='model'
-      className='min-h-screen flex flex-col justify-center items-center bg-white'
-      style={{ padding: '120px clamp(32px, 5vw, 100px)', paddingLeft: 'clamp(80px, 15vw, 280px)' }}
+      className='flex flex-col items-center bg-white pt-[15vh] pb-[120px]'
+      style={{ paddingRight: 'clamp(32px, 5vw, 100px)', paddingLeft: 'clamp(80px, 15vw, 280px)' }}
     >
       <div className='w-full max-w-[1200px] mx-auto'>
 
