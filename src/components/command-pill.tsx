@@ -137,7 +137,7 @@ export default function CommandPill() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ ...calmBounce, delay: 0.1 }}
-                  className='relative bg-white rounded-full h-[40px] flex items-center justify-center overflow-hidden min-w-0 px-0 sm:px-[30px]'
+                  className='relative bg-white rounded-full h-[40px] flex items-center justify-center overflow-hidden min-w-0 px-3.5 sm:px-[32px]'
                 >
                   {/* Left fade overlay */}
                   <div className='absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none sm:hidden' />

@@ -59,7 +59,7 @@ export default function Nav({ page }: { page?: string }) {
               className={
                 link.isPill
                   ? 'btn-pill-teal'
-                  : 'text-[13px] font-medium text-[#1B1B1B]/50 hover:text-[#1B1B1B] transition-colors'
+                  : 'text-[13px] font-medium text-[#1B1B1B]/50 hover:text-[#1B1B1B] transition-colors font-poppins'
               }
             >
               {link.label}{link.isExternal && ' \u2197'}
@@ -104,7 +104,7 @@ export default function Nav({ page }: { page?: string }) {
                     className={
                       link.isPill
                         ? 'btn-pill-teal inline-flex px-8 py-2.5 text-[15px]'
-                        : 'text-[28px] font-medium text-[#1B1B1B]'
+                        : 'text-[28px] font-medium text-[#1B1B1B] font-poppins'
                     }
                   >
                     {link.label}{link.isExternal && ' \u2197'}

@@ -2,6 +2,7 @@
 
 @theme {
   --font-sans: var(--font-helvetica), ui-sans-serif, system-ui, sans-serif;
+  --font-poppins: var(--font-poppins), 'Poppins', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
@@ -17,7 +18,6 @@
 
 * {
   box-sizing: border-box;
-  padding: 0;
   margin: 0;
 }
 

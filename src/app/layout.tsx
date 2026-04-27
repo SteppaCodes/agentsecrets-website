@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
+import { Poppins } from 'next/font/google';
 import './globals.css';
 import CommandPill from '@/components/command-pill';
 
@@ -29,6 +30,12 @@ const helveticaNow = localFont({
   variable: '--font-helvetica',
 });
 
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+  variable: '--font-poppins',
+});
+
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -47,7 +54,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en' suppressHydrationWarning className={helveticaNow.variable}>
+    <html lang='en' suppressHydrationWarning className={`${helveticaNow.variable} ${poppins.variable}`}>
       <body className='antialiased font-sans bg-white text-[#1B1B1B]'>
         {children}
         <CommandPill />
