@@ -73,7 +73,7 @@ export default function CommandPill() {
               animate={{ opacity: 1, y: 0, scale: 1, width: '100%' }}
               exit={{ opacity: 0, y: 10, scale: 0.95, width: '40%', transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } }}
               transition={calmBounce}
-              className='absolute bottom-full mb-3 sm:mb-5 left-0 bg-[#1B1B1B] rounded-full p-1 sm:p-[6px] border border-white/[0.08] shadow-2xl flex flex-row items-center justify-between'
+              className='absolute bottom-full mb-3 sm:mb-5 left-0 bg-[#005E50] rounded-full p-1 sm:p-[6px] border border-white/[0.08] shadow-2xl flex flex-row items-center justify-between'
             >
               <AnimatePresence>
                 {isDropdownReady && INSTALL_METHODS.map((m, i) => (
@@ -111,7 +111,7 @@ export default function CommandPill() {
             opacity: { delay: 1.8, duration: 1.2, ease: [0.16, 1, 0.3, 1] }, 
             y: { delay: 1.8, duration: 1.2, ease: [0.16, 1, 0.3, 1] } 
           }}
-          className='bg-[#1B1B1B] rounded-full shadow-lg inline-flex items-center gap-1 sm:gap-1.5 border border-white/[0.08] max-w-full h-[52px]'
+          className='bg-[#005E50] rounded-full shadow-lg inline-flex items-center gap-1 sm:gap-1.5 border border-white/[0.08] max-w-full h-[52px]'
           style={{ paddingLeft: '24px', paddingRight: isReady ? '8px' : '24px' }}
         >
           
