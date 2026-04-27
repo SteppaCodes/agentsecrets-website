@@ -47,9 +47,35 @@ export default function VisWorkflowWheel() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<(HTMLDivElement | null)[]>([]);
   const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const glow1Ref = useRef<HTMLDivElement>(null);
+  const glow2Ref = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
     if (!containerRef.current || !wrapperRef.current) return;
+
+    if (glow1Ref.current) {
+      gsap.to(glow1Ref.current, {
+        yPercent: 10,
+        xPercent: 5,
+        scale: 1.1,
+        duration: 8,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut'
+      });
+    }
+    if (glow2Ref.current) {
+      gsap.to(glow2Ref.current, {
+        yPercent: -15,
+        xPercent: -10,
+        scale: 1.2,
+        duration: 11,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+        delay: 2
+      });
+    }
 
     let radius = window.innerHeight * 0.9; 
     if (window.innerWidth < 768) radius = window.innerHeight * 0.6;
@@ -87,11 +113,17 @@ export default function VisWorkflowWheel() {
         }
 
         let opacity = 0;
-        let color = '#FFFFFF'; 
+        let color = '#FFFFFF'; // White text for dark background
+        let textShadow = 'none';
 
         // Strict spotlight, but with a SMOOTH fade out (no cliffs)
         if (distanceToZero < 0.08) {
           opacity = 1; // Dead center is fully bright
+          // Smoothly bloom the text as it hits the dead center
+          const depthProgress = distanceToZero / 0.08;
+          const blurAmount = Math.round((1 - depthProgress) * 25);
+          const alphaAmount = (1 - depthProgress) * 0.6;
+          textShadow = `0 0 ${blurAmount}px rgba(255,255,255,${alphaAmount})`;
         } else if (distanceToZero < 0.6) {
           // Others fade down smoothly from 1.0 down to 0.15
           const progress = (distanceToZero - 0.08) / 0.52; 
@@ -108,6 +140,7 @@ export default function VisWorkflowWheel() {
           rotation,
           opacity,
           color,
+          textShadow,
           transformOrigin: "left center",
         });
       });
@@ -140,7 +173,7 @@ export default function VisWorkflowWheel() {
     const handleResize = () => {
       radius = window.innerHeight * 0.9;
       if (window.innerWidth < 768) radius = window.innerHeight * 0.6;
-      centerX = (window.innerWidth * 0.2) - radius;
+      centerX = (window.innerWidth * 0.10) - radius;
       gsap.set(wrapperRef.current, { left: centerX });
       ScrollTrigger.update();
     };
@@ -150,11 +183,25 @@ export default function VisWorkflowWheel() {
   }, { scope: containerRef });
 
   return (
-    <section ref={containerRef} className='h-screen w-full bg-[#1b1b1b] text-[#EBEBED] flex items-center justify-center relative overflow-hidden'>
+    <section 
+      ref={containerRef} 
+      className='h-screen w-full flex items-center justify-center relative overflow-hidden'
+      style={{ backgroundColor: '#0D1512', color: '#FFFFFF' }}
+    >
       
-      <div className='absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.03)_0%,rgba(0,0,0,0.4)_100%)] pointer-events-none' />
+      {/* Background Glows */}
+      <div ref={glow1Ref} className='absolute left-[5%] top-[40%] w-[500px] h-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/20 blur-[100px] pointer-events-none z-0 will-change-transform' />
+      <div ref={glow2Ref} className='absolute right-0 bottom-0 w-[400px] h-[400px] translate-x-1/4 rounded-full bg-white/15 blur-[90px] pointer-events-none z-0 will-change-transform' />
 
-      <div className='w-full max-w-[1600px] mx-auto flex items-center justify-between h-full relative'>
+      {/* Noise Overlay */}
+      <div 
+        className="pointer-events-none absolute inset-0 z-0 opacity-[0.2] mix-blend-overlay" 
+        style={{ 
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` 
+        }}
+      />
+
+      <div className='w-full max-w-[1600px] mx-auto flex items-center justify-between h-full relative z-10'>
         
         {/* LEFT SIDE: The Math Circle Wrapper */}
         <div 
@@ -188,11 +235,11 @@ export default function VisWorkflowWheel() {
               style={{ opacity: i === 0 ? 1 : 0 }}
             >
               <div className='font-mono text-[15px] leading-relaxed'>
-                <div className='text-[#00C6A5] mb-2 font-medium'>{step.cmd}</div>
+                <div className='text-[#34D399] mb-2 font-medium'>{step.cmd}</div>
                 <div className='text-white/70'>{step.output}</div>
               </div>
 
-              <p className='mt-8 text-[14px] text-white/40 leading-relaxed font-mono max-w-[400px]'>
+              <p className='mt-8 text-[14px] text-white/50 leading-relaxed font-mono max-w-[400px]'>
                 {i === WORKFLOW_STEPS.length - 1 
                   ? "The agent managed the complete workflow autonomously. No credential value appeared at any step."
                   : "Executing autonomous lifecycle management without context exposure."}

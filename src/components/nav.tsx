@@ -29,7 +29,7 @@ export default function Nav({ page }: { page?: string }) {
   return (
     <>
       <nav
-        className='fixed top-0 left-0 right-0 z-[200] flex items-center justify-between bg-white/80 backdrop-blur-md'
+        className='fixed top-0 left-0 right-0 z-[200] flex items-center justify-between bg-white/10 backdrop-blur-xl border-b border-white/10'
         style={{ 
           padding: 'clamp(14px, 3vw, 18px) clamp(24px, 6vw, 120px)'
         }}
