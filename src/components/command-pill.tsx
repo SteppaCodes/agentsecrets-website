@@ -27,7 +27,7 @@ export default function CommandPill() {
   const [isDropdownReady, setIsDropdownReady] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const calmBounce = { type: 'spring', stiffness: 180, damping: 18 };
+  const calmBounce = { type: 'spring', stiffness: 180, damping: 18 } as const;
 
   useEffect(() => {
     const timer = setTimeout(() => setIsReady(true), 2400);
