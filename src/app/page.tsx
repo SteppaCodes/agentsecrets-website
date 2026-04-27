@@ -4,6 +4,7 @@ import React from 'react';
 import Nav from '@/components/nav';
 import Hero from '@/components/hero';
 import ModelSection from '@/components/model-section';
+import VisWorkflowWheel from '@/components/vis-workflow-wheel';
 
 export default function HomePage() {
   return (
@@ -11,6 +12,7 @@ export default function HomePage() {
       <Nav />
       <Hero />
       <ModelSection />
+      <VisWorkflowWheel />
     </main>
   );
 }

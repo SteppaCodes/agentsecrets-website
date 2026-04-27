@@ -40,9 +40,9 @@ export default function Nav({ page }: { page?: string }) {
             <Image
               src='/Logo.png'
               alt='Agent Secrets'
-              width={160}
-              height={36}
-              className='h-[20px] md:h-[30px] w-auto object-contain'
+              width={200}
+              height={45}
+              className='h-[28px] md:h-[40px] w-auto object-contain'
               priority
             />
           </Link>
