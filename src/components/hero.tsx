@@ -91,28 +91,29 @@ export default function Hero() {
 
   return (
     <section
+      id="hero-section"
       className='min-h-screen flex flex-col justify-center bg-white'
       style={{ padding: '0 clamp(32px, 5vw, 100px)' }}
     >
-      <div className='w-full max-w-[1200px]' ref={containerRef}>
+      <div className='w-full max-w-[1200px] mx-auto flex flex-col items-center text-center' ref={containerRef}>
 
         {/* Badge Row */}
         <div 
           ref={badgeRowRef}
-          className='flex flex-wrap items-center gap-6 mb-12'
+          className='flex flex-wrap justify-center items-center gap-3 mb-24'
           style={{ opacity: 0 }}
         >
-          <span className='px-5 py-1.5 rounded-full text-[12px] font-light tracking-tight bg-[#F5F5F7]/60 text-[#1B1B1B] font-poppins'>{latestTag}</span>
+          <span className='px-3.5 py-1 rounded-md text-[12px] font-light tracking-tight bg-[#F5F5F7]/60 text-[#1B1B1B] font-poppins'><RollingNumber value={latestTag} delay={1.5} /></span>
           <a
             href='https://github.com/The-17/agentsecrets/stargazers'
             target='_blank'
             rel='noopener noreferrer'
-            className='px-5 py-1.5 rounded-full text-[12px] font-light tracking-tight bg-[#F5F5F7]/60 text-[#1B1B1B] hover:bg-[#EBEBED] transition-colors font-poppins'
+            className='px-3.5 py-1 rounded-md text-[12px] font-light tracking-tight bg-[#F5F5F7]/60 text-[#1B1B1B] hover:bg-[#EBEBED] transition-colors font-poppins'
           >
-            github: {stars} stars
+            github: <RollingNumber value={stars} delay={1.6} /> stars
           </a>
-          <span className='px-5 py-1.5 rounded-full text-[12px] font-light tracking-tight bg-[#F5F5F7]/60 text-[#1B1B1B] font-poppins'>secrets stored: 500+</span>
-          <span className='hidden sm:inline-flex px-5 py-1.5 rounded-full text-[12px] font-light tracking-tight bg-[#F5F5F7]/60 text-[#1B1B1B] font-poppins'>MIT</span>
+          <span className='px-3.5 py-1 rounded-md text-[12px] font-light tracking-tight bg-[#F5F5F7]/60 text-[#1B1B1B] font-poppins'>secrets stored: <RollingNumber value={500} delay={1.7} />+</span>
+          <span className='hidden sm:inline-flex px-3.5 py-1 rounded-md text-[12px] font-light tracking-tight bg-[#F5F5F7]/60 text-[#1B1B1B] font-poppins'>MIT</span>
         </div>
 
         {/* Headline Container */}
@@ -139,5 +140,56 @@ export default function Hero() {
 
       </div>
     </section>
+  );
+}
+
+function RollingNumber({ value, delay = 1.5 }: { value: number | string, delay?: number }) {
+  const containerRef = useRef<HTMLSpanElement>(null);
+
+  useGSAP(() => {
+    if (!containerRef.current) return;
+    
+    const digits = gsap.utils.toArray<HTMLElement>('.rolling-digit', containerRef.current);
+    
+    digits.forEach((el, index) => {
+      let target = parseInt(el.getAttribute('data-target') || '0', 10);
+      
+      // Slot machine trick: If target is 0, we force it to roll all the way through 1-9 
+      // and land on the trailing '0' at the bottom of the column (index 10).
+      if (target === 0) target = 10;
+      
+      gsap.fromTo(el, 
+        { y: '0em' }, 
+        { 
+          y: `-${target * 1.1}em`, 
+          duration: 1.6, 
+          ease: 'power3.out',
+          delay: delay + (index * 0.1) // Syncs with hero entrance
+        }
+      );
+    });
+  }, { dependencies: [value], scope: containerRef });
+
+  const chars = String(value).split('');
+  
+  return (
+    <span ref={containerRef} className="inline-flex overflow-hidden h-[1.1em] leading-[1.1em] align-text-bottom" style={{ verticalAlign: '-0.1em' }}>
+      {chars.map((char, i) => {
+        if (isNaN(parseInt(char))) {
+          return <span key={i} className="inline-flex">{char}</span>;
+        }
+        return (
+          <span 
+            key={i} 
+            className="rolling-digit block" 
+            data-target={char}
+          >
+            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((n, idx) => (
+              <span key={idx} className="block h-[1.1em] text-center">{n}</span>
+            ))}
+          </span>
+        );
+      })}
+    </span>
   );
 }
