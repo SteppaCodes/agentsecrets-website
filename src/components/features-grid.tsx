@@ -1,5 +1,12 @@
-import { useState } from "react";
+"use client";
+
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const features = [
   {
@@ -77,10 +84,37 @@ const features = [
 
 export default function FeaturesGrid() {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (!containerRef.current) return;
+
+    gsap.from(gsap.utils.toArray(".feature-card"), {
+      opacity: 0,
+      y: 40,
+      scale: 0.95,
+      stagger: 0.1,
+      duration: 1,
+      ease: "power4.out",
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top 70%",
+        toggleActions: "play none none none"
+      }
+    });
+  }, { scope: containerRef });
 
   return (
-    <section id="features" className="w-full min-h-screen flex items-center justify-center bg-white py-20 px-4 md:px-6 lg:px-8 text-[#1B1B1B]">
-      <div className="w-full max-w-[1150px] mx-auto bg-white rounded-[32px] p-8 md:p-12 lg:p-16 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.08)] flex flex-col items-center">
+    <section 
+      ref={containerRef}
+      id="features" 
+      className="w-full min-h-screen flex items-center justify-center bg-white py-20 px-4 md:px-6 lg:px-8 text-[#1B1B1B] relative z-10"
+    >
+      <div 
+        ref={cardRef}
+        className="w-full max-w-[1150px] mx-auto bg-white rounded-[32px] p-8 md:p-12 lg:p-16 flex flex-col items-center"
+      >
         
         <div className="w-full max-w-fit">
           {/* Section Label */}
@@ -97,24 +131,14 @@ export default function FeaturesGrid() {
             return (
             <motion.div
               key={f.title}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
+              className="feature-card flex flex-col cursor-pointer transition-opacity duration-500 ease-out"
               onMouseEnter={() => setHoveredIdx(i)}
               onMouseLeave={() => setHoveredIdx(null)}
               animate={{
                 opacity: isOthersHovered ? 0.3 : 1,
                 y: isHovered ? -4 : 0
               }}
-              variants={{
-                hidden: { opacity: 0, y: 30 },
-                visible: { 
-                  opacity: 1, 
-                  y: 0,
-                  transition: { duration: 0.8, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }
-                }
-              }}
-              className="flex flex-col cursor-pointer transition-opacity duration-500 ease-out"
+              transition={{ duration: 0.4, ease: "easeOut" }}
             >
               {/* Abstract SVG Icon */}
               <motion.div 

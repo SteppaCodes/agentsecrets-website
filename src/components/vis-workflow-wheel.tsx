@@ -80,15 +80,12 @@ export default function VisWorkflowWheel() {
     let radius = window.innerHeight * 0.9; 
     if (window.innerWidth < 768) radius = window.innerHeight * 0.6;
     
-    // Pushed further to the left per user request (10% of screen width)
     let centerX = (window.innerWidth * 0.10) - radius;
 
     gsap.set(wrapperRef.current, { left: centerX, top: '50%' });
 
     const updateItemsPosition = (scrollProgress: number) => {
-      // Hardcode a very tight angle between the steps (10 degrees)
       const spacing = Math.PI / 18; 
-      // The total rotation needed to bring the last item to angle 0
       const maxRotation = (CIRCLE_ITEMS.length - 1) * spacing;
 
       let closestIndex = 0;
@@ -98,7 +95,6 @@ export default function VisWorkflowWheel() {
         const item = itemsRef.current[index];
         if (!item) return;
 
-        // Simple linear interpolation
         const angle = (index * spacing) - (scrollProgress * maxRotation);
         
         const x = Math.cos(angle) * radius;
@@ -113,26 +109,22 @@ export default function VisWorkflowWheel() {
         }
 
         let opacity = 0;
-        let color = '#FFFFFF'; // White text for dark background
+        let color = '#FFFFFF';
         let textShadow = 'none';
 
         const isAbove = angle < 0;
         const targetLowOpacity = isAbove ? 0.35 : 0.08;
 
-        // Strict spotlight with a rapid drop-off for non-focused items
         if (distanceToZero < 0.05) {
-          opacity = 1; // Dead center is fully bright
-          // Smoothly bloom the text as it hits the dead center
+          opacity = 1;
           const depthProgress = distanceToZero / 0.05;
           const blurAmount = Math.round((1 - depthProgress) * 25);
           const alphaAmount = (1 - depthProgress) * 0.6;
           textShadow = `0 0 ${blurAmount}px rgba(255,255,255,${alphaAmount})`;
         } else if (distanceToZero < 0.15) {
-          // Rapidly drop opacity from 1.0 down to targetLowOpacity just outside the spotlight
           const dropProgress = (distanceToZero - 0.05) / 0.10;
           opacity = 1 - (dropProgress * (1 - targetLowOpacity)); 
         } else if (distanceToZero < 0.8) {
-          // Non-focused items fade out slowly from their target low opacity
           const fadeProgress = (distanceToZero - 0.15) / 0.65;
           opacity = targetLowOpacity * (1 - fadeProgress);
         } else {
@@ -166,14 +158,18 @@ export default function VisWorkflowWheel() {
 
     updateItemsPosition(0);
 
+    // Pin the visualization and animate the wheel
     ScrollTrigger.create({
       trigger: containerRef.current,
       start: 'top top',
-      end: '+=200%', // Reduced from 400% since it's only 4 items now
+      end: '+=300%', // Increased duration to allow for the curtain reveal phase
       pin: true,
+      pinSpacing: false, // Essential: we will manage spacing manually in the parent
       scrub: 1,
       onUpdate: (self) => {
-        updateItemsPosition(self.progress);
+        // Animation finishes at 66% of the total scroll (approx 200vh)
+        const animationProgress = Math.min(self.progress / 0.66, 1);
+        updateItemsPosition(animationProgress);
       },
     });
 
@@ -192,15 +188,12 @@ export default function VisWorkflowWheel() {
   return (
     <section 
       ref={containerRef} 
-      className='h-screen w-full flex items-center justify-center relative overflow-hidden'
+      className='h-screen w-full flex items-center justify-center relative overflow-hidden z-0'
       style={{ backgroundColor: '#0D1512', color: '#FFFFFF' }}
     >
-      
-      {/* Background Glows */}
       <div ref={glow1Ref} className='absolute left-[5%] top-[40%] w-[500px] h-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/20 blur-[100px] pointer-events-none z-0 will-change-transform' />
       <div ref={glow2Ref} className='absolute right-0 bottom-0 w-[400px] h-[400px] translate-x-1/4 rounded-full bg-white/15 blur-[90px] pointer-events-none z-0 will-change-transform' />
 
-      {/* Noise Overlay */}
       <div 
         className="pointer-events-none absolute inset-0 z-0 opacity-[0.2] mix-blend-overlay" 
         style={{ 
@@ -209,8 +202,6 @@ export default function VisWorkflowWheel() {
       />
 
       <div className='w-full max-w-[1600px] mx-auto flex items-center justify-between h-full relative z-10'>
-        
-        {/* LEFT SIDE: The Math Circle Wrapper */}
         <div 
           ref={wrapperRef}
           className='absolute top-1/2' 
@@ -232,7 +223,6 @@ export default function VisWorkflowWheel() {
           ))}
         </div>
 
-        {/* RIGHT SIDE: Raw Commands */}
         <div className='absolute right-6 md:right-12 lg:right-24 top-1/2 -translate-y-1/2 w-full max-w-[500px] h-[250px] z-20 pointer-events-none'>
           {WORKFLOW_STEPS.map((step, i) => (
             <div
@@ -254,7 +244,6 @@ export default function VisWorkflowWheel() {
             </div>
           ))}
         </div>
-
       </div>
     </section>
   );
