@@ -5,6 +5,7 @@ import Nav from '@/components/nav';
 import Hero from '@/components/hero';
 import ModelSection from '@/components/model-section';
 import VisWorkflowWheel from '@/components/vis-workflow-wheel';
+import FeaturesGrid from '@/components/features-grid';
 
 export default function HomePage() {
   return (
@@ -13,6 +14,7 @@ export default function HomePage() {
       <Hero />
       <ModelSection />
       <VisWorkflowWheel />
+      <FeaturesGrid />
     </main>
   );
 }
