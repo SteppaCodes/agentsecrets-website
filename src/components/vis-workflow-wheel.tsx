@@ -10,33 +10,33 @@ gsap.registerPlugin(ScrollTrigger);
 const WORKFLOW_STEPS = [
   {
     label: "Store Credentials",
-    cmd: "$ agentsecrets secrets set OPENAI_API_KEY",
+    cmd: "$ agentsecrets secrets set OPENAI_API_KEY=sk_...",
     output: "Encrypted locally. Stored in zero-knowledge vault."
   },
   {
     label: "Sync Environments",
-    cmd: "$ agentsecrets sync --env production",
-    output: "Synced 14 encrypted variables to agent context. Zero-knowledge verified."
+    cmd: "$ agentsecrets secrets pull",
+    output: "Synced 3 secrets from cloud to OS keychain."
   },
   {
     label: "Detect Drift",
     cmd: "$ agentsecrets secrets diff",
-    output: "OUT OF SYNC: STRIPE_KEY (remote is newer)"
+    output: "Only local:   NEW_KEY\nOnly remote:  DEPRECATED_KEY\nDiffers:      DATABASE_URL"
   },
   {
     label: "Switch Environments",
-    cmd: "$ agentsecrets env use staging",
-    output: "Switched to staging context. Injecting 8 variables."
+    cmd: "$ agentsecrets environment switch production",
+    output: "Switched to production."
   },
   {
     label: "Execute Calls",
-    cmd: "$ agentsecrets call --bearer STRIPE_KEY",
+    cmd: "$ agentsecrets call --url api.stripe.com/v1/balance --bearer STRIPE_KEY",
     output: '{"object":"balance","available":[{"amount":420000,"currency":"usd"}]}'
   },
   {
     label: "Audit Logs",
-    cmd: "$ agentsecrets audit --tail",
-    output: "[14:02:01] Agent accessed STRIPE_KEY. Context isolated."
+    cmd: "$ agentsecrets proxy logs --watch",
+    output: "14:23:01  GET  api.stripe.com/v1/balance  STRIPE_KEY  200  245ms"
   },
 ];
 
@@ -116,18 +116,25 @@ export default function VisWorkflowWheel() {
         let color = '#FFFFFF'; // White text for dark background
         let textShadow = 'none';
 
-        // Strict spotlight, but with a SMOOTH fade out (no cliffs)
-        if (distanceToZero < 0.08) {
+        const isAbove = angle < 0;
+        const targetLowOpacity = isAbove ? 0.35 : 0.08;
+
+        // Strict spotlight with a rapid drop-off for non-focused items
+        if (distanceToZero < 0.05) {
           opacity = 1; // Dead center is fully bright
           // Smoothly bloom the text as it hits the dead center
-          const depthProgress = distanceToZero / 0.08;
+          const depthProgress = distanceToZero / 0.05;
           const blurAmount = Math.round((1 - depthProgress) * 25);
           const alphaAmount = (1 - depthProgress) * 0.6;
           textShadow = `0 0 ${blurAmount}px rgba(255,255,255,${alphaAmount})`;
-        } else if (distanceToZero < 0.6) {
-          // Others fade down smoothly from 1.0 down to 0.15
-          const progress = (distanceToZero - 0.08) / 0.52; 
-          opacity = 1 - (progress * 0.85); 
+        } else if (distanceToZero < 0.15) {
+          // Rapidly drop opacity from 1.0 down to targetLowOpacity just outside the spotlight
+          const dropProgress = (distanceToZero - 0.05) / 0.10;
+          opacity = 1 - (dropProgress * (1 - targetLowOpacity)); 
+        } else if (distanceToZero < 0.8) {
+          // Non-focused items fade out slowly from their target low opacity
+          const fadeProgress = (distanceToZero - 0.15) / 0.65;
+          opacity = targetLowOpacity * (1 - fadeProgress);
         } else {
           opacity = 0;
         }
@@ -236,7 +243,7 @@ export default function VisWorkflowWheel() {
             >
               <div className='font-mono text-[15px] leading-relaxed'>
                 <div className='text-[#34D399] mb-2 font-medium'>{step.cmd}</div>
-                <div className='text-white/70'>{step.output}</div>
+                <div className='text-white/70 whitespace-pre-wrap'>{step.output}</div>
               </div>
 
               <p className='mt-8 text-[14px] text-white/50 leading-relaxed font-mono max-w-[400px]'>
