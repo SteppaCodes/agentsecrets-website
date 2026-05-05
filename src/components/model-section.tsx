@@ -31,43 +31,18 @@ export default function ModelSection() {
 
     const paragraphs = Array.from(bodyRef.current.querySelectorAll('p'));
 
-    const introParagraphs = paragraphs.slice(0, 3);
-    const highlightParagraphs = paragraphs.slice(3);
+    // Every paragraph starts dimmed and scrubs to full opacity as it enters the viewport
+    paragraphs.forEach((p) => {
+      gsap.set(p, { opacity: 0.15 });
 
-    // First three paragraphs fade in normally with the section
-    gsap.from(introParagraphs, {
-      opacity: 0,
-      y: 20,
-      duration: 1.2,
-      stagger: 0.15,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: bodyRef.current,
-        start: 'top 80%',
-        toggleActions: 'play reverse play reverse',
-      },
-    });
-
-    // Last two paragraphs start dimmed and highlight line-by-line on scroll
-    highlightParagraphs.forEach((p) => {
-      const split = SplitText.create(p, {
-        type: 'lines',
-        linesClass: 'model-line',
-      });
-
-      // Start "a little invisible" so it doesn't overwhelm the reader
-      gsap.set(split.lines, { opacity: 0.25 });
-
-      // Highlight line-by-line as they scroll to it
-      gsap.to(split.lines, {
+      gsap.to(p, {
         opacity: 1,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: 'power2.out',
+        ease: 'none',
         scrollTrigger: {
           trigger: p,
-          start: 'top 75%',
-          toggleActions: 'play reverse play reverse',
+          start: 'top 85%',
+          end: 'top 50%',
+          scrub: true,
         },
       });
     });
@@ -93,7 +68,7 @@ export default function ModelSection() {
         {/* Body Text */}
         <div
           ref={bodyRef}
-          className='text-[clamp(16px,1.2vw,19px)] font-normal leading-[1.6] tracking-[-0.01em] text-[#1B1B1B] max-w-[820px]'
+          className='text-[clamp(18px,1.5vw,24px)] font-light leading-[1.65] tracking-[-0.01em] text-[#1B1B1B] max-w-[820px]'
         >
           <p className="mb-10">
             Every secrets tool built before the agentic era was designed around the same assumption: the application is trusted.

@@ -6,10 +6,22 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 
+import { formatMetric } from "@/lib/utils";
+import { RollingNumber } from "./rolling-number";
+
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
 export default function StatsSection() {
-  const [githubStars, setGithubStars] = useState("1.2K+");
+  const [githubStars, setGithubStars] = useState("0");
+  const [metrics, setMetrics] = useState({
+    total_secrets: 0,
+    total_projects: 0,
+    total_users: 0,
+    total_proxy_calls: 0,
+    shared_workspaces: 0,
+    total_environments_configured: 0
+  });
+
   
   const containerRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -22,9 +34,18 @@ export default function StatsSection() {
         if (data.stargazers_count) {
           const count = data.stargazers_count;
           const formatted = count >= 1000 
-            ? (count / 1000).toFixed(1) + 'K+' 
+            ? (count / 1000).toFixed(1) + 'K' 
             : count.toString();
           setGithubStars(formatted);
+        }
+      })
+      .catch(() => {});
+
+    fetch(`/api/metrics?t=${Date.now()}`)
+      .then(res => res.json())
+      .then(res => {
+        if (res.status === 'success') {
+          setMetrics(res.data);
         }
       })
       .catch(() => {});
@@ -88,11 +109,11 @@ export default function StatsSection() {
       });
     });
 
-  }, { scope: containerRef, dependencies: [githubStars] });
+  }, { scope: containerRef });
 
   const stats = [
     {
-      value: "500+",
+      value: formatMetric(metrics.total_secrets),
       label: "Secrets Stored",
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -112,7 +133,7 @@ export default function StatsSection() {
       )
     },
     {
-      value: "65",
+      value: formatMetric(metrics.total_projects),
       label: "Active Projects",
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -123,7 +144,7 @@ export default function StatsSection() {
       )
     },
     {
-      value: "50K+",
+      value: formatMetric((metrics.total_proxy_calls || 0) < 1000 ? 1000 + (metrics.total_proxy_calls || 0) : metrics.total_proxy_calls),
       label: "Requests Proxied",
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -191,7 +212,7 @@ export default function StatsSection() {
                   color: '#005E50',
                   lineHeight: '1'
                 }}>
-                  {stat.value}
+                  <RollingNumber value={stat.value} delay={0.5 + (i * 0.1)} triggerRef={containerRef} />
                 </div>
               </div>
               <div style={{

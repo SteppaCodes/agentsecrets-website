@@ -6,11 +6,16 @@ import { useGSAP } from '@gsap/react';
 import { SplitText } from 'gsap/SplitText';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+import { formatMetric } from '@/lib/utils';
+import { RollingNumber } from './rolling-number';
+
 gsap.registerPlugin(SplitText, ScrollTrigger);
 
 export default function Hero() {
-  const [stars, setStars] = useState<number | string>('92');
+  const [stars, setStars] = useState<number | string>(0);
   const [latestTag, setLatestTag] = useState('v1.1.2');
+  const [totalSecretsStored, setTotalSecretsStored] = useState<number | string>(0);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const badgeRowRef = useRef<HTMLDivElement>(null);
   const headlineRef = useRef<HTMLSpanElement>(null);
@@ -31,6 +36,15 @@ export default function Hero() {
       .then(data => {
         if (Array.isArray(data) && data.length > 0 && data[0].name) {
           setLatestTag(data[0].name);
+        }
+      })
+      .catch(() => {});
+
+    fetch(`/api/metrics?t=${Date.now()}`)
+      .then(res => res.json())
+      .then(res => {
+        if (res.status === 'success') {
+          setTotalSecretsStored(res.data.total_secrets);
         }
       })
       .catch(() => {});
@@ -112,7 +126,7 @@ export default function Hero() {
           >
             github: <RollingNumber value={stars} delay={1.6} /> stars
           </a>
-          <span className='px-3.5 py-1 rounded-md text-[12px] font-light tracking-tight bg-[#F5F5F7]/60 text-[#1B1B1B] font-poppins'>secrets stored: <RollingNumber value={500} delay={1.7} />+</span>
+          <span className='px-3.5 py-1 rounded-md text-[12px] font-light tracking-tight bg-[#F5F5F7]/60 text-[#1B1B1B] font-poppins'>secrets stored: <RollingNumber value={formatMetric(Number(totalSecretsStored))} delay={1.7} /></span>
           <span className='hidden sm:inline-flex px-3.5 py-1 rounded-md text-[12px] font-light tracking-tight bg-[#F5F5F7]/60 text-[#1B1B1B] font-poppins'>MIT</span>
         </div>
 
@@ -143,53 +157,4 @@ export default function Hero() {
   );
 }
 
-function RollingNumber({ value, delay = 1.5 }: { value: number | string, delay?: number }) {
-  const containerRef = useRef<HTMLSpanElement>(null);
-
-  useGSAP(() => {
-    if (!containerRef.current) return;
-    
-    const digits = gsap.utils.toArray<HTMLElement>('.rolling-digit', containerRef.current);
-    
-    digits.forEach((el, index) => {
-      let target = parseInt(el.getAttribute('data-target') || '0', 10);
-      
-      // Slot machine trick: If target is 0, we force it to roll all the way through 1-9 
-      // and land on the trailing '0' at the bottom of the column (index 10).
-      if (target === 0) target = 10;
-      
-      gsap.fromTo(el, 
-        { y: '0em' }, 
-        { 
-          y: `-${target * 1.1}em`, 
-          duration: 1.6, 
-          ease: 'power3.out',
-          delay: delay + (index * 0.1) // Syncs with hero entrance
-        }
-      );
-    });
-  }, { dependencies: [value], scope: containerRef });
-
-  const chars = String(value).split('');
-  
-  return (
-    <span ref={containerRef} className="inline-flex overflow-hidden h-[1.1em] leading-[1.1em] align-text-bottom" style={{ verticalAlign: '-0.1em' }}>
-      {chars.map((char, i) => {
-        if (isNaN(parseInt(char))) {
-          return <span key={i} className="inline-flex">{char}</span>;
-        }
-        return (
-          <span 
-            key={i} 
-            className="rolling-digit block" 
-            data-target={char}
-          >
-            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((n, idx) => (
-              <span key={idx} className="block h-[1.1em] text-center">{n}</span>
-            ))}
-          </span>
-        );
-      })}
-    </span>
-  );
-}
+function OldRollingNumber() { return null; } // Removing inline definition

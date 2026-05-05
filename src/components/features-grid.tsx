@@ -119,14 +119,13 @@ export default function FeaturesGrid() {
         <div className="w-full max-w-fit">
           {/* Section Label */}
           <div className="text-[11px] font-bold tracking-[0.15em] uppercase mb-16 opacity-60">
-            AGENTSECRETS FEATURES
+            FEATURES
           </div>
 
         {/* 3-Column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20">
           {features.map((f, i) => {
             const isHovered = hoveredIdx === i;
-            const isOthersHovered = hoveredIdx !== null && hoveredIdx !== i;
             
             return (
             <motion.div
@@ -135,7 +134,7 @@ export default function FeaturesGrid() {
               onMouseEnter={() => setHoveredIdx(i)}
               onMouseLeave={() => setHoveredIdx(null)}
               animate={{
-                opacity: isOthersHovered ? 0.3 : 1,
+                opacity: hoveredIdx !== null && !isHovered ? 0.8 : 1,
                 y: isHovered ? -4 : 0
               }}
               transition={{ duration: 0.4, ease: "easeOut" }}

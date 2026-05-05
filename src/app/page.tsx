@@ -7,6 +7,7 @@ import ModelSection from '@/components/model-section';
 import VisWorkflowWheel from '@/components/vis-workflow-wheel';
 import FeaturesGrid from '@/components/features-grid';
 import StatsSection from '@/components/stats-section';
+import PlatformSection from '@/components/platform-section';
 
 export default function HomePage() {
   return (
@@ -20,6 +21,7 @@ export default function HomePage() {
         <FeaturesGrid />
       </div>
       <StatsSection />
+      <PlatformSection />
     </main>
   );
 }
