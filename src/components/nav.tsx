@@ -36,7 +36,16 @@ export default function Nav({ page }: { page?: string }) {
       >
         {/* Logo */}
         <div className='flex items-center shrink-0'>
-          <Link href='/' onClick={() => setIsMobileOpen(false)}>
+          <Link 
+            href='/' 
+            onClick={(e) => {
+              if (window.location.pathname === '/') {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+              setIsMobileOpen(false);
+            }}
+          >
             <Image
               src='/Logo.png'
               alt='Agent Secrets'

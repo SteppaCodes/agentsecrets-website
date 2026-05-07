@@ -43,8 +43,8 @@ export default function Hero() {
     fetch(`/api/metrics?t=${Date.now()}`)
       .then(res => res.json())
       .then(res => {
-        if (res.status === 'success') {
-          setTotalSecretsStored(res.data.total_secrets);
+        if (res.status === 'success' && res.data?.platform) {
+          setTotalSecretsStored(res.data.platform.total_secrets);
         }
       })
       .catch(() => {});

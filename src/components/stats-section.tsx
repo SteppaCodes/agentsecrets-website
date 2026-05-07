@@ -44,8 +44,19 @@ export default function StatsSection() {
     fetch(`/api/metrics?t=${Date.now()}`)
       .then(res => res.json())
       .then(res => {
-        if (res.status === 'success') {
-          setMetrics(res.data);
+        if (res.status === 'success' && res.data) {
+          const d = res.data;
+          setMetrics({
+            total_secrets: d.platform?.total_secrets ?? 0,
+            total_projects: d.platform?.total_projects ?? 0,
+            total_users: d.platform?.total_users ?? 0,
+            total_proxy_calls: d.security?.total_proxy_calls ?? 0,
+            shared_workspaces: d.platform?.shared_workspaces ?? 0,
+            total_environments_configured:
+              (d.feature_adoption?.environment_distribution?.staging ?? 0) +
+              (d.feature_adoption?.environment_distribution?.production ?? 0) +
+              (d.feature_adoption?.environment_distribution?.development ?? 0)
+          });
         }
       })
       .catch(() => {});

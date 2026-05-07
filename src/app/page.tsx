@@ -9,6 +9,8 @@ import FeaturesGrid from '@/components/features-grid';
 import StatsSection from '@/components/stats-section';
 import PlatformSection from '@/components/platform-section';
 import BuildSection from '@/components/build-section';
+import FAQSection from '@/components/faq-section';
+import Footer from '@/components/footer';
 
 export default function HomePage() {
   return (
@@ -24,6 +26,8 @@ export default function HomePage() {
       <StatsSection />
       <PlatformSection />
       <BuildSection />
+      <FAQSection />
+      <Footer />
     </main>
   );
 }
