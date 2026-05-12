@@ -1,72 +1,89 @@
-# Secrets Management
+# Managing Secrets
 
-## Storing secrets
+Secrets are named credentials stored in your OS keychain, scoped to a project and environment. This page covers the day-to-day operations: setting, listing, and deleting secrets.
+
+---
+
+## Setting a secret
 
 ```bash
-agentsecrets secrets set STRIPE_KEY=sk_live_...
-agentsecrets secrets set OPENAI_KEY=sk-proj-...
+agentsecrets secrets set KEY_NAME=value
+```
 
-# Set the same value across all three environments simultaneously
+The value goes directly to the OS keychain for the active workspace, project, and environment. It is never written to disk in plaintext and never sent to the AgentSecrets server in plaintext.
+
+Set multiple secrets at once:
+
+```bash
+agentsecrets secrets set STRIPE_KEY=sk_live_... OPENAI_KEY=sk-proj-... GITHUB_TOKEN=ghp_...
+```
+
+Set the same value across all three environments simultaneously:
+
+```bash
 agentsecrets secrets set ANALYTICS_KEY=value --all-envs
 ```
 
-## Listing secrets
+This prompts for confirmation before writing to all three environments.
 
-Key names only. Never values.
+---
+
+## Listing secrets
 
 ```bash
 agentsecrets secrets list
 ```
 
-Output shows cross-environment coverage:
+Lists key names only — never values. The output shows cross-environment coverage so you can see which keys are missing in which environments without switching context:
 
 ```
 Environment: development
 
 KEY             DEV   STAGING   PROD
 STRIPE_KEY       ✓       ✓        ✓
-OPENAI_KEY       ✓       ✓        ✗
-DATABASE_URL     ✓       ✗        ✗
+OPENAI_KEY       ✓       ✓        ✗  ← missing in production
+DATABASE_URL     ✓       ✗        ✗  ← missing in staging and production
 ```
 
-## Syncing with the cloud
+
+## Deleting a secret
 
 ```bash
-# Push local secrets to cloud (encrypted before upload)
-agentsecrets secrets push
-
-# Pull cloud secrets to local OS keychain
-agentsecrets secrets pull
-
-# See what is out of sync
-agentsecrets secrets diff
-
-# Cross-environment diff
-agentsecrets secrets diff --from development --to production
+agentsecrets secrets delete KEY_NAME
 ```
 
-## Deleting secrets
+Removes the secret from the active environment only. This is permanent. To delete from all environments, switch and delete for each:
 
 ```bash
+agentsecrets environment switch development
+agentsecrets secrets delete OLD_KEY
+
+agentsecrets environment switch staging
+agentsecrets secrets delete OLD_KEY
+
+agentsecrets environment switch production
 agentsecrets secrets delete OLD_KEY
 ```
 
-Deleting from the active environment only. To delete from all environments, switch environments and delete separately, or use `agentsecrets environment clean` to remove all secrets in the current environment.
+Or use `agentsecrets environment clean` to remove all secrets in the current environment at once.
 
 ---
 
-## Secrets Drift Detection
+## Naming conventions and best practices
 
-`agentsecrets secrets diff` compares your local keychain against the cloud for the active environment and reports what is out of sync.
+Key names are uppercase strings with underscores as separators. This matches the convention used by most external API providers and environment variable standards.
 
-```bash
-agentsecrets secrets diff
-
-# LOCAL ONLY:  NEW_KEY
-# REMOTE ONLY: DEPRECATED_KEY
-# DIFFERS:     DATABASE_URL (remote is newer)
+Good names:
+```
+STRIPE_KEY
+OPENAI_API_KEY
+GITHUB_TOKEN
+SENDGRID_API_KEY
+DATABASE_URL
 ```
 
-Local-only means the secret exists in your keychain but has not been pushed to cloud. Remote-only means it exists in cloud but you have not pulled it. Differs means the encrypted blob in cloud is newer than what you have locally.
+Keep names consistent across environments. If `STRIPE_KEY` is the name in development, it should be `STRIPE_KEY` in staging and production too. The cross-environment coverage view in `secrets list` relies on matching names — inconsistent naming creates false gaps.
 
-Running `agentsecrets secrets pull` resolves all three states.
+Use names that identify the service. `API_KEY` is ambiguous when you have ten secrets. `STRIPE_LIVE_KEY` is not.
+
+Do not encode the environment in the key name. You do not need `STRIPE_KEY_PRODUCTION` — the active environment context already scopes which value is resolved.

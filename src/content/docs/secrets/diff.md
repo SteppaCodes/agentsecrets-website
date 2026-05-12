@@ -1,18 +1,33 @@
-# Diffing Secrets
+# Diffing secrets
 
-## Local vs remote diff
+```bash
+agentsecrets secrets diff
+```
 
-Content for this section is coming soon.
+Compares your local keychain state against the cloud for the active environment and reports what is out of sync:
 
-## Cross-environment diff
+```
+LOCAL ONLY:   NEW_KEY          ← exists locally, not pushed yet
+REMOTE ONLY:  DEPRECATED_KEY   ← exists in cloud, not pulled yet
+DIFFERS:      DATABASE_URL     ← remote is newer than local
+```
 
-Content for this section is coming soon.
+Local only means the key exists in your keychain but has not been pushed. Remote only means it exists in cloud but has not been pulled. Differs means the remote version is newer. Run `secrets pull` to resolve all three states.
 
-## Reading the diff output
+`secrets diff` compares encrypted blob metadata — it does not compare plaintext values and does not reveal values in its output.
 
-Content for this section is coming soon.
+### Cross-environment diff
 
-## Acting on gaps
+```bash
+agentsecrets secrets diff --from development --to production
+```
 
-Content for this section is coming soon.
+Shows which key names exist in one environment but are missing in another. Does not compare values — only key name coverage:
 
+```
+In development but missing in production:
+  OPENAI_KEY
+  DATABASE_URL
+```
+
+Use this before deploying to production to catch missing credentials before they cause runtime errors.
