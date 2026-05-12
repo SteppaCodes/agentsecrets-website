@@ -593,7 +593,7 @@ export default function DocsPage() {
       )}
       
       {/* Mobile Sidebar */}
-      <div className="docs-drawer lg:hidden" style={{ position: "fixed", top: 0, left: 0, bottom: 0, width: 280, zIndex: 201, background: "var(--bg2)", borderRight: "1px solid var(--border)", padding: "80px 20px 40px", transform: drawerOpen ? "translateX(0)" : "translateX(-100%)", transition: "transform 0.28s cubic-bezier(0.32, 0.72, 0, 1)", overflowY: "auto" }}>
+      <div className="docs-drawer lg:hidden" style={{ position: "fixed", top: 0, left: 0, bottom: 0, width: 280, zIndex: 201, background: "#FFFFFF", borderRight: "1px solid rgba(0,0,0,0.08)", padding: "80px 20px 40px", transform: drawerOpen ? "translateX(0)" : "translateX(-100%)", transition: "transform 0.28s cubic-bezier(0.32, 0.72, 0, 1)", overflowY: "auto" }}>
         <SidebarContent active={active} groups={groups} onJump={jump} />
       </div>
 
@@ -607,7 +607,7 @@ export default function DocsPage() {
       {/* Main Layout Grid */}
       <div className="docs-layout grid grid-cols-1 lg:grid-cols-[280px_1fr] xl:grid-cols-[280px_1fr_260px]" style={{ minHeight: "100vh" }}>
         <div className="hidden lg:block" />
-        <main ref={contentRef} className="docs-content" style={{ padding: "80px 40px 120px", width: "100%", maxWidth: "900px", margin: "0 auto", minHeight: "80vh", display: "flex", flexDirection: "column" }}>
+        <main ref={contentRef} className="docs-content" style={{ padding: "80px 20px 120px", width: "100%", maxWidth: "900px", margin: "0 auto", minHeight: "80vh", display: "flex", flexDirection: "column" }}>
           
           <div key={active} className="docs-section animate-in fade-in slide-in-from-bottom-4 duration-500" style={{ flex: 1 }}>
             <Breadcrumb items={[DOCS_SECTIONS.find(s => s.id === active)?.group || "Docs", activeLabel]} />

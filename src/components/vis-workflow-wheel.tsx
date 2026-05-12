@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { motion, AnimatePresence } from 'framer-motion';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -42,7 +43,150 @@ const WORKFLOW_STEPS = [
 
 const CIRCLE_ITEMS = WORKFLOW_STEPS;
 
-export default function VisWorkflowWheel() {
+/* ─────────────────────────────────────────────
+   MOBILE VERSION — vertical stepper with tap
+   ───────────────────────────────────────────── */
+function MobileWorkflow() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const containerRef = useRef<HTMLElement>(null);
+
+  useGSAP(() => {
+    if (!containerRef.current) return;
+    gsap.from('.mobile-wf-label', {
+      opacity: 0,
+      y: 20,
+      duration: 1,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: 'top 80%',
+        toggleActions: 'play none none reverse',
+      }
+    });
+    gsap.from('.mobile-wf-step', {
+      opacity: 0,
+      y: 30,
+      stagger: 0.08,
+      duration: 1,
+      ease: 'expo.out',
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: 'top 75%',
+        toggleActions: 'play none none reverse',
+      }
+    });
+  }, { scope: containerRef });
+
+  // Auto-advance every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex(prev => (prev + 1) % WORKFLOW_STEPS.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <section
+      ref={containerRef}
+      className="w-full md:hidden"
+      style={{ backgroundColor: '#0D1512', color: '#FFFFFF', padding: '80px 24px' }}
+    >
+      {/* Section Label */}
+      <div className="mobile-wf-label text-center mb-12">
+        <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-[#34D399]/60 block mb-4">
+          WORKFLOW
+        </span>
+        <h2 className="text-[28px] font-medium tracking-[-0.03em] leading-[1.15] text-white">
+          The agent lifecycle,<br />
+          <span className="text-white/40">without exposure.</span>
+        </h2>
+      </div>
+
+      {/* Step Labels — horizontal scroll pills */}
+      <div className="flex gap-2 overflow-x-auto pb-4 mb-8 -mx-2 px-2 scrollbar-hide">
+        {WORKFLOW_STEPS.map((step, i) => (
+          <button
+            key={i}
+            onClick={() => setActiveIndex(i)}
+            className="mobile-wf-step shrink-0 px-4 py-2 rounded-full text-[12px] font-medium transition-all duration-300 whitespace-nowrap"
+            style={{
+              background: activeIndex === i ? 'rgba(52, 211, 153, 0.15)' : 'rgba(255,255,255,0.05)',
+              color: activeIndex === i ? '#34D399' : 'rgba(255,255,255,0.4)',
+              border: `1px solid ${activeIndex === i ? 'rgba(52, 211, 153, 0.3)' : 'rgba(255,255,255,0.06)'}`,
+            }}
+          >
+            {step.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Active Step Content — terminal card */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeIndex}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="rounded-2xl overflow-hidden"
+          style={{
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(255,255,255,0.06)',
+          }}
+        >
+          <div className="px-5 py-5">
+            {/* Step Number + Label */}
+            <div className="flex items-center gap-3 mb-5">
+              <span
+                className="flex items-center justify-center w-[24px] h-[24px] rounded-full text-[11px] font-bold"
+                style={{
+                  background: 'rgba(52, 211, 153, 0.15)',
+                  color: '#34D399',
+                }}
+              >
+                {activeIndex + 1}
+              </span>
+              <span className="text-[14px] font-medium text-white/90">
+                {WORKFLOW_STEPS[activeIndex].label}
+              </span>
+            </div>
+
+            {/* Terminal */}
+            <div className="font-mono text-[12px] leading-relaxed">
+              <div className="text-[#34D399] mb-2 font-medium break-all">
+                {WORKFLOW_STEPS[activeIndex].cmd}
+              </div>
+              <div className="text-white/60 whitespace-pre-wrap break-all">
+                {WORKFLOW_STEPS[activeIndex].output}
+              </div>
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          <div className="h-[2px] bg-white/5">
+            <motion.div
+              key={`progress-${activeIndex}`}
+              className="h-full bg-[#34D399]/40"
+              initial={{ width: '0%' }}
+              animate={{ width: '100%' }}
+              transition={{ duration: 4, ease: 'linear' }}
+            />
+          </div>
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Footnote */}
+      <p className="text-[12px] text-white/30 text-center mt-8 leading-relaxed max-w-[300px] mx-auto">
+        The agent managed the complete workflow autonomously. No credential value appeared at any step.
+      </p>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   DESKTOP VERSION — original scroll wheel
+   ───────────────────────────────────────────── */
+function DesktopWorkflow() {
   const containerRef = useRef<HTMLElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -78,8 +222,6 @@ export default function VisWorkflowWheel() {
     }
 
     let radius = window.innerHeight * 0.9; 
-    if (window.innerWidth < 768) radius = window.innerHeight * 0.6;
-    
     let centerX = (window.innerWidth * 0.10) - radius;
 
     gsap.set(wrapperRef.current, { left: centerX, top: '50%' });
@@ -158,16 +300,14 @@ export default function VisWorkflowWheel() {
 
     updateItemsPosition(0);
 
-    // Pin the visualization and animate the wheel
     ScrollTrigger.create({
       trigger: containerRef.current,
       start: 'top top',
-      end: '+=300%', // Increased duration to allow for the curtain reveal phase
+      end: '+=300%',
       pin: true,
-      pinSpacing: false, // Essential: we will manage spacing manually in the parent
+      pinSpacing: false,
       scrub: 1,
       onUpdate: (self) => {
-        // Animation finishes at 66% of the total scroll (approx 200vh)
         const animationProgress = Math.min(self.progress / 0.66, 1);
         updateItemsPosition(animationProgress);
       },
@@ -175,7 +315,6 @@ export default function VisWorkflowWheel() {
 
     const handleResize = () => {
       radius = window.innerHeight * 0.9;
-      if (window.innerWidth < 768) radius = window.innerHeight * 0.6;
       centerX = (window.innerWidth * 0.10) - radius;
       gsap.set(wrapperRef.current, { left: centerX });
       ScrollTrigger.update();
@@ -188,7 +327,7 @@ export default function VisWorkflowWheel() {
   return (
     <section 
       ref={containerRef} 
-      className='h-screen w-full flex items-center justify-center relative overflow-hidden z-0'
+      className='h-screen w-full hidden md:flex items-center justify-center relative overflow-hidden z-0'
       style={{ backgroundColor: '#0D1512', color: '#FFFFFF' }}
     >
       <div ref={glow1Ref} className='absolute left-[5%] top-[40%] w-[500px] h-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/20 blur-[100px] pointer-events-none z-0 will-change-transform' />
@@ -246,5 +385,17 @@ export default function VisWorkflowWheel() {
         </div>
       </div>
     </section>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   EXPORTED COMPONENT — renders the right one
+   ───────────────────────────────────────────── */
+export default function VisWorkflowWheel() {
+  return (
+    <>
+      <MobileWorkflow />
+      <DesktopWorkflow />
+    </>
   );
 }

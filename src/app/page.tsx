@@ -19,7 +19,7 @@ export default function HomePage() {
       <Hero />
       <ModelSection />
       <VisWorkflowWheel />
-      <div className='h-[200vh] pointer-events-none' />
+      <div className='hidden md:block h-[200vh] pointer-events-none' />
       <div className='relative z-10'>
         <FeaturesGrid />
       </div>

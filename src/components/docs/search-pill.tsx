@@ -49,9 +49,12 @@ export default function SearchPill({ onMenuClick }: { onMenuClick?: () => void }
 
     // Figure out minimum grow steps needed for current text
     const baseTextareaW = 185; // matches the min-width below
+    const baseTextareaMobile = 140; // smaller on mobile
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+    const baseW = isMobile ? baseTextareaMobile : baseTextareaW;
     if (growCount > 0) {
-      const currentCapacity = baseTextareaW + growCount * step;
-      const prevCapacity = baseTextareaW + (growCount - 1) * step;
+      const currentCapacity = baseW + growCount * step;
+      const prevCapacity = baseW + (growCount - 1) * step;
       // If text fits in the previous step's capacity at 80%, shrink
       if (textWidth < prevCapacity * 0.80) {
         setGrowCount(prev => Math.max(0, prev - 1));
@@ -81,7 +84,7 @@ export default function SearchPill({ onMenuClick }: { onMenuClick?: () => void }
             opacity: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
             y: { duration: 1.2, ease: [0.16, 1, 0.3, 1] }
           }}
-          className='bg-[#005E50] rounded-full shadow-lg flex items-center border border-white/[0.08] h-[52px] max-w-[90vw] sm:max-w-[600px] overflow-hidden'
+          className='bg-[#005E50] rounded-full shadow-lg flex items-center border border-white/[0.08] h-[48px] sm:h-[52px] max-w-[92vw] sm:max-w-[600px] overflow-hidden'
           style={{ paddingLeft: onMenuClick ? '6px' : '8px', paddingRight: '8px' }}
         >
           {onMenuClick && (
@@ -102,7 +105,7 @@ export default function SearchPill({ onMenuClick }: { onMenuClick?: () => void }
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className='relative bg-white rounded-full h-[40px] flex items-center overflow-hidden pl-4 pr-0'
+                className='relative bg-white rounded-full h-[36px] sm:h-[40px] flex items-center overflow-hidden pl-3 sm:pl-4 pr-0'
               >
                 {/* Mirror for width calculation - measures actual text pixel width */}
                 <div 
@@ -118,9 +121,9 @@ export default function SearchPill({ onMenuClick }: { onMenuClick?: () => void }
                 <motion.div 
                   ref={textareaContainerRef}
                   className="h-full flex items-center relative"
-                  animate={{ width: 185 + extraWidth }}
+                  animate={{ width: (typeof window !== 'undefined' && window.innerWidth < 640 ? 140 : 185) + extraWidth }}
                   transition={smoothSpring}
-                  style={{ minWidth: 185, maxWidth: 450 }}
+                  style={{ minWidth: typeof window !== 'undefined' && window.innerWidth < 640 ? 140 : 185, maxWidth: 450 }}
                 >
                   <textarea
                     ref={textareaRef}
@@ -136,7 +139,7 @@ export default function SearchPill({ onMenuClick }: { onMenuClick?: () => void }
                 </motion.div>
 
                 {/* Keyboard Shortcut Indicator */}
-                <div className='flex items-center justify-center shrink-0 h-[24px] px-1.5 rounded-lg bg-[#F5F5F7] text-[#1B1B1B]/40 text-[10px] font-bold tracking-widest font-mono border border-black/5 ml-[2px] mr-1.5'>
+                <div className='flex items-center justify-center shrink-0 h-[20px] sm:h-[24px] px-1 sm:px-1.5 rounded-md sm:rounded-lg bg-[#F5F5F7] text-[#1B1B1B]/40 text-[8px] sm:text-[10px] font-bold tracking-widest font-mono border border-black/5 ml-[2px] mr-1 sm:mr-1.5'>
                   ⌘K
                 </div>
               </motion.div>
