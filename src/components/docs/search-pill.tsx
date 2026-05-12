@@ -116,10 +116,7 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
       setResults([]);
       setIsFocused(false);
       inputRef.current?.blur();
-      
-      // Parse sectionId and headingId
-      const [sectionId, headingId] = id.split('::');
-      onNavigate?.(sectionId, headingId);
+      onNavigate?.(id);
     },
     [onNavigate, trackRecent],
   );
@@ -229,38 +226,32 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                       </span>
                     </div>
                     <div className='overflow-y-auto max-h-[50vh] overscroll-contain'>
-                      {results.map((r, idx) => {
-                        const isSubHeading = r.id.includes('::');
-                        return (
-                          <button
-                            key={r.id}
-                            onClick={() => navigateTo(r.id, r.label, r.group)}
-                            onMouseEnter={() => setActiveIdx(idx)}
-                            className={`w-full text-left px-4 py-3 flex items-center gap-3 transition-colors ${
-                              idx === activeIdx
-                                ? 'bg-[#f0fdfa]'
-                                : 'hover:bg-[#fafafa]'
-                            }`}
-                          >
-                            {idx === activeIdx && (
-                              <div className='w-[3px] h-5 bg-[#0d9488] rounded-full shrink-0 absolute left-0' />
-                            )}
-                            {isSubHeading ? (
-                              <div className='flex items-center justify-center w-[14px] h-[14px] text-[#0d9488] shrink-0 font-bold text-[10px] opacity-60'>#</div>
-                            ) : (
-                              <FileText size={14} className='text-[#0d9488] shrink-0' />
-                            )}
-                          <div className='flex flex-col min-w-0 flex-1'>
-                            <span className='text-[14px] font-medium text-[#1B1B1B] whitespace-normal break-words'>
+                      {results.map((r, idx) => (
+                        <button
+                          key={r.id}
+                          onClick={() => navigateTo(r.id, r.label, r.group)}
+                          onMouseEnter={() => setActiveIdx(idx)}
+                          className={`w-full text-left px-4 py-3 flex items-center gap-3 transition-colors ${
+                            idx === activeIdx
+                              ? 'bg-[#f0fdfa]'
+                              : 'hover:bg-[#fafafa]'
+                          }`}
+                        >
+                          {idx === activeIdx && (
+                            <div className='w-[3px] h-5 bg-[#0d9488] rounded-full shrink-0 absolute left-0' />
+                          )}
+                          <FileText size={14} className='text-[#0d9488] shrink-0' />
+                          <div className='flex flex-col min-w-0'>
+                            <span className='text-[14px] font-medium text-[#1B1B1B] truncate'>
                               {r.label}
                             </span>
-                            <span className='text-[12px] text-[#1B1B1B]/40 whitespace-normal break-words'>
+                            <span className='text-[12px] text-[#1B1B1B]/40 truncate'>
                               {r.group}
                             </span>
                           </div>
                           <ArrowRight size={12} className={`ml-auto shrink-0 transition-opacity ${idx === activeIdx ? 'text-[#0d9488] opacity-100' : 'opacity-0'}`} />
                         </button>
-                      )})}
+                      ))}
                     </div>
                     {/* Footer hints */}
                     <div className='px-4 py-2 border-t border-black/[0.04] flex items-center gap-4 text-[11px] text-[#1B1B1B]/30 font-medium'>
@@ -300,10 +291,10 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                           className='w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-[#fafafa] transition-colors'
                         >
                           <Clock size={13} className='text-[#1B1B1B]/25 shrink-0' />
-                          <span className='text-[13px] font-medium text-[#1B1B1B]/70 whitespace-normal break-words flex-1 min-w-0'>
+                          <span className='text-[13px] font-medium text-[#1B1B1B]/70 truncate'>
                             {item.label}
                           </span>
-                          <span className='text-[11px] text-[#1B1B1B]/25 ml-auto shrink-0 whitespace-normal break-words max-w-[40%] text-right'>
+                          <span className='text-[11px] text-[#1B1B1B]/25 ml-auto shrink-0 truncate'>
                             {item.group}
                           </span>
                         </button>
@@ -330,7 +321,7 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                             className='w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-[#fafafa] transition-colors'
                           >
                             <FileText size={13} className='text-[#0d9488]/50 shrink-0' />
-                            <span className='text-[13px] font-medium text-[#1B1B1B]/70 whitespace-normal break-words flex-1 min-w-0'>
+                            <span className='text-[13px] font-medium text-[#1B1B1B]/70 truncate'>
                               {meta.label}
                             </span>
                           </button>
@@ -359,7 +350,7 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
             opacity: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
             y: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
           }}
-          className='bg-[#005E50] rounded-[24px] sm:rounded-[28px] shadow-lg flex items-center border border-white/[0.08] min-h-[48px] sm:min-h-[52px] py-1.5 sm:py-2 max-w-[92vw] sm:max-w-[600px] overflow-hidden'
+          className='bg-[#005E50] rounded-full shadow-lg flex items-center border border-white/[0.08] h-[48px] sm:h-[52px] max-w-[92vw] sm:max-w-[600px] overflow-hidden'
           style={{ paddingLeft: onMenuClick ? '6px' : '8px', paddingRight: '8px' }}
         >
           {onMenuClick && (
@@ -380,14 +371,14 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className='relative bg-white rounded-[20px] sm:rounded-[24px] min-h-[36px] sm:min-h-[40px] flex items-center overflow-hidden pl-3 sm:pl-4 pr-0 py-1.5'
+                className='relative bg-white rounded-full h-[36px] sm:h-[40px] flex items-center overflow-hidden pl-3 sm:pl-4 pr-0'
               >
                 {/* Mirror for width calculation */}
                 <div
                   ref={mirrorRef}
-                  className='invisible absolute whitespace-pre-wrap break-words text-[13px] sm:text-[14px] font-medium opacity-0 pointer-events-none'
+                  className='invisible absolute whitespace-nowrap text-[13px] sm:text-[14px] font-medium opacity-0 pointer-events-none'
                   aria-hidden='true'
-                  style={{ left: 16, right: 40 }}
+                  style={{ left: 0 }}
                 >
                   {query || 'Search documentation...'}
                 </div>
@@ -395,25 +386,20 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                 {/* Input container */}
                 <motion.div
                   ref={inputContainerRef}
-                  className='flex items-center relative'
+                  className='h-full flex items-center relative'
                   animate={{ width: baseW + extraWidth }}
                   transition={smoothSpring}
                   style={{ minWidth: baseW, maxWidth: 450 }}
                 >
-                  <textarea
-                    ref={inputRef as any}
-                    rows={1}
+                  <input
+                    ref={inputRef}
+                    type='text'
                     value={query}
-                    onChange={(e) => {
-                      setQuery(e.target.value);
-                      // Auto-resize textarea height
-                      e.target.style.height = 'auto';
-                      e.target.style.height = `${e.target.scrollHeight}px`;
-                    }}
+                    onChange={(e) => setQuery(e.target.value)}
                     onFocus={handleFocus}
                     onKeyDown={handleKeyDown}
                     placeholder='Search documentation...'
-                    className='w-full bg-transparent border-none outline-none text-[#1B1B1B] font-medium text-[13px] sm:text-[14px] placeholder:text-[#1B1B1B]/30 leading-[1.4] py-1 m-0 resize-none overflow-hidden'
+                    className='w-full bg-transparent border-none outline-none text-[#1B1B1B] font-medium text-[13px] sm:text-[14px] placeholder:text-[#1B1B1B]/30 leading-[20px] h-[20px] py-0 m-0'
                     autoComplete='off'
                     spellCheck={false}
                   />
