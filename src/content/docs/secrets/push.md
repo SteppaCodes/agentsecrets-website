@@ -2,35 +2,23 @@
 
 ## What push does
 
-Content for this section is coming soon.
+`agentsecrets secrets push` reads your local secrets for the active environment, encrypts each value client-side using your workspace key, and uploads the encrypted blobs to the cloud. The server receives ciphertext it cannot decrypt. Your workspace key never leaves your machine.
+Push is how your secrets become available to teammates and to your other machines.
+
 
 ## How encryption works before leaving your machine
 
-Content for this section is coming soon.
+Before any secret leaves your machine, the CLI retrieves the value from the OS keychain, encrypts it using AES-256-GCM with a key derived via Argon2id from your workspace key, generates a fresh nonce for each encryption operation, and uploads the ciphertext, nonce, and authentication tag together as a single blob. The plaintext value and the workspace key are never transmitted.
+
 
 ## Resolving conflicts
 
-Content for this section is coming soon.
+Push does not merge, it overwrites. If a remote secret is newer than your local version, pushing will replace the remote value with your local one. Run `agentsecrets secrets diff` before pushing to see exactly what will change. If remote is newer and you want to keep it, pull first, then make your changes, then push.
+
 
 ## Pushing a specific environment
 
-Content for this section is coming soon.
-
-# Syncing Secrets with Cloud
-
-AgentSecrets uses zero-knowledge cloud sync to share secrets across machines and teammates. Secrets are encrypted client-side before upload. The server holds ciphertext it cannot decrypt. Push sends your local secrets to the cloud. Pull brings cloud secrets to your local keychain.
-
----
-
-## Pushing to cloud sync
-
-```bash
-agentsecrets secrets push
-```
-
-Reads secrets from your local storage (keychain in mode 1, `.env.{environment}` in mode 2), encrypts them client-side using your workspace key, and uploads the encrypted blobs to the cloud.
-
-Push operates on the active environment. To push all three environments, switch and push for each:
+Push operates on the active environment only. To push all three environments:
 
 ```bash
 agentsecrets environment switch development && agentsecrets secrets push

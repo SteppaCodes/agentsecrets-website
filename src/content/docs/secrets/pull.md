@@ -2,26 +2,28 @@
 
 ## What pull does
 
-Content for this section is coming soon.
+`agentsecrets secrets pull` downloads the encrypted blobs from the cloud for the active environment, decrypts each one using your workspace key, and writes the values to your local storage. It is how you get secrets onto a new machine or pick up changes a teammate pushed.
+
 
 ## Syncing to the OS keychain
 
-Content for this section is coming soon.
+In storage mode 1, pull writes directly to the OS keychain. No file is created on disk. The decrypted values exist only in the keychain, scoped to your user account.
+In storage mode 2, pull writes to the OS keychain and also writes the decrypted values to `.env.{environment}` in your project root. In both modes, pull generates `.env.example` with key names and environment annotations but no values — this file is safe to commit.
+
 
 ## Pulling a specific environment
 
-Content for this section is coming soon.
+Pull operates on the active environment only. To pull all three:
+
+```bash
+agentsecrets environment switch development && agentsecrets secrets pull
+agentsecrets environment switch staging && agentsecrets secrets pull
+agentsecrets environment switch production && agentsecrets secrets pull
+```
+
 
 ## What happens when remote is newer
 
-Content for this section is coming soon.
+Pull always takes the remote value. If your local keychain has a newer version of a secret than the cloud, pulling will overwrite your local value with the remote one. Run `agentsecrets secrets diff` before pulling to see what will change. If you have local changes you want to keep, push first.
 
-# Pulling from cloud sync
 
-```bash
-agentsecrets secrets pull
-```
-
-Downloads encrypted blobs from the cloud for the active environment, decrypts them using your workspace key, and writes to the OS keychain in mode 1, or to both the OS keychain and `.env.{environment}` in mode 2.
-
-In both modes, `secrets pull` also generates `.env.example` with key names and environment annotations — no values, just names. This is safe to commit and useful for documenting which keys a project requires.

@@ -47,6 +47,9 @@ agentsecrets workspace list
 
 # Switch active workspace
 agentsecrets workspace switch "Acme Engineering"
+
+# To switch to your personal workspace
+agentsecrets workspace switch personal
 ```
 
 All subsequent commands operate in the active workspace.

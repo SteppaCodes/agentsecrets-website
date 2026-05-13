@@ -12,9 +12,14 @@ REMOTE ONLY:  DEPRECATED_KEY   ← exists in cloud, not pulled yet
 DIFFERS:      DATABASE_URL     ← remote is newer than local
 ```
 
-Local only means the key exists in your keychain but has not been pushed. Remote only means it exists in cloud but has not been pulled. Differs means the remote version is newer. Run `secrets pull` to resolve all three states.
+**Local only** means the key exists in your keychain but has not been pushed. 
+**Remote only** means it exists in cloud but has not been pulled. 
+**Differs** means the remote version is newer. 
+
+Pull to get the latest. Push to share your changes.
 
 `secrets diff` compares encrypted blob metadata — it does not compare plaintext values and does not reveal values in its output.
+
 
 ### Cross-environment diff
 
@@ -28,6 +33,12 @@ Shows which key names exist in one environment but are missing in another. Does 
 In development but missing in production:
   OPENAI_KEY
   DATABASE_URL
+
+In production but missing in development:
+  (none)
+
+Present in both:
+  STRIPE_KEY
 ```
 
-Use this before deploying to production to catch missing credentials before they cause runtime errors.
+This is useful before deploying to production, run it to catch any secrets that exist in development but have not been configured in production yet.
