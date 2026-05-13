@@ -239,35 +239,24 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
   const hasQuery = query.trim().length > 0;
 
   return (
-    <div className='fixed bottom-6 sm:bottom-8 left-0 right-0 z-[100] px-5 flex justify-center pointer-events-none'>
-      <div className='relative flex flex-col items-center max-w-full pointer-events-auto'>
+    <div className='fixed bottom-6 sm:bottom-8 left-0 right-0 z-[1000] px-5 flex justify-center pointer-events-none'>
+      {/* ─── Overlay + Card Layout ─── */}
+      <AnimatePresence>
+        {showPanel && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className='fixed inset-0 z-[999] bg-white pointer-events-auto overflow-y-auto flex flex-col items-center'
+          >
+            <div className='w-full max-w-[1400px] mx-auto px-8 pt-32 pb-48 flex flex-row relative'>
+              {/* Left Ghost Spacer for Centering */}
+              <div className='hidden lg:block w-[260px] shrink-0' aria-hidden="true" />
 
-        {/* ─── Overlay + Card Layout ─── */}
-        <AnimatePresence>
-          {showPanel && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className='fixed inset-0 z-[999] bg-white pointer-events-auto overflow-y-auto flex flex-col items-center'
-            >
-              {/* Close Button */}
-              <button 
-                onClick={() => setIsFocused(false)}
-                className='fixed top-24 right-12 p-2 rounded-full bg-black/5 hover:bg-black/10 transition-colors z-[1000]'
-                aria-label='Close search'
-              >
-                <X size={18} className='text-[#1B1B1B]/40' />
-              </button>
-
-              <div className='w-full max-w-[1400px] mx-auto px-8 pt-32 pb-48 flex flex-row relative'>
-                {/* Left Ghost Spacer for Centering */}
-                <div className='hidden lg:block w-[260px] shrink-0' aria-hidden="true" />
-
-                {/* Main Content Area */}
-                <div className='flex-1 max-w-[820px] mx-auto flex flex-col gap-[100px]'>
-                  {hasQuery ? (
+              {/* Main Content Area */}
+              <div className='flex-1 max-w-[820px] mx-auto flex flex-col gap-[100px]'>
+                {hasQuery ? (
                   results.length > 0 ? (
                     <>
                       <div className='text-center mb-10'>
@@ -279,48 +268,43 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                         {results.map((r, idx) => (
                           <motion.button
                             key={r.id}
-                            onClick={() => navigateTo(r.id, r.label, r.group, r.snippet)}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: idx * 0.05 }}
+                            onClick={() => navigateTo(r.id, r.label, r.group)}
                             onMouseEnter={() => setActiveIdx(idx)}
-                            whileHover={{ y: -4 }}
-                            className={`text-left bg-white rounded-2xl border p-6 min-h-[180px] flex flex-col gap-3 transition-all duration-200 cursor-pointer ${
-                              idx === activeIdx
-                                ? 'border-[#0d9488]/15 shadow-[0_4px_20px_rgba(0,0,0,0.04)] scale-[1.01]'
-                                : 'border-transparent hover:border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.02)]'
+                            className={`p-6 rounded-[20px] text-left border transition-all duration-300 ${
+                              activeIdx === idx 
+                                ? 'bg-[#005E50] border-[#005E50] shadow-xl translate-y-[-2px]' 
+                                : 'bg-white border-black/[0.05] hover:border-black/10'
                             }`}
                           >
-                            <span className='inline-flex items-center self-start text-[9px] font-bold tracking-[0.1em] uppercase text-[#0d9488] bg-[#ECFDF5] rounded-full px-3 py-1'>
-                              {r.group}
-                            </span>
-                            <span className='text-[16px] font-semibold text-[#1B1B1B] leading-snug line-clamp-2 mt-1'>
-                              {r.label}
-                            </span>
-                            {r.snippet && (
-                              <span className='text-[12px] text-[#1B1B1B]/35 leading-[1.6] line-clamp-2'>
-                                {r.snippet}
-                              </span>
-                            )}
-                            <div className='flex items-center gap-3 mt-auto pt-3'>
-                              <span className='flex items-center gap-1.5 text-[10px] text-[#1B1B1B]/20 font-medium'>
-                                <BookOpen size={10} />
-                                Docs
-                              </span>
-                              <span className={`flex items-center gap-1 text-[10px] font-semibold ml-auto transition-opacity duration-200 ${
-                                idx === activeIdx ? 'text-[#0d9488] opacity-100' : 'opacity-0'
-                              }`}>
-                                Read <ArrowRight size={10} />
+                            <div className='flex items-center gap-3 mb-4'>
+                              <div className={`p-2 rounded-lg ${activeIdx === idx ? 'bg-white/20 text-white' : 'bg-black/[0.03] text-[#1B1B1B]/40'}`}>
+                                <FileText size={16} />
+                              </div>
+                              <span className={`text-[10px] font-bold tracking-widest uppercase ${activeIdx === idx ? 'text-white/60' : 'text-[#1B1B1B]/30'}`}>
+                                {r.group}
                               </span>
                             </div>
+                            <h4 className={`text-[17px] font-semibold mb-2 leading-tight ${activeIdx === idx ? 'text-white' : 'text-[#1B1B1B]'}`}>
+                              {r.label}
+                            </h4>
+                            <p className={`text-[13px] line-clamp-2 leading-relaxed ${activeIdx === idx ? 'text-white/70' : 'text-[#1B1B1B]/40'}`}>
+                              {r.snippet}
+                            </p>
                           </motion.button>
                         ))}
                       </div>
                     </>
                   ) : (
-                    <div className='text-center pt-32'>
-                      <p className='text-[16px] text-[#1B1B1B]/25 font-medium'>
-                        No results for &ldquo;{query.trim()}&rdquo;
-                      </p>
-                      <p className='text-[13px] text-[#1B1B1B]/15 mt-3'>
-                        Try a different search term
+                    <div className='text-center py-32'>
+                      <div className='inline-flex items-center justify-center w-16 h-16 rounded-full bg-black/[0.03] mb-6'>
+                        <Search size={24} className='text-[#1B1B1B]/20' />
+                      </div>
+                      <h3 className='text-[18px] font-semibold text-[#1B1B1B] mb-2'>No results found</h3>
+                      <p className='text-[#1B1B1B]/40 max-w-[300px] mx-auto text-[14px]'>
+                        We couldn't find anything matching "{query}". Try a different term.
                       </p>
                     </div>
                   )
@@ -339,11 +323,11 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                           Recents
                         </h3>
                         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-16 gap-y-10'>
-                          {recentSearches.map((item) => {
+                          {recentSearches.map((item, idx) => {
                             const isHovered = hoveredItemId === `recent-${item.id}`;
                             return (
                               <motion.button
-                                key={`recent-${item.id}`}
+                                key={`recent-${item.id}-${idx}`}
                                 onClick={() => navigateTo(item.id, item.label, item.group, item.snippet)}
                                 onMouseEnter={() => setHoveredItemId(`recent-${item.id}`)}
                                 onMouseLeave={() => setHoveredItemId(null)}
@@ -395,18 +379,19 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                       return (
                         <motion.div 
                           key={group.category} 
+                          id={`section-${group.category.toLowerCase().replace(/ /g, '-')}`}
                           initial={{ opacity: 0, y: 40 }}
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ once: true, margin: '-100px' }}
                           transition={{ duration: 0.8, ease: "easeOut", delay: groupIdx * 0.1 }}
                           className='flex flex-col gap-[32px]'
                         >
-                          <h3 id={`section-${group.category.toLowerCase().replace(/ /g, '-')}`} className='text-[22px] font-bold text-[#1B1B1B]/60'>
+                          <h3 className='text-[22px] font-bold text-[#1B1B1B]/60'>
                             {group.category}
                           </h3>
                           
                           <div className={`grid grid-cols-1 ${isGettingStarted ? 'lg:grid-cols-3 gap-4 lg:-mx-12' : 'md:grid-cols-2 gap-x-8 gap-y-6'}`}>
-                            {group.items.map((id, itemIdx) => {
+                            {group.items.map((id) => {
                               const meta = resolveSectionMeta(id);
                               if (!meta) return null;
                               const isHovered = hoveredItemId === `suggested-${id}`;
@@ -423,18 +408,18 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                                       opacity: hoveredItemId !== null && !isHovered ? 0.5 : 1,
                                     }}
                                     transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-                                    className='text-left bg-white rounded-[24px] p-8 flex flex-col gap-8 shadow-[0_2px_12px_rgba(0,0,0,0.02)] hover:shadow-[0_32px_80px_rgba(0,0,0,0.08)] transition-all duration-500 cursor-pointer group border border-black/[0.03] h-full relative'
+                                    className='text-left bg-white rounded-[24px] p-6 sm:p-8 flex flex-col gap-6 sm:gap-8 shadow-[0_2px_12px_rgba(0,0,0,0.02)] hover:shadow-[0_32px_80px_rgba(0,0,0,0.08)] transition-all duration-500 cursor-pointer group border border-black/[0.03] h-full relative'
                                   >
                                     <div className='flex flex-col gap-3 flex-1'>
                                       <motion.h4 
                                         animate={{ color: isHovered ? '#0d9488' : '#1B1B1B' }}
-                                        className='text-[22px] font-semibold leading-[1.2] tracking-[-0.03em] w-full'
+                                        className='text-[20px] sm:text-[22px] font-semibold leading-[1.2] tracking-[-0.03em] w-full'
                                       >
                                         {meta.label}
                                       </motion.h4>
                                       <motion.p 
                                         animate={{ color: isHovered ? '#0d9488' : 'rgba(27, 27, 27, 0.3)' }}
-                                        className='text-[14px] leading-[1.6] line-clamp-3 font-medium'
+                                        className='text-[13px] sm:text-[14px] leading-[1.6] line-clamp-3 font-medium'
                                         style={{ textWrap: 'pretty' } as any}
                                       >
                                         {meta.snippet}
@@ -450,7 +435,7 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                                           borderColor: isHovered ? '#0d9488' : 'rgba(0,0,0,0.1)'
                                         }}
                                         transition={{ duration: 0.3, ease: "easeOut" }}
-                                        className='flex items-center justify-center gap-2 text-[12px] font-bold px-6 py-2.5 rounded-[12px] border w-full group/btn'
+                                        className='flex items-center justify-center gap-2 text-[11px] sm:text-[12px] font-bold px-4 sm:px-6 py-2.5 rounded-[12px] border w-full group/btn whitespace-nowrap'
                                       >
                                         Start Learning 
                                         <ChevronRight 
@@ -529,19 +514,20 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                 </div>
               )}
             </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        {/* ─── Outer Pill ─── */}
+      {/* ─── Bottom Action Bar ─── */}
+      <div className='relative z-[1001] flex items-center gap-4 max-w-full pointer-events-auto'>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ 
             opacity: 1, 
             y: 0, 
             width: 'auto',
-            backgroundColor: isFocused ? '#005E50' : '#F8F8F9',
-            borderColor: isFocused ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)'
+            backgroundColor: isFocused ? '#005E50' : '#F1F1F4',
+            borderColor: isFocused ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.1)'
           }}
           transition={{
             opacity: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
@@ -549,7 +535,7 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
             backgroundColor: { duration: 0.4 },
             borderColor: { duration: 0.4 }
           }}
-          className='relative z-[1001] rounded-full shadow-lg flex items-center border h-[48px] sm:h-[52px] max-w-[92vw] sm:max-w-[600px] overflow-hidden'
+          className='relative rounded-full shadow-lg flex items-center border h-[48px] sm:h-[52px] max-w-[92vw] sm:max-w-[600px] overflow-hidden'
           style={{ paddingLeft: onMenuClick ? '6px' : '8px', paddingRight: '8px' }}
         >
           {onMenuClick && (
@@ -612,6 +598,22 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
             )}
           </AnimatePresence>
         </motion.div>
+
+        {/* ─── Cancel Button (Always to the right of the pill on search page) ─── */}
+        <AnimatePresence>
+          {isFocused && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8, x: -20 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.8, x: -20 }}
+              onClick={() => setIsFocused(false)}
+              className='h-[48px] sm:h-[52px] w-[48px] sm:w-[52px] rounded-full bg-[#F1F1F4] border border-black/5 shadow-none flex items-center justify-center text-[#1B1B1B]/60 hover:text-[#1B1B1B] transition-all hover:scale-110 active:scale-95 pointer-events-auto'
+              aria-label='Close search'
+            >
+              <X size={20} />
+            </motion.button>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
