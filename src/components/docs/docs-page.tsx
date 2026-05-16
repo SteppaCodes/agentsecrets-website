@@ -313,7 +313,7 @@ export default function DocsPage() {
   const [feedback, setFeedback] = useState<Record<string, string>>({});
 
   // 5. Table of Contents & ScrollSpy
-  const [toc, setToc] = useState<{id: string, title: string}[]>([]);
+  const [toc, setToc] = useState<{id: string, title: string, level: number}[]>([]);
   const [activeHeading, setActiveHeading] = useState("");
 
   useEffect(() => {
