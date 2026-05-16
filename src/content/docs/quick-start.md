@@ -222,7 +222,6 @@ agentsecrets proxy logs --watch
 agentsecrets log list --agent my-billing-agent
 ```
 
----
 
 ## Verify everything is working
 
