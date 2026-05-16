@@ -427,13 +427,13 @@ export default function DocsPage() {
         @media (min-width: 1024px) {
           .docs-layout { 
             display: grid !important;
-            grid-template-columns: 300px 1fr !important; 
+            grid-template-columns: 340px 1fr !important; 
           }
         }
         @media (min-width: 1280px) {
           .docs-layout { 
             display: grid !important;
-            grid-template-columns: 300px 1fr 300px !important; 
+            grid-template-columns: 340px 1fr 340px !important; 
           }
         }
       `}} />
@@ -451,8 +451,45 @@ export default function DocsPage() {
 
 
       {/* Desktop Sidebar */}
-      <aside className="docs-sidebar hidden lg:block" style={{ position: "fixed", left: 0, width: 300, top: 60, height: "calc(100vh - 60px)", overflowY: "auto", borderRight: "1px solid var(--border)", padding: "32px 24px" }}>
+      <aside className="docs-sidebar hidden lg:block" style={{ position: "fixed", left: 0, width: 340, top: 60, height: "calc(100vh - 60px)", overflowY: "auto", borderRight: "1px solid var(--border)", padding: "32px 32px" }}>
         <SidebarContent active={active} groups={groups} onJump={jump} />
+      </aside>
+
+      {/* Right Sidebar (Table of Contents) */}
+      <aside className="hidden xl:block" style={{ position: "fixed", right: 0, width: 340, top: 60, height: "calc(100vh - 60px)", overflowY: "auto", borderLeft: "1px solid var(--border)", padding: "32px 32px" }}>
+        {toc.length > 0 && (
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 400, color: "#999", marginBottom: 16 }}>On this page</div>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+              {toc.map(item => {
+                const isActive = activeHeading === item.id;
+                return (
+                  <li key={item.id}>
+                    <a
+                      href={`#${item.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' });
+                        setActiveHeading(item.id);
+                      }}
+                      style={{
+                        fontSize: 13,
+                        color: isActive ? "#007F6A" : "#666",
+                        fontWeight: isActive ? 500 : 400,
+                        textDecoration: "none",
+                        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                        display: "inline-block",
+                        transform: isActive ? "translateX(4px)" : "none"
+                      }}
+                    >
+                      {item.title}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
       </aside>
 
       {/* Main Layout Grid */}
@@ -529,42 +566,7 @@ export default function DocsPage() {
           </div>
         </main>
 
-        {/* Right Sidebar (Table of Contents) */}
-        <aside className="hidden xl:block" style={{ position: "sticky", top: 60, width: 300, height: "calc(100vh - 60px)", padding: "32px 24px", overflowY: "auto" }}>
-          {toc.length > 0 && (
-            <div>
-              <div style={{ fontSize: 13, fontWeight: 400, color: "#999", marginBottom: 16 }}>On this page</div>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
-                {toc.map(item => {
-                  const isActive = activeHeading === item.id;
-                  return (
-                    <li key={item.id}>
-                      <a
-                        href={`#${item.id}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' });
-                          setActiveHeading(item.id);
-                        }}
-                        style={{
-                          fontSize: 13,
-                          color: isActive ? "#007F6A" : "#666",
-                          fontWeight: isActive ? 500 : 400,
-                          textDecoration: "none",
-                          transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                          display: "inline-block",
-                          transform: isActive ? "translateX(4px)" : "none"
-                        }}
-                      >
-                        {item.title}
-                      </a>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          )}
-        </aside>
+        <div className="hidden xl:block" />
       </div>
       <SearchPill onMenuClick={() => setDrawerOpen(true)} onNavigate={jump} />
     </>
