@@ -13,8 +13,6 @@ brew install The-17/tap/agentsecrets
 
 Homebrew handles updates automatically and is the recommended installation method on macOS and Linux.
 
----
-
 ## npm
 
 ```bash
@@ -23,7 +21,6 @@ npm install -g @the-17/agentsecrets
 
 Installs the CLI globally. Suitable for Node.js environments and teams already using npm for tooling.
 
----
 
 ## pip
 
@@ -38,6 +35,7 @@ pip install agentsecrets-cli --break-system-packages
 ```
 
 `agentsecrets-cli` installs the CLI. The `agentsecrets` package (without `-cli`) is the Python SDK for building on top of AgentSecrets — see [Python SDK](/docs/sdk/python). These are different packages with different purposes.
+
 ---
 
 ## Go
@@ -64,24 +62,25 @@ If the command is not found, your PATH likely does not include the installation 
 
 :::tabs
 
-**Homebrew:**
+### Homebrew:
 ```bash
 brew upgrade agentsecrets
 ```
 
-**npm:**
+### npm:
 ```bash
 npm update -g @the-17/agentsecrets
 ```
 
-**pip:**
+### pip:
 ```bash
 pip install --upgrade agentsecrets-cli
 ```
 
-**Go:**
+### Go:
 ```bash
 go install github.com/The-17/agentsecrets/cmd/agentsecrets@latest
 ```
 :::
+
 Run `agentsecrets --version` after upgrading to confirm the new version is active.
