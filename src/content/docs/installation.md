@@ -4,7 +4,8 @@ AgentSecrets is available via Homebrew, npm, pip, and Go. The CLI, proxy, Python
 
 ---
 
-## Homebrew (macOS / Linux) — recommended
+:::tabs
+## Homebrew (macOS / Linux)
 
 ```bash
 brew install The-17/tap/agentsecrets
@@ -37,7 +38,6 @@ pip install agentsecrets-cli --break-system-packages
 ```
 
 `agentsecrets-cli` installs the CLI. The `agentsecrets` package (without `-cli`) is the Python SDK for building on top of AgentSecrets — see [Python SDK](/docs/sdk/python). These are different packages with different purposes.
-
 ---
 
 ## Go
@@ -48,7 +48,7 @@ go install github.com/The-17/agentsecrets/cmd/agentsecrets@latest
 
 Builds from source and places the binary in your `$GOPATH/bin`. Ensure `$GOPATH/bin` is in your `$PATH`.
 
----
+:::
 
 ## Verifying your installation
 
@@ -61,6 +61,8 @@ If the command is not found, your PATH likely does not include the installation 
 ---
 
 ## Updating
+
+:::tabs
 
 **Homebrew:**
 ```bash
@@ -81,5 +83,5 @@ pip install --upgrade agentsecrets-cli
 ```bash
 go install github.com/The-17/agentsecrets/cmd/agentsecrets@latest
 ```
-
+:::
 Run `agentsecrets --version` after upgrading to confirm the new version is active.

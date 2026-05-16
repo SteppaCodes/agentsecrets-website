@@ -6,8 +6,7 @@ If your current setup relies on `.env` files, this guide walks you through movin
 
 ## Why .env files are risky with AI agents
 
-> [CAUTION]
-> `.env` files are particularly dangerous when using AI agents. Since agents often have filesystem access, they can inadvertently read or leak your secrets if they are stored in plaintext on disk.
+`.env` files are particularly dangerous when using AI agents. Since agents often have filesystem access, they can inadvertently read or leak your secrets if they are stored in plaintext on disk.
 
 AgentSecrets eliminates all of these vectors by keeping the value out of the filesystem (in keychain-only mode), out of environment variables, and out of any accessible process context.
 
@@ -45,6 +44,7 @@ response = requests.get(
     headers={"Authorization": f"Bearer {os.getenv('STRIPE_KEY')}"}
 )
 ```
+
 
 **After:**
 ```python
@@ -85,7 +85,7 @@ The JavaScript SDK is on the roadmap. Until then, route requests through the HTT
 
 ---
 
-## Using agentsecrets env as a drop-in replacement
+## Using `agentsecrets env` as a drop-in replacement
 
 For tools and frameworks that read from environment variables at startup and cannot be modified to use the SDK or proxy, `agentsecrets env` is the closest drop-in:
 
@@ -101,6 +101,16 @@ Values are injected into the child process at spawn time. The parent process nev
 
 This is a stronger guarantee than a `.env` file, but weaker than the proxy — the child process does hold the values in its environment for the duration of the process. For AI agents specifically, prefer the SDK or proxy. For non-agent tools and frameworks that cannot be modified, `agentsecrets env` is the right path. See [Proxy Injection vs env Injection](/docs/env-injection/proxy-vs-env) for a full comparison.
 
+> [TIP]
+> if you use makefile, the lowest-friction way to use `agentsecrets env` in a project is to define a `RUN` variable at the top of your `Makefile` and prefix commands with it. This way you type `make dev` and not `agentsecrets env -- npm run dev`.
+
+> ```bash 
+> RUN := agentsecrets env --
+> dev:
+> 	$(RUN) npm run dev
+> test:
+> 	$(RUN) npm test
+> ```
 
 ## Migration checklist
 
