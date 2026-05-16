@@ -410,11 +410,11 @@ export default function MarkdownRenderer({ content, id: sectionId }: { content: 
                 info: <Info size={16} />,
                 caution: <AlertOctagon size={16} />
               };
-              const labels = {
-                warning: 'Warning',
-                tip: 'Tip',
-                info: 'Note',
-                caution: 'Caution'
+              const colors = {
+                warning: '#B25E00',
+                tip: '#007F6A',
+                info: '#0056B3',
+                caution: '#B91C1C'
               };
 
               // 2. Recursive cleaning to remove the marker text
@@ -435,18 +435,16 @@ export default function MarkdownRenderer({ content, id: sectionId }: { content: 
                 return node;
               };
 
-              const cleanedChildren = childrenArray.map(clean).filter(c => {
-                if (typeof c === 'string') return c.trim() !== "";
-                return true;
-              });
+              const cleanedChildren = React.Children.map(children, clean);
 
               return (
-                <blockquote className={type}>
-                  <div className={`callout-header ${type}`}>
+                <blockquote className={type} style={{ display: "flex", gap: "16px", alignItems: "flex-start", padding: "16px 20px" }}>
+                  <div style={{ color: colors[type], marginTop: "4px", flexShrink: 0 }}>
                     {icons[type]}
-                    {labels[type]}
                   </div>
-                  {cleanedChildren}
+                  <div style={{ flex: 1 }}>
+                    {cleanedChildren}
+                  </div>
                 </blockquote>
               );
             }
