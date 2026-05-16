@@ -219,12 +219,19 @@ export default function DocsPage() {
 
   useEffect(() => {
     let isMounted = true;
+    
+    // Clear stale state
+    setToc([]);
+    setActiveHeading("");
+
     const loadContent = async () => {
       // Instant render if cached
       if (docsCache[active]) {
         setContent(docsCache[active]);
         setIsLoading(false);
-        if (!pendingHeadingId) window.scrollTo({ top: 0, behavior: "smooth" });
+        if (!pendingHeadingId && contentRef.current) {
+          contentRef.current.scrollTo({ top: 0 });
+        }
       } else {
         setIsLoading(true);
         const data = await getDocContent(active);
@@ -232,7 +239,9 @@ export default function DocsPage() {
           if (data) docsCache[active] = data;
           setContent(data);
           setIsLoading(false);
-          if (!pendingHeadingId) window.scrollTo({ top: 0, behavior: "smooth" });
+          if (!pendingHeadingId && contentRef.current) {
+            contentRef.current.scrollTo({ top: 0 });
+          }
         }
       }
 
@@ -328,8 +337,12 @@ export default function DocsPage() {
 
     lines.forEach(line => {
       const trimmed = line.trim();
-      if (trimmed.startsWith(':::tabs')) { inTabs = true; return; }
-      if (trimmed === ':::') { inTabs = false; return; }
+      if (trimmed.match(/^:{2,3}tabs/)) { inTabs = true; return; }
+      if (trimmed.match(/^:{2,3}/)) { 
+        // If it's a closing marker for something else, it also ends the tabs context for TOC purposes
+        inTabs = false; 
+        return; 
+      }
       
       const match = trimmed.match(/^(#{2,3})\s+(.*)$/);
       if (match) {

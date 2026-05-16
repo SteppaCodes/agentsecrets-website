@@ -14,7 +14,7 @@ The agent never performs authentication directly. The proxy performs authenticat
 
 ## How transport-layer injection works
 
-Transport-layer injection means the credential value is added to the HTTP request at the point of transmission — after the request has left the calling process and before it reaches the target API.
+Transport-layer injection means the credential value is added to the HTTP request at the point of transmission, after the request has left the calling process and before it reaches the target API.
 
 The sequence:
 
@@ -90,7 +90,7 @@ Agent / calling code receives the API response
 |------|---------------------|
 | Before the call | Key name: `"STRIPE_KEY"` |
 | During the proxy request | Key name in request header |
-| While proxy resolves | Nothing — proxy is handling this independently |
+| While proxy resolves | Nothing, the proxy is handling this independently |
 | After the call | API response: `{"object": "balance", ...}` |
 
 The agent never holds `sk_live_51H...`. At no point in this sequence does the value enter the agent's process.
@@ -101,7 +101,7 @@ The agent never holds `sk_live_51H...`. At no point in this sequence does the va
 
 | | Retrieval model | Proxy model |
 |---|---|---|
-| Agent holds credential value | Yes — after retrieval | Never |
+| Agent holds credential value | Yes, after retrieval | Never |
 | Value in calling process memory | Yes | No |
 | Prompt injection can access value | Yes | No |
 | Plugin/tool in same process can access | Yes | No |

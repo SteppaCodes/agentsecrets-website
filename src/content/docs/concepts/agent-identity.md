@@ -1,6 +1,6 @@
 # Agent Identity
 
-In a single-agent workflow, knowing that a call was made is usually enough. In a multi-agent workflow — where multiple agents run simultaneously, share the same secrets, and make overlapping calls — you need to know which agent made each specific call.
+In a single-agent workflow, knowing that a call was made is usually enough. In a multi-agent workflow where multiple agents run simultaneously, share the same secrets, and make overlapping calls, you need to know which agent made each specific call.
 
 Agent identity lets you attribute every proxied call to a specific agent, filter audit logs by agent, and revoke access for one agent without affecting any others.
 
@@ -20,9 +20,9 @@ AgentSecrets supports three levels of agent identity with increasing strength of
 
 ### Anonymous
 
-The default. Calls are made and logged without any agent attribution. The audit log records that a call happened, but not which agent made it. Suitable for single-agent setups, scripts and one-off tools, and development.
+The default. Calls are made and logged without any agent attribution. The audit log records that a call happened, but not which agent made it. Suitable for single-agent setups, scripts and one-off tools, and development, also useful for spotting gaps in your identity coverage.
 
-The risk in a multi-agent system: anonymous calls create coverage gaps. You cannot attribute incidents to specific agents, and you cannot revoke access for one agent without stopping them all. Find anonymous calls in the audit log with:
+The risk in a multi-agent system: anonymous calls create coverage gaps. You cannot attribute incidents to specific agents, and you cannot revoke access for one agent without stopping them all. the call is logged as `anonymous`, you can find anonymous calls in the audit log with:
 
 ```bash
 agentsecrets log list --identity anonymous
@@ -30,30 +30,75 @@ agentsecrets log list --identity anonymous
 
 ### Declared identity
 
-The agent declares its name at initialization. The name is recorded in every audit log entry for that agent's calls. There is no cryptographic verification — if an agent claims to be `"billing-processor"`, it is taken at its word.
+A declared identity is a name you assign to an agent when you make a cal. The name is recorded in every audit log entry for that agent's calls. There is no cryptographic verification, if an agent claims to be `"billing-processor"`, it is taken at its word.
 
+:::tabs
+
+### CLI
+
+```bash
+agentsecrets call \
+  --url https://api.stripe.com/v1/balance \
+  --bearer STRIPE_KEY \
+  --agent-id billing-processor
+
+```
+
+### Python SDK
 ```python
 from agentsecrets import AgentSecrets
 
 client = AgentSecrets(agent_id="billing-processor")
+
+response = client.call(
+    url="https://api.stripe.com/v1/balance",
+    bearer="STRIPE_KEY"
+)
 ```
+
+### HTTP Proxy
+```
+curl http://localhost:8765/proxy \
+  -H "X-AS-Target-URL: https://api.stripe.com/v1/balance" \
+  -H "X-AS-Inject-Bearer: STRIPE_KEY" \
+  -H "X-AS-Agent-ID: billing-processor"
+```
+
+:::
 
 Declared identity is suitable for multi-agent systems where audit log clarity matters but you trust the agents running and do not need per-token revocation.
 
 ### Issued identity
 
-The agent is issued a cryptographically signed token. The proxy verifies the token on every call. Attribution is cryptographic — a call attributed to `"billing-processor"` can only have come from a process holding that token.
+An issued identity is cryptographically verified on every call. You issue a token for a named agent and the proxy verifies the token signature on every request. Attribution is cryptographic, a call attributed to `"billing-processor"` can only have come from a process holding that token.
+
+#### Issuing a token
 
 ```bash
 # Issue a token
 agentsecrets agent token issue "billing-processor"
 # → agt_ws01hxyz_4kR9mNpQ...
-# Shown once — store it securely immediately
+# Shown once, store it securely immediately
 ```
 
+#### Using the token
+
+:::tabs 
+
+### Python SDK
 ```python
 client = AgentSecrets(agent_token="agt_ws01hxyz_4kR9mNpQ...")
 ```
+
+### HTTP Proxy
+```bash
+curl http://localhost:8765/proxy \
+  -H "X-AS-Target-URL: https://api.stripe.com/v1/balance" \
+  -H "X-AS-Inject-Bearer: STRIPE_KEY" \
+  -H "X-AS-Agent-Token: agt_ws01hxyz_4kR9mNpQ..."
+```
+
+:::
 
 Use issued identity for production multi-agent systems, agents with access to sensitive secrets, and any situation where you need to revoke a single agent's access immediately.
 
@@ -69,13 +114,13 @@ Every proxy call produces an audit log entry. The identity fields in that entry 
 | Declared | `"billing-processor"` | `"declared"` |
 | Issued | `"billing-processor"` | `"issued"` |
 
-For issued identity, the log entry is cryptographically tied to the specific token used. If that token is later revoked, the historical entries remain — you can still see what that agent did before revocation.
+For issued identity, the log entry is cryptographically tied to the specific token used. If that token is later revoked, the historical entries remain, you can still see what that agent did before revocation.
 
 ---
 
 ## Token-based identity explained
 
-Issued tokens are cryptographically signed at the workspace level. When the proxy receives a request with an agent token, it verifies the token's signature before processing the request. Invalid or revoked tokens are rejected immediately — the proxy returns 401 and logs the attempt.
+Issued tokens are cryptographically signed at the workspace level. When the proxy receives a request with an agent token, it verifies the token's signature before processing the request. Invalid or revoked tokens are rejected immediately, the proxy returns 401 and logs the attempt.
 
 Tokens are individual. Revoking one token has no effect on other tokens issued to the same agent or to different agents:
 
@@ -87,11 +132,35 @@ agentsecrets agent token issue "billing-processor"
 agentsecrets agent token issue "billing-processor"
 # → agt_ws01hxyz_token2...
 
-# Revoke one — the other continues working
+# Revoke one, the other continues working
 agentsecrets agent token revoke <token-id> --agent="billing-processor"
 ```
 
 This makes it safe to rotate access for a single agent instance without disrupting others.
+
+## Managing agent tokens
+
+You can list and revoke tokens using the following commands:
+
+```bash
+# List all tokens for the current workspace
+agentsecrets agent token list
+
+# Revoke a specific token
+agentsecrets agent token revoke <token-id>
+```
+
+## Deleting an agent
+Deleting an agent cascade-revokes all tokens issued to it in one operation:
+
+```bash
+agentsecrets agent delete "billing-processor"
+```
+
+After deletion, every token issued to that agent is immediately invalidated. Calls using any of those tokens will be rejected by the proxy.
+
+> [WARNING]
+> Deleting an agent is irreversible. All tokens are revoked immediately. Any process using a token for that agent will lose proxy access.
 
 ---
 

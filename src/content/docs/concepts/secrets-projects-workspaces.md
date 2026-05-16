@@ -52,13 +52,13 @@ A workspace is a shared environment for a team. It contains projects, manages te
 
 ---
 
-## Personal workspaces
+### Personal workspaces
 
 A personal workspace is created automatically when you sign up. It is tied to your account and intended for individual work. You cannot invite other users to a personal workspace — it is for solo projects, personal agents, and experimentation that does not need to be shared with a team.
 
 ---
 
-## Shared workspaces
+### Shared workspaces
 
 A shared workspace is created explicitly for team collaboration. The creator is automatically assigned `owner` and `admin` roles. Other developers join by invitation.
 
