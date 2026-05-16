@@ -424,6 +424,18 @@ export default function DocsPage() {
         .text-roll-inner {
           will-change: transform;
         }
+        @media (min-width: 1024px) {
+          .docs-layout { 
+            display: grid !important;
+            grid-template-columns: 300px 1fr !important; 
+          }
+        }
+        @media (min-width: 1280px) {
+          .docs-layout { 
+            display: grid !important;
+            grid-template-columns: 300px 1fr 300px !important; 
+          }
+        }
       `}} />
 
       {/* Mobile Drawer Overlay */}
@@ -439,12 +451,12 @@ export default function DocsPage() {
 
 
       {/* Desktop Sidebar */}
-      <aside className="docs-sidebar hidden lg:block" style={{ position: "fixed", left: 0, width: 340, top: 60, height: "calc(100vh - 60px)", overflowY: "auto", borderRight: "1px solid var(--border)", padding: "32px 32px" }}>
+      <aside className="docs-sidebar hidden lg:block" style={{ position: "fixed", left: 0, width: 300, top: 60, height: "calc(100vh - 60px)", overflowY: "auto", borderRight: "1px solid var(--border)", padding: "32px 24px" }}>
         <SidebarContent active={active} groups={groups} onJump={jump} />
       </aside>
 
       {/* Main Layout Grid */}
-      <div className="docs-layout grid grid-cols-1 lg:grid-cols-[340px_1fr] xl:grid-cols-[340px_1fr_340px]" style={{ minHeight: "100vh" }}>
+      <div className="docs-layout grid grid-cols-1" style={{ minHeight: "100vh" }}>
         <div className="hidden lg:block" />
         <main ref={contentRef} className="docs-content" style={{ padding: "80px 64px 120px 80px", width: "100%", maxWidth: "840px", margin: "0 auto", minHeight: "80vh", display: "flex", flexDirection: "column" }}>
           
@@ -518,7 +530,7 @@ export default function DocsPage() {
         </main>
 
         {/* Right Sidebar (Table of Contents) */}
-        <aside className="hidden xl:block" style={{ position: "sticky", top: 60, height: "calc(100vh - 60px)", padding: "32px 32px", overflowY: "auto" }}>
+        <aside className="hidden xl:block" style={{ position: "sticky", top: 60, width: 300, height: "calc(100vh - 60px)", padding: "32px 24px", overflowY: "auto" }}>
           {toc.length > 0 && (
             <div>
               <div style={{ fontSize: 13, fontWeight: 400, color: "#999", marginBottom: 16 }}>On this page</div>

@@ -203,24 +203,23 @@ agentsecrets proxy logs --last 5
 ---
 
 ### 9. Check the audit log
+  Every call is logged with the key name, endpoint, agent identity, status, and duration. No value field exists in the schema.
 
-Every call is logged with the key name, endpoint, agent identity, status, and duration. No value field exists in the schema.
+  ```bash
+  agentsecrets proxy logs --last 5
+  ```
 
-```bash
-agentsecrets proxy logs --last 5
-```
+  Output:
+  ```
+  TIME      RESULT  METHOD  URL                           KEY         AUTH    STATUS  REASON  DURATION
+  14:23:01  * OK    GET     api.stripe.com/v1/balance     STRIPE_KEY  bearer  200     -       245ms
+  ```
 
-Output:
-```
-TIME      RESULT  METHOD  URL                           KEY         AUTH    STATUS  REASON  DURATION
-14:23:01  * OK    GET     api.stripe.com/v1/balance     STRIPE_KEY  bearer  200     -       245ms
-```
-
-You can also tail the log in real time or filter by agent:
-```bash
-agentsecrets proxy logs --watch
-agentsecrets log list --agent my-billing-agent
-```
+  You can also tail the log in real time or filter by agent:
+  ```bash
+  agentsecrets proxy logs --watch
+  agentsecrets log list --agent my-billing-agent
+  ```
 
 
 ## Verify everything is working

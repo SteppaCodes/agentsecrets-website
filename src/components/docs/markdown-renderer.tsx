@@ -187,13 +187,9 @@ export default function MarkdownRenderer({ content, id: sectionId }: { content: 
         .markdown-body h3 { font-size: 20px; font-weight: 600; margin-bottom: 12px; margin-top: 32px; color: #1B1B1B; letter-spacing: -0.02em; scroll-margin-top: 100px; }
         .markdown-body p { margin-bottom: 20px; }
         .markdown-body a { color: #007F6A; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
-        .markdown-body ul { list-style-type: disc; padding-left: 28px; margin-bottom: 24px; }
-        .markdown-body ol { list-style-type: decimal; padding-left: 28px; margin-bottom: 24px; }
-        .markdown-body li { margin-bottom: 12px; }
-        .markdown-body li > *:not(:first-child) {
-          margin-left: 24px;
-          margin-top: 12px;
-        }
+        .markdown-body ul { list-style-type: disc; padding-left: 24px; margin-bottom: 20px; }
+        .markdown-body ol { list-style-type: decimal; padding-left: 24px; margin-bottom: 20px; }
+        .markdown-body li { margin-bottom: 8px; }
         .markdown-body strong { font-weight: 600; color: #1B1B1B; }
         .markdown-body blockquote { border: 1px solid var(--border-em, rgba(0,0,0,0.08)); background: rgba(0,255,135,0.04); border-radius: 12px; margin: 24px 0; padding: 16px 20px; }
         .markdown-body blockquote.warning { background: rgba(255, 171, 0, 0.05); border-color: rgba(255, 171, 0, 0.2); }
