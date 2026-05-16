@@ -94,15 +94,29 @@ function extractChunks(raw: string, sectionId: string, sectionLabel: string, sec
   const h1Match = raw.match(/^#\s+(.+)$/m);
   if (h1Match) pageTitle = h1Match[1].trim();
 
+  const usedIds = new Set<string>();
+
   for (const line of lines) {
-    const headingMatch = line.match(/^#{2,3}\s+(.+)$/);
+    const headingMatch = line.match(/^#{2,3}\s+(.*)$/);
     
     if (headingMatch) {
       // Save previous chunk
       if (currentBodyLines.length > 0 || currentHeading) {
         const bodyText = stripMarkdown(currentBodyLines.join(' '));
+        let id = currentHeadingId ? `${sectionId}::${currentHeadingId}` : sectionId;
+        
+        // Ensure ID uniqueness
+        if (usedIds.has(id)) {
+          let counter = 1;
+          while (usedIds.has(`${id}-${counter}`)) {
+            counter++;
+          }
+          id = `${id}-${counter}`;
+        }
+        usedIds.add(id);
+
         chunks.push({
-          id: currentHeadingId ? `${sectionId}::${currentHeadingId}` : sectionId,
+          id,
           title: currentHeading || pageTitle,
           group: sectionGroup,
           label: sectionLabel,
@@ -127,8 +141,20 @@ function extractChunks(raw: string, sectionId: string, sectionLabel: string, sec
   // Last chunk
   if (currentBodyLines.length > 0 || currentHeading) {
     const bodyText = stripMarkdown(currentBodyLines.join(' '));
+    let id = currentHeadingId ? `${sectionId}::${currentHeadingId}` : sectionId;
+    
+    // Ensure ID uniqueness
+    if (usedIds.has(id)) {
+      let counter = 1;
+      while (usedIds.has(`${id}-${counter}`)) {
+        counter++;
+      }
+      id = `${id}-${counter}`;
+    }
+    usedIds.add(id);
+
     chunks.push({
-      id: currentHeadingId ? `${sectionId}::${currentHeadingId}` : sectionId,
+      id,
       title: currentHeading || pageTitle,
       group: sectionGroup,
       label: sectionLabel,
