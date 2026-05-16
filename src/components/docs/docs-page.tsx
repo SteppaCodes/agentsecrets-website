@@ -321,45 +321,27 @@ export default function DocsPage() {
       setToc([]);
       return;
     }
-    const headings: {id: string, title: string}[] = [];
-    const regex = /^#{2,3}\s+(.*)$/gm;
+
+    // Strip out :::tabs blocks so their titles don't show up in TOC
+    const contentWithoutTabs = content.replace(/:::tabs\s*([\s\S]*?)\s*:::/g, "");
+
+    const headings: {id: string, title: string, level: number}[] = [];
+    const regex = /^(#{2,3})\s+(.*)$/gm;
     let match;
-    while ((match = regex.exec(content)) !== null) {
-      let rawTitle = match[1].trim();
+    while ((match = regex.exec(contentWithoutTabs)) !== null) {
+      const level = match[1].length;
+      let rawTitle = match[2].trim();
+      
       const stepMatch = rawTitle.match(/^(?:(?:Step|Stage)\s+)?(\d+)(?:\s*[—:\-\.]\s+)(.*)$/i);
+      const title = stepMatch ? stepMatch[2] : rawTitle;
       const id = rawTitle.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
-      const displayTitle = stepMatch ? stepMatch[2] : rawTitle;
-      headings.push({ id, title: displayTitle });
+      
+      headings.push({ id, title, level });
     }
     setToc(headings);
   }, [content]);
 
-  useEffect(() => {
-    if (toc.length === 0) return;
-    
-    const handleScroll = () => {
-      let currentId = toc[0]?.id || "";
-      for (const item of toc) {
-        const el = document.getElementById(item.id);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          // Threshold of 150px accounts for sticky header + scroll margin + some buffer
-          if (rect.top <= 150) {
-            currentId = item.id;
-          } else {
-            break;
-          }
-        }
-      }
-      setActiveHeading(currentId);
-    };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    // Initial check
-    setTimeout(handleScroll, 100);
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [toc, active]);
 
   useEffect(() => {
     const saved = localStorage.getItem("agentsecrets_feedback");
@@ -400,7 +382,7 @@ export default function DocsPage() {
       },
       {
         root: mainContainer,
-        rootMargin: "0px 0px -80% 0px", // Focus on the top 20% of the viewport
+        rootMargin: "-10% 0px -40% 0px", // Larger trigger zone
         threshold: 0
       }
     );
@@ -526,7 +508,7 @@ export default function DocsPage() {
               {toc.map(item => {
                 const isActive = activeHeading === item.id;
                 return (
-                  <li key={item.id}>
+                  <li key={item.id} style={{ paddingLeft: item.level === 3 ? 16 : 0 }}>
                     <a
                       href={`#${item.id}`}
                       onClick={(e) => {
