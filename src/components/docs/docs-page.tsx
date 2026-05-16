@@ -381,6 +381,35 @@ export default function DocsPage() {
     localStorage.setItem("agentsecrets_feedback", JSON.stringify(newFeedback));
   };
 
+  // Scroll Spy for TOC
+  useEffect(() => {
+    const mainContainer = contentRef.current;
+    if (!mainContainer) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Find the topmost intersecting heading
+        const visibleHeadings = entries
+          .filter(e => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+        if (visibleHeadings.length > 0) {
+          setActiveHeading(visibleHeadings[0].target.id);
+        }
+      },
+      {
+        root: mainContainer,
+        rootMargin: "0px 0px -80% 0px", // Focus on the top 20% of the viewport
+        threshold: 0
+      }
+    );
+
+    const headings = mainContainer.querySelectorAll("h2, h3");
+    headings.forEach((h) => observer.observe(h));
+
+    return () => observer.disconnect();
+  }, [content, active, isLoading]);
+
   const jump = (id: string, headingId?: string) => {
     setActive(id);
     setDrawerOpen(false);

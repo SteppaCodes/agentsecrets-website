@@ -142,13 +142,9 @@ export default function MarkdownRenderer({ content, id: sectionId }: { content: 
   const processedContent = React.useMemo(() => {
     let processed = content;
     
-    // Process :::step blocks
-    processed = processed.replace(/:::step\s*([\s\S]*?)\s*:::/g, (_: string, inner: string) => {
-      return `\n<div class="step-content-wrapper">\n${inner}\n</div>\n`;
-    });
-
-    // Process :::tabs blocks
-    return processed.replace(/:::tabs\s*([\s\S]*?)\s*:::/g, (_: string, inner: string) => {
+    // 1. Process :::tabs blocks FIRST
+    // This prevents the ::: marker from the tabs being confused with the ::: marker from the steps
+    processed = processed.replace(/:::tabs\s*([\s\S]*?)\s*:::/g, (_: string, inner: string) => {
       const tabs: { label: string, content: string }[] = [];
       const parts = inner.split(/^##\s+/m).filter(Boolean);
       
@@ -166,6 +162,13 @@ export default function MarkdownRenderer({ content, id: sectionId }: { content: 
       // Use a custom tag that rehype-raw will pass through
       return `\n<terminal-tabs data-tabs='${JSON.stringify(tabs).replace(/'/g, "&apos;")}'></terminal-tabs>\n`;
     });
+
+    // 2. Process :::step blocks SECOND
+    processed = processed.replace(/:::step\s*\n?([\s\S]*?)\n?:::/g, (_: string, inner: string) => {
+      return `\n\n<div class="step-content-wrapper">\n\n${inner.trim()}\n\n</div>\n\n`;
+    });
+
+    return processed;
   }, [content]);
 
   useEffect(() => {
