@@ -441,12 +441,16 @@ export default function DocsPage() {
           .docs-layout { 
             display: grid !important;
             grid-template-columns: 280px 1fr !important; 
+            height: 100vh;
+            overflow: hidden;
           }
         }
         @media (min-width: 1280px) {
           .docs-layout { 
             display: grid !important;
-            grid-template-columns: 280px 1fr 320px !important; 
+            grid-template-columns: 280px 1fr 380px !important; 
+            height: 100vh;
+            overflow: hidden;
           }
         }
       `}} />
@@ -468,11 +472,54 @@ export default function DocsPage() {
         <SidebarContent active={active} groups={groups} onJump={jump} />
       </aside>
 
+      {/* Right Sidebar (Table of Contents) */}
+      <aside className="hidden xl:block" style={{ position: "fixed", right: 0, width: 380, top: 60, height: "calc(100vh - 60px)", overflowY: "auto", borderLeft: "1px solid var(--border)", padding: "32px 32px" }}>
+        {toc.length > 0 && (
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#1B1B1B", marginBottom: 20, display: "flex", alignItems: "center", gap: 8 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>
+              On this page
+            </div>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+              {toc.map(item => {
+                const isActive = activeHeading === item.id;
+                return (
+                  <li key={item.id}>
+                    <a
+                      href={`#${item.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' });
+                        setActiveHeading(item.id);
+                      }}
+                      style={{
+                        fontSize: 13,
+                        color: isActive ? "#007F6A" : "#888",
+                        fontWeight: isActive ? 500 : 400,
+                        textDecoration: "none",
+                        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                        display: "block",
+                        paddingLeft: 2,
+                        borderLeft: `2px solid ${isActive ? "#007F6A" : "transparent"}`,
+                        marginLeft: -2,
+                        padding: "4px 0 4px 12px"
+                      }}
+                    >
+                      {item.title}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+      </aside>
+
       {/* Main Layout Grid */}
       <div className="docs-layout grid grid-cols-1" style={{ minHeight: "100vh" }}>
         <div className="hidden lg:block" />
-        <main ref={contentRef} className="docs-content" style={{ padding: "80px 48px 120px 48px", width: "100%", maxWidth: "1000px", minHeight: "80vh", display: "flex", flexDirection: "row", gap: 48 }}>
-          <div style={{ flex: 1, maxWidth: "720px" }}>
+        <main ref={contentRef} className="docs-content" style={{ padding: "100px 64px 120px 64px", width: "100%", height: "calc(100vh - 60px)", marginTop: 60, overflowY: "auto", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ width: "100%", maxWidth: "680px" }}>
             <div key={active} className="docs-section animate-in fade-in slide-in-from-bottom-4 duration-500">
               <Breadcrumb items={[DOCS_SECTIONS.find(s => s.id === active)?.group || "Docs", activeLabel]} />
               {isLoading && !docsCache[active] ? (
@@ -542,48 +589,6 @@ export default function DocsPage() {
             </div>
           </div>
 
-          {/* Right Sidebar (Table of Contents) - Sticky inside content area */}
-          <aside className="hidden xl:block" style={{ width: 320, position: "sticky", top: 120, height: "fit-content", padding: "0 0 40px 0" }}>
-            {toc.length > 0 && (
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#1B1B1B", marginBottom: 20, display: "flex", alignItems: "center", gap: 8 }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>
-                  On this page
-                </div>
-                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
-                  {toc.map(item => {
-                    const isActive = activeHeading === item.id;
-                    return (
-                      <li key={item.id}>
-                        <a
-                          href={`#${item.id}`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' });
-                            setActiveHeading(item.id);
-                          }}
-                          style={{
-                            fontSize: 13,
-                            color: isActive ? "#007F6A" : "#888",
-                            fontWeight: isActive ? 500 : 400,
-                            textDecoration: "none",
-                            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                            display: "block",
-                            paddingLeft: 2,
-                            borderLeft: `2px solid ${isActive ? "#007F6A" : "transparent"}`,
-                            marginLeft: -2,
-                            padding: "4px 0 4px 12px"
-                          }}
-                        >
-                          {item.title}
-                        </a>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            )}
-          </aside>
         </main>
 
         <div className="hidden xl:block" />
