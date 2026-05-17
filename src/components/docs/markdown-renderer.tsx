@@ -191,12 +191,12 @@ export default function MarkdownRenderer({ content, id: sectionId }: { content: 
       <style>{`
         .markdown-body {
           color: #2D2D2D;
-          font-size: 15px;
+          font-size: 18px;
           line-height: 1.7;
         }
-        .markdown-body h1 { font-size: clamp(32px, 4vw, 42px); font-weight: 600; letter-spacing: -0.04em; margin-bottom: 24px; line-height: 1.25; color: #1B1B1B; }
-        .markdown-body h2 { font-size: 28px; font-weight: 700; margin-bottom: 16px; margin-top: 48px; letter-spacing: -0.03em; color: #1B1B1B; scroll-margin-top: 100px; line-height: 1.3; }
-        .markdown-body h3 { font-size: 20px; font-weight: 600; margin-bottom: 12px; margin-top: 32px; color: #1B1B1B; letter-spacing: -0.02em; scroll-margin-top: 100px; }
+        .markdown-body h1 { font-size: clamp(36px, 4vw, 48px); font-weight: 600; letter-spacing: -0.04em; margin-bottom: 24px; line-height: 1.25; color: #1B1B1B; }
+        .markdown-body h2 { font-size: 32px; font-weight: 700; margin-bottom: 16px; margin-top: 48px; letter-spacing: -0.03em; color: #1B1B1B; scroll-margin-top: 100px; line-height: 1.3; }
+        .markdown-body h3 { font-size: 24px; font-weight: 600; margin-bottom: 12px; margin-top: 32px; color: #1B1B1B; letter-spacing: -0.02em; scroll-margin-top: 100px; }
         .markdown-body p { margin-bottom: 20px; }
         .markdown-body a { color: #007F6A; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
         .markdown-body ul { list-style-type: disc; padding-left: 24px; margin-bottom: 20px; }

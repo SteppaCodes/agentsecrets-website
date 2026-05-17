@@ -1,5 +1,5 @@
 # Listing Environments and Viewing Coverage
-detailed explanation of how to list environments and view secrets coverage across environments.
+List all environments for the active project with their secret counts and show which one is currently active.
 
 
 ## Listing all environments
@@ -15,6 +15,8 @@ Output:
 
 Shows all three environments, their secret counts, and which one is currently active.
 
+Secret counts are fetched live from the API across all three environments in parallel.
+
 
 ## Reading the coverage output
 
@@ -23,13 +25,16 @@ Shows all three environments, their secret counts, and which one is currently ac
 ```
 Environment: development
 
-KEY             DEV   STAGING   PROD
-STRIPE_KEY       ✓       ✓        ✓
-OPENAI_KEY       ✓       ✓        ✗
-DATABASE_URL     ✓       ✗        ✗
+Key              DEV  STAGING  PROD
+DATABASE_URL      *      *      *
+OPENAI_KEY        *      *      -
+SENDGRID_KEY      *      -      -
+STRIPE_KEY        *      *      *
+
+Showing cached keys. Use --remote for latest from cloud.
 ```
 
-Each row is a key name. Each column is an environment. A checkmark (✓) or asterisk (*) means the key exists there. An X means it does not.
+Each row is a key name. Each column is an environment. `*` means the key is present in that environment; `-` means it is absent.
 
 
 ## Identifying missing keys

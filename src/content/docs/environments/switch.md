@@ -3,9 +3,7 @@
 ## The switch command
 
 ```bash
-agentsecrets environment switch production
-agentsecrets environment switch staging
-agentsecrets environment switch development
+agentsecrets environment switch <environment>
 ```
 
 Valid values are `development`, `staging`, and `production`. Anything else is rejected with an error listing the valid options.
@@ -25,6 +23,8 @@ agentsecrets status
 ```
 
 The active environment is always shown in the status output. Check it before any operation that touches secrets to confirm you are in the right context.
+
+
 
 
 

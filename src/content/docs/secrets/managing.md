@@ -1,4 +1,4 @@
-# agentsecrets secrets — Manage your credentials
+# agentsecrets secrets: Manage your credentials
 
 Secrets are named credentials stored in your OS keychain, scoped to a project and environment. This page covers the day-to-day operations: setting, listing, and deleting secrets.
 
