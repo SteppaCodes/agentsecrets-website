@@ -390,7 +390,7 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                             {group.category}
                           </h3>
                           
-                          <div className={`grid grid-cols-1 ${isGettingStarted ? 'lg:grid-cols-3 gap-4 lg:-mx-12' : 'md:grid-cols-2 gap-x-8 gap-y-6'}`}>
+                          <div className={`grid grid-cols-1 ${isGettingStarted ? 'lg:grid-cols-3 gap-4 lg:-mx-12' : 'sm:grid-cols-2 gap-x-16 gap-y-10'}`}>
                             {group.items.map((id) => {
                               const meta = resolveSectionMeta(id);
                               if (!meta) return null;
@@ -459,16 +459,31 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                                     opacity: hoveredItemId !== null && !isHovered ? 0.8 : 1
                                   }}
                                   transition={{ duration: 0.3, ease: "easeOut" }}
-                                  className='text-left bg-white rounded-[24px] p-8 flex items-center gap-8 shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_48px_rgba(0,0,0,0.06)] transition-all duration-300 cursor-pointer group border border-black/[0.01]'
+                                  className='text-left flex flex-col gap-6 group cursor-pointer'
                                 >
-                                  <div className='flex items-center justify-center w-12 h-12 rounded-xl bg-[#F5F5F7] group-hover:bg-[#0d94881a] transition-colors'>
-                                    <FileText size={20} className='text-[#1B1B1B]/40 group-hover:text-[#0d9488] transition-colors' />
+                                  <motion.div 
+                                    animate={{ 
+                                      backgroundColor: isHovered ? '#0d94881a' : '#F5F5F7',
+                                      color: isHovered ? '#0d9488' : 'rgba(27, 27, 27, 0.6)'
+                                    }}
+                                    className='inline-flex items-center self-start text-[9px] font-bold tracking-wide rounded-full px-2.5 py-1 transition-colors'
+                                  >
+                                    {meta.group}
+                                  </motion.div>
+                                  <div className='flex flex-col gap-4'>
+                                    <motion.h4 
+                                      animate={{ color: isHovered ? '#0d9488' : '#1B1B1B' }}
+                                      className='text-[22px] font-medium leading-[1.15] tracking-[-0.035em] whitespace-pre-line line-clamp-2 min-h-[2.3em]'
+                                    >
+                                      {splitToTwoLines(meta.label)}
+                                    </motion.h4>
+                                    <motion.p 
+                                      animate={{ color: isHovered ? '#0d9488' : 'rgba(27, 27, 27, 0.6)' }}
+                                      className='text-[13.5px] leading-[1.65] line-clamp-3 font-medium'
+                                    >
+                                      {meta.snippet}
+                                    </motion.p>
                                   </div>
-                                  <div className='flex flex-col gap-1'>
-                                    <span className='text-[10px] font-bold tracking-wider text-[#1B1B1B]/30 uppercase'>{meta.group}</span>
-                                    <h4 className='text-[16px] font-semibold text-[#1B1B1B] group-hover:text-[#0d9488] transition-colors'>{meta.label}</h4>
-                                  </div>
-                                  <ArrowRight size={16} className='ml-auto text-[#1B1B1B]/10 group-hover:text-[#0d9488] group-hover:translate-x-1 transition-all' />
                                 </motion.button>
                               );
                             })}
