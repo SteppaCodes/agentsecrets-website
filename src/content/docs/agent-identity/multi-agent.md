@@ -27,7 +27,6 @@ Instantiate separate client instances in your orchestration code:
 
 ```python
 from agentsecrets import AgentSecrets
-:::
 
 # Researcher uses search/database keys
 researcher_secrets = AgentSecrets(
@@ -53,7 +52,6 @@ publisher_secrets = AgentSecrets(
 Ensure each agent's tool executable block uses its designated secrets client:
 
 ```python
-:::
 # researcher_tools.py
 @tool
 def search_web(query: str) -> str:
@@ -129,7 +127,6 @@ import contextvars
 import httpx
 
 active_agent_token = contextvars.ContextVar("active_agent_token")
-:::
 
 # httpx Client event hook
 def inject_agent_identity(request: httpx.Request):

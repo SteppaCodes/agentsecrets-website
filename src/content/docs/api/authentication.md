@@ -9,25 +9,19 @@ All requests to the AgentSecrets API (except for user registration, login, and t
 The backend supports three categories of tokens:
 
 ### 1. User Session Tokens
-:::step
 * **Who uses it**: Human developers via the CLI or web dashboard.
 * **Format**: Standard JWT containing the user's UUID, email, and permissions.
-* **Lifecycle**: Access token expires in 1 hour; Refresh token expires in 6 hours.
+* **Lifecycle**: Access token expires in 6 hours; Refresh token uses standard JWT refresh lifetimes.
 * **Storage**: Saved locally on the developer's machine inside `~/.agentsecrets/token.json`.
-:::
 
 ### 2. Agent Tokens
-:::step
 * **Who uses it**: Credential proxies, MCP servers, or background runners.
 * **Format**: Cryptographically signed agent tokens representing a specific declared identity.
 * **Lifecycle**: Configurable lifecycle (e.g., 24 hours up to 30 days) and scope. Can be revoked at any time.
-:::
 
 ### 3. Service Keys
-:::step
 * **Who uses it**: Internal backend-to-backend resolver components.
 * **Format**: High-entropy static bearer keys configured in the environment (`RESOLVER_SERVICE_KEY`).
-:::
 
 ---
 

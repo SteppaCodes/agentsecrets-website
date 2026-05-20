@@ -56,23 +56,23 @@ The template uses `uv` for lightning-fast Python dependency management. Run:
 
 ```bash
 make install
-:::
 # Or manually install with uv:
 uv sync
 ```
+:::
 
 ### 3. Store credentials and allowlist the target API
 :::step
 Before running the server, save your credentials in your local OS Keychain and authorize the target domain:
 
 ```bash
-:::
 # Store the Stripe key locally
 agentsecrets secrets set STRIPE_KEY=sk_live_...
 
 # Authorize the proxy to make calls to api.stripe.com
 agentsecrets workspace allowlist add api.stripe.com
 ```
+:::
 
 ---
 

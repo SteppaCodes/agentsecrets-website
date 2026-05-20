@@ -8,22 +8,27 @@ Centralized audit logging is essential for compliance and security governance. T
 
 The local credential proxy logs every request it intercepts. These logs are stored in a local SQLite database and synchronized to the cloud on-demand or immediately after request execution.
 
-* **Endpoint**: `POST /api/internal/audit/logs/` (or `/api/audit/logs/` for standard client pushes).
+* **Endpoint**: `POST /api/internal/audit/logs/`
 * **Security & Redaction**: The proxy redacts all credentials and sensitive authorization headers before transmitting logs to the backend. The API never receives or stores plaintext tokens.
-* **Payload Structure**:
+* **Payload Structure**: The API accepts a single log object or an array of log objects directly (not wrapped in a `"logs"` key).
   ```json
-  {
-    "logs": [
-      {
-        "timestamp": "2026-05-19T22:00:00Z",
-        "agent_id": "claude-assistant",
-        "url": "https://api.stripe.com/v1/charges",
-        "method": "POST",
-        "status_code": 200,
-        "environment": "development"
-      }
-    ]
-  }
+  [
+    {
+      "timestamp": "2026-05-19T22:00:00Z",
+      "environment": "development",
+      "agent_id": "Claude-Codebase-Assistant",
+      "identity_level": "agent",
+      "method": "POST",
+      "target_url": "https://api.stripe.com/v1/charges",
+      "target_path": "/v1/charges",
+      "target_domain": "api.stripe.com",
+      "status_code": 200,
+      "duration_ms": 145,
+      "redacted": true,
+      "credential_ref": "STRIPE_KEY",
+      "injection_style": "header"
+    }
+  ]
   ```
 
 ---
@@ -33,7 +38,8 @@ The local credential proxy logs every request it intercepts. These logs are stor
 Administrators can retrieve, filter, and export synced audit logs from the cloud.
 
 * **List Logs**: `GET /api/audit/logs/`
-  * Supports filters for `project_id`, `environment`, `agent_id`, and date ranges.
+  * Requires `workspace_id` parameter.
+  * Supports filters for `project_id`, `environment`, `agent_id`, `domain`, `method`, `status_code`, and date ranges (`since`/`until`).
 * **Log Detail**: `GET /api/audit/logs/{log_id}/`
-* **Log Summary**: `GET /api/audit/summary/` (Returns aggregated metrics, e.g., total requests per day, most active agents).
-* **Export Logs (CSV)**: `GET /api/audit/export/` (Generates a CSV download for external SIEM integration).
+* **Log Summary**: `GET /api/audit/summary/` (Returns aggregated metrics, e.g., totals, most active agents, domains, and credentials).
+* **Export Logs (JSONL)**: `GET /api/audit/export/` (Generates a streaming JSONL download for external SIEM integration. Requires `workspace_id` and parameter `format=jsonl`).

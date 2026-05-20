@@ -18,22 +18,20 @@ AgentSecrets removes the value from that space entirely. The agent passes a key 
 AgentSecrets sits directly between your AI agent (or execution environment) and the external APIs it calls. It acts as a local security boundaries layer, intercepting outbound requests, validating permission scopes, and injecting keys securely at the transport layer.
 
 ```mermaid
-flowchart LR
-    A[Agent Request] --> B[TLS Interception]
-    B --> C[Domain Allowlist]
-    C --> D[Header Redaction]
-    D --> E[Key Resolution & Injection]
-    E --> F[Upstream API]
+flowchart TD
+    A["Agent Request (Key Names Only)"] --> B["TLS Interception Proxy (localhost:8765)"]
+    B --> C["Domain Allowlist Check"]
+    C --> D["Header Redaction & Security Scan"]
+    D --> E["Secure Key Resolution (OS Keychain)"]
+    E --> F["Credential Injection (Outbound Request)"]
+    F --> G["Upstream API Endpoint (External)"]
 ```
 
-AgentSecrets provides two core execution paths depending on your workflow:
+AgentSecrets provides three core execution paths depending on your workflow:
 
-
-
-:::step
 1. **The Credential Proxy (for AI Agents)**: Intercepts HTTP/HTTPS requests at the transport layer, resolving key names from the OS keychain and injecting credential values on the fly. This prevents credentials from entering the agent's context or memory.
 2. **Environment Injection (for Developers & CLI Tools)**: Runs tools, scripts, or servers using `agentsecrets env -- <command>`. This injects secrets directly into the process environment variables at runtime without writing them to disk (replacing `.env` files completely).
-:::
+3. **Direct CLI Calls (for quick tests)**: Use `agentsecrets call` to make one-shot authenticated requests from the command line. The proxy resolves the key and injects the credential for a single request without needing to start the background proxy daemon.
 
 Both modes run locally, ensuring credentials never leave your machine as plaintext.
 

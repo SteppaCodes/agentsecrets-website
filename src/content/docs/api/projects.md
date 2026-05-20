@@ -10,7 +10,7 @@ Each Project consists of:
 * A unique UUID identifier.
 * A name (e.g. `frontend-app` or `billing-service`).
 * The Workspace ID it belongs to.
-* Project-specific access control lists.
+* Inherited workspace membership permissions (access is governed by workspace roles, with no project-specific access control lists).
 
 ---
 
@@ -41,7 +41,10 @@ The API exposes the following endpoints for projects:
 
 * **List Projects**: `GET /api/projects/` (Lists projects in the active workspace context).
 * **Create Project**: `POST /api/projects/`
-* **Get Project Details**: `GET /api/projects/{workspace_id}/{project_name}/`
-* **Update Project**: `PUT /api/projects/{workspace_id}/{project_name}/`
-* **Delete Project**: `DELETE /api/projects/{workspace_id}/{project_name}/`
-* **Project Invite**: `POST /api/projects/{workspace_id}/{project_name}/invite/` (Used to share or delegate project access to specific workspace members).
+* **Get Project Details**: `GET /api/projects/{workspace_id}/{project_name}/` or `GET /api/projects/{project_name}/`
+* **Update Project**: `PATCH /api/projects/{workspace_id}/{project_name}/` or `PATCH /api/projects/{project_name}/`
+* **Delete Project**: `DELETE /api/projects/{workspace_id}/{project_name}/` or `DELETE /api/projects/{project_name}/`
+* **Project Invite**: `POST /api/projects/{workspace_id}/{project_name}/invite/` (Used to delegate project access to specific workspace members).
+* **Environment Counts**: `GET /api/projects/{project_id}/environments/` (Returns the number of secrets defined in each environment).
+* **Secret Coverage**: `GET /api/projects/{project_id}/secrets/coverage/` (Details key coverage across environments).
+* **Secret Diff**: `GET /api/projects/{project_id}/secrets/diff/` (Details differences in key presence across environments).

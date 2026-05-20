@@ -12,7 +12,7 @@ When an application uses Vault, it authenticates to Vault, requests a secret (vi
 
 If you connect an AI agent to Vault, the agent pulls the secret into its environment context. If the agent is compromised by a prompt injection attack, the secret can be logged or exfiltrated. 
 
-### The AgentSecrets Model (The No `get()` Principle)
+### The AgentSecrets Model (The No get() Principle)
 
 AgentSecrets does not have a `get()` method. 
 

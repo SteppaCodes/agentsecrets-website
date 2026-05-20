@@ -100,14 +100,15 @@ response = client.call(
 
 ### 5. Start the proxy and test
 :::step
-
-
 ```bash
 agentsecrets proxy start
-:::
-# Run your updated agent code and verify it works
+```
+
+Run your updated agent code and verify it works. Then inspect the logs:
+```bash
 agentsecrets proxy logs --last 10
 ```
+:::
 
 
 

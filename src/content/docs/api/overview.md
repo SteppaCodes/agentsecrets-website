@@ -11,7 +11,7 @@ It serves as the cloud synchronization and orchestration layer that powers the A
 The API acts as an orchestrator for the following resources:
 
 * **Workspaces & Teams**: Organizes developers and servers into shared boundaries. Manages member invitations, roles, and domain allowlists.
-* **Encrypted Secrets Metadata**: Stores encrypted secret envelopes (the encrypted keys and values) but is never able to decrypt them.
+* **Encrypted Secrets Metadata**: Stores secret entries (plaintext key names and encrypted values) but is never able to decrypt the underlying secret values.
 * **Agent Identities**: Resolves cryptographic agent tokens to track which AI agent or system made a call.
 * **Audit Log Sync**: Receives encrypted or redacted audit logs pushed by the local credential proxy to provide centralized visibility.
 * **Telemetry**: Collects anonymous, aggregated daily usage metrics to monitor client health and stability.
@@ -26,11 +26,9 @@ The backend operates under strict **Zero-Knowledge** constraints.
 > The backend structurally cannot decrypt your secrets. Plaintext credential values never enter the cloud.
 
 All encryption and decryption happen locally on your machine:
-:::step
 1. When you run `agentsecrets init` or create a workspace, a symmetric **Workspace Key** is generated locally.
 2. When you invite team members, your local CLI fetches their public keys from the backend, encrypts the Workspace Key for them, and uploads the encrypted key envelope to the backend.
-3. Secrets are encrypted locally using AES-GCM prior to being pushed to the cloud. The backend only sees base64-encoded encrypted blobs.
-:::
+3. Secret values are encrypted locally using AES-256-GCM prior to being pushed to the cloud (key names remain in plaintext). The backend wraps these client-encrypted values in its own at-rest encryption layer (Fernet) but structurally cannot decrypt the underlying plaintext secrets.
 
 ---
 

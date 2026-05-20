@@ -1,31 +1,31 @@
 # Secrets & Sync
 
-The core function of the AgentSecrets API is to coordinate secret synchronization across developers. Because of the zero-knowledge constraint, the API does not handle plaintext secret values. Instead, it acts as a storage layer for **Encrypted Secret Envelopes**.
+The core function of the AgentSecrets API is to coordinate secret synchronization across developers. Because of the zero-knowledge constraint, the API does not handle plaintext secret values. Instead, it acts as a storage layer for client-encrypted secrets wrapped in its own database encryption layer.
 
 ---
 
-## The Zero-Knowledge Envelope Model
+## The Zero-Knowledge Double-Encryption Model
 
-When you set a secret locally, your client encrypts both the key name and the secret value before sending it to the backend.
+When you set a secret locally, your client encrypts the secret value before sending it to the backend, while keeping the key name in plaintext to enable search and sync coordination. The backend then applies its own at-rest encryption layer (Fernet) over the client-encrypted value.
 
 ```
-Plaintext Secret                    Local Encryption (AES-GCM)                API JSON Payload
-  Key:   STRIPE_KEY   ─────────►    Workspace Symmetric Key    ─────────►    {
-  Value: sk_live_...                (Decrypted from user key)                 "encrypted_key": "abc...",
-                                                                              "encrypted_value": "xyz...",
-                                                                              "nonce": "123...",
-                                                                              "tag": "456..."
+Plaintext Secret                    Local Encryption (AES-256-GCM)            API JSON Payload
+  Key:   STRIPE_KEY   ─────────►    (No local encryption)      ─────────►    {
+  Value: sk_live_...                Workspace Symmetric Key                  "project_id": "uuid",
+                                                                              "environment": "development",
+                                                                              "secrets": {
+                                                                                "STRIPE_KEY": "base64_aes_gcm_blob..."
+                                                                              }
                                                                              }
 ```
 
 The database stores the following fields for each secret:
+* `id`: UUID of the secret.
 * `project_id`: UUID of the project.
 * `environment`: The target environment (e.g. `development`).
-* `encrypted_key`: Base64-encoded encrypted key name.
-* `encrypted_value`: Base64-encoded encrypted secret value.
-* `nonce`: AES-GCM nonce (unique per secret).
-* `tag`: AES-GCM authentication tag.
-* `version`: Incremental version number for conflict resolution.
+* `key`: Plaintext key name (stored in uppercase).
+* `value`: Doubly-encrypted secret value (client-side AES-256-GCM ciphertext, encrypted again on the server via Fernet).
+* `created_at` / `updated_at`: Timestamps.
 
 ---
 
@@ -34,16 +34,15 @@ The database stores the following fields for each secret:
 Secret syncing is done on-demand or through background integration triggers:
 
 ### Pushing Secrets
-:::step
+
 1. The local CLI reads the environment secrets and identifies changes (additions, deletions, updates).
-2. It encrypts all modified secrets.
-3. The CLI issues a `POST /api/secrets/` with a list of encrypted envelopes.
-4. The backend updates the database records and increments the version metadata.
-:::
+2. It encrypts all modified values using the local Workspace Key.
+3. The CLI issues a `POST /api/secrets/` with a dictionary of plaintext keys and encrypted values.
+4. The backend encrypts the values with Fernet and updates/inserts the database records.
 
 ### Pulling Secrets
-:::step
+
 1. The local CLI calls `GET /api/secrets/{project_id}/` (optionally specifying environment).
-2. The backend returns all encrypted envelopes.
-3. The CLI decrypts the envelopes locally using the stored Workspace Key and updates the local SQLite cache or project `.env` templates.
-:::
+2. The backend decrypts the Fernet layer and returns the client-encrypted blobs.
+3. The CLI decrypts the values locally using the stored Workspace Key and updates the local SQLite cache or project `.env` templates.
+

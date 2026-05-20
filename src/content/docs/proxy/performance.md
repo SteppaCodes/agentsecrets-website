@@ -62,23 +62,18 @@ gantt
 For high-throughput applications making hundreds of API calls per minute (such as autonomous swarm agents or high-frequency trading services), you can optimize performance using the following strategies:
 
 ### 1. Enable Connection Keep-Alive
-:::step
 Ensure that your application's HTTP client is configured to reuse TCP connections when talking to the proxy. In Node.js, use an Agent with `keepAlive: true`. In Python, use a `requests.Session` or `httpx.AsyncClient`.
-:::
 
 ### 2. Configure Secret Memory Cache TTL
-:::step
 By default, the proxy caches decrypted secrets in RAM for **300 seconds** (5 minutes). If your secrets rarely change, you can extend this TTL to reduce keychain queries:
 
 ```bash
-:::
 # Set cache TTL to 1 hour (3600 seconds)
 export AGENTSECRETS_CACHE_TTL=3600
 agentsecrets proxy start
 ```
 
 ### 3. Pre-warm Connection Pools
-:::step
 If you know your agent will make burst calls to a specific domain (e.g., OpenAI), you can configure the proxy to pre-warm connections in your configuration file `.agentsecrets/config.json`:
 
 ```json
@@ -91,4 +86,3 @@ If you know your agent will make burst calls to a specific domain (e.g., OpenAI)
 ```
 
 This keeps active TLS tunnels open to those hosts, eliminating handshake delays during the agent's first execution cycle.
-:::

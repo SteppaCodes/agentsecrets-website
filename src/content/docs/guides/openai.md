@@ -26,7 +26,6 @@ You can easily configure the official OpenAI Python SDK to use the AgentSecrets 
 ```python
 from openai import OpenAI
 import httpx
-:::
 
 # Route HTTP traffic through the local proxy
 proxy_client = httpx.Client(proxy="http://localhost:8765")
@@ -50,3 +49,4 @@ chat_completion = client.chat.completions.create(
 ```
 
 By doing this, even if a user maliciously tricks the agent into dumping its initialized variables, the `client.api_key` only holds the string `"OPENAI_API_KEY"`. The real key is completely safe from prompt injection.
+:::

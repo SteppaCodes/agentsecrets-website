@@ -8,7 +8,6 @@ Secret rotation is a critical lifecycle event. Because AgentSecrets employs a ze
 
 To rotate an existing secret (e.g., you rolled your Stripe API key in the Stripe Dashboard and need to update your local codebase):
 
-:::step
 1. **Overwrite the Local Value**: Use the standard `set` command. It will overwrite the existing entry in your local OS Keychain.
    ```bash
    agentsecrets secrets set STRIPE_KEY=sk_live_new12345
@@ -21,7 +20,6 @@ To rotate an existing secret (e.g., you rolled your Stripe API key in the Stripe
    ```bash
    agentsecrets secrets pull
    ```
-:::
 
 ---
 

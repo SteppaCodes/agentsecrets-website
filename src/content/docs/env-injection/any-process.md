@@ -8,13 +8,11 @@ The `agentsecrets env` command allows you to run any script, application, or too
 
 When you execute a command using `agentsecrets env -- <command>`, AgentSecrets performs a secure, multi-stage spawn operation:
 
-:::step
 1. **Target Context Verification**: The CLI reads the active workspace, project, and environment config in the execution directory.
 2. **Local Keychain Read**: It queries the OS Keychain (macOS Keychain, Windows Credential Manager, or Linux Secret Service) for the secrets belonging to the active environment namespace.
 3. **Decryption**: It decrypts the stored values locally.
 4. **Child Process Spawning**: The CLI spawns the target command as a child process, passing the decrypted secrets directly into the environment variable array of the child process.
 5. **Memory Clean**: The parent CLI process immediately overwrites the plaintext secrets in its own RAM and exits, leaving the child process running with the injected variables in its process memory.
-:::
 
 Because the values are passed directly to the OS spawn call, they are **ephemeral**:
 - They are never written to any file on disk.

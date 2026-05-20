@@ -41,7 +41,6 @@ Notice the complete absence of an `env` block. The agent passes only a **key nam
 
 ## Getting Started
 
-:::step
 1. **Install AgentSecrets** and log in:
    ```bash
    agentsecrets init
@@ -64,7 +63,6 @@ Notice the complete absence of an `env` block. The agent passes only a **key nam
    ```bash
    agentsecrets proxy start
    ```
-:::
 
 You can now use Claude or Cursor to securely query GitHub without exposing your token to the LLM.
 

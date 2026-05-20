@@ -74,7 +74,6 @@ Locate where the `AgentSecrets` SDK or proxy endpoints are called in your codeba
 Modify the initialization to pass an `agent_id` representing the specific agent's role:
 
 ```python
-:::
 # Before (Anonymous)
 from agentsecrets import AgentSecrets
 client = AgentSecrets()

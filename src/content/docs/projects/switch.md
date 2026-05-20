@@ -28,12 +28,10 @@ When you execute any command (like `agentsecrets env` or `agentsecrets call`), t
 
 This means that if you organize your code into separate directories, context switching is completely automatic:
 
-:::step
 1. `cd ~/code/billing-api`
    (AgentSecrets automatically detects the billing project config and loads Stripe keys).
 2. `cd ~/code/support-agent`
    (AgentSecrets seamlessly drops the billing context and loads the OpenAI keys for the agent).
-:::
 
 You never have to manually run `project use` when navigating between properly initialized repositories.
 

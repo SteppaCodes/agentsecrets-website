@@ -28,8 +28,7 @@ agentsecrets project delete "finance-agent"
 > Deletion is immediate and irreversible. It destroys all secrets across all environments (`development`, `staging`, `production`) associated with the project.
 
 When you delete a project, the following teardown occurs:
-:::step
+
 1. **Cloud Erase**: All encrypted blobs associated with the project are hard-deleted from the synchronization server.
 2. **Local Keychain Purge**: The CLI scrubs all decrypted values belonging to the project from your local OS Keychain.
 3. **Teammate Cascade**: The next time your teammates run `agentsecrets secrets pull`, their local CLIs will detect the project deletion and automatically purge the orphaned keys from their local Keychains.
-:::

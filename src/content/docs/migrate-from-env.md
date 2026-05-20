@@ -85,7 +85,7 @@ The JavaScript SDK is on the roadmap. Until then, route requests through the HTT
 
 ---
 
-## Using `agentsecrets env` as a drop-in replacement
+## Using agentsecrets env as a drop-in replacement
 
 For tools and frameworks that read from environment variables at startup and cannot be modified to use the SDK or proxy, `agentsecrets env` is the closest drop-in:
 

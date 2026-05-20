@@ -35,12 +35,10 @@ Inviting User                   API (secretsapi)                 Invited User
       │                                │                              │
 ```
 
-:::step
 1. **Public Key Retrieval**: The inviter's client calls `/api/users/{email}/public-key/` to fetch the invitee's public key.
 2. **Local Encryption**: The inviter's client decrypts the workspace key locally (requiring the inviter's password), and encrypts it using the invitee's public key.
 3. **Submission**: The encrypted workspace key envelope and role are sent to the backend.
 4. **Acceptance**: When the invitee accepts and logs in, their client retrieves the encrypted envelope, decrypts it using their private key, and stores the workspace key locally.
-:::
 
 ---
 
@@ -73,8 +71,9 @@ To simplify onboarding, the API support bulk invitations in a single request:
 ## Roles and Permissions
 
 The API enforces role-based access control (RBAC):
-* **Owner/Admin**: Full permissions. Can add/remove members, promote/demote users, configure allowlists, delete projects, and sync secrets.
+* **Owner/Admin**: Full permissions. Can add/remove members, configure allowlists, delete projects, and sync secrets.
 * **Member**: Read and write access to secrets. Cannot manage workspace settings, members, or allowlists.
+* **Read-Only**: Read access to secrets. Cannot modify (add/update/delete) secrets or manage workspace configurations.
 
 ---
 
@@ -84,4 +83,4 @@ The credential proxy checks authorized domains before injecting credentials.
 * **Get Allowlist**: `GET /api/workspaces/{workspace_id}/allowlist/`
 * **Add Domains**: `POST /api/workspaces/{workspace_id}/allowlist/` (Requires Admin authentication)
 * **Remove Domain**: `DELETE /api/workspaces/{workspace_id}/allowlist/{domain}/`
-* **Blocked Log**: `POST /api/workspaces/{workspace_id}/allowlist/log/` (Submits blocked request attempts for audit logs).
+* **Allowlist Log History**: `GET /api/workspaces/{workspace_id}/allowlist/log/` (Retrieves audit history of domain addition and removal actions).

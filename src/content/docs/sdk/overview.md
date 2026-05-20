@@ -34,7 +34,7 @@ client = AgentSecrets(port=9000)
 
 No credentials are passed into the constructor. Ever.
 
-## Making calls — `client.call()`
+## Making calls — client.call()
 
 ```python
 # Bearer token (Stripe, OpenAI, GitHub, most modern APIs)
@@ -99,7 +99,7 @@ response = await client.async_call(
 
 There is no field containing the credential value. The response object is structurally incapable of carrying it.
 
-## Spawning processes — `client.spawn()`
+## Spawning processes — client.spawn()
 
 Inject secrets as environment variables into a child process. The calling code never sees the values.
 

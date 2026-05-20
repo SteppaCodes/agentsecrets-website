@@ -35,8 +35,9 @@ On error, the API returns a structured JSON payload with the appropriate HTTP st
 
 ```json
 {
-  "detail": "Detailed error message explanation",
-  "code": "error_code_identifier"
+  "status": "failure",
+  "code": "error_code_identifier",
+  "message": "Detailed error message explanation"
 }
 ```
 

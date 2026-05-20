@@ -10,7 +10,6 @@ When building LangChain tools (`@tool` or `BaseTool`), you traditionally inject 
 
 ### Example: Custom LangChain Tool
 
-:::step
 1. **Store your secret**:
    ```bash
    agentsecrets secrets set STRIPE_KEY=sk_live_...
@@ -50,7 +49,6 @@ When building LangChain tools (`@tool` or `BaseTool`), you traditionally inject 
        
        return response.text
    ```
-:::
 
 By defining your LangChain tools this way, the agent can reason about the tool and invoke it, but the agent's memory window and process environment remain completely free of the `STRIPE_KEY`.
 

@@ -22,11 +22,9 @@ All synchronization traffic between the AgentSecrets CLI and the AgentSecrets Cl
 
 ### Encryption at Rest (Client-Side)
 AgentSecrets employs a strict Zero-Knowledge architecture:
-:::step
 1. Your workspace encryption key never leaves your local OS Keychain.
 2. Credentials are encrypted locally using AES-256-GCM.
 3. The AgentSecrets server only receives, stores, and synchronizes the resulting ciphertext blobs.
-:::
 This structural guarantee means that in the event of an AgentSecrets database breach, your credentials remain mathematically secure.
 
 ---

@@ -9,14 +9,10 @@ Because the AgentSecrets **Cloud Resolver** has not yet been released, the proxy
 Support for production deployments is currently in active development. Once the Cloud Resolver is released, AgentSecrets will support two primary Kubernetes deployment models:
 
 ### 1. The Sidecar Pattern
-:::step
 The proxy will run as a sidecar container inside your AI Agent's Pod. It will intercept outbound `localhost` traffic, authenticate against the Kubernetes native Secrets API (or AWS/GCP Secret Manager) using the Pod's ServiceAccount, and inject the decrypted credentials directly into the transport layer.
-:::
 
 ### 2. The DaemonSet Pattern
-:::step
 For high-density micro-agent architectures, the proxy will run as a node-level DaemonSet to reduce memory overhead, intercepting and injecting credentials based on the calling Pod's cryptographically signed Agent Identity token.
-:::
 
 ---
 

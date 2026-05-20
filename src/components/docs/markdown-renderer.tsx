@@ -15,7 +15,7 @@ if (typeof window !== "undefined") {
     theme: "base",
     themeVariables: {
       primaryColor: "rgba(0, 127, 106, 0.08)",
-      primaryTextColor: "#1B1B1B",
+      primaryTextColor: "#007F6A",
       primaryBorderColor: "#007F6A",
       lineColor: "#1B1B1B",
       secondaryColor: "#007F6A",

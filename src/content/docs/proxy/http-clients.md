@@ -10,7 +10,6 @@ To do so, your client must read the local session token, determine the active pr
 
 To communicate with the proxy directly, your client must perform three steps:
 
-:::step
 1. **Locate and read the session file**:
    - **macOS/Linux**: `~/.agentsecrets/session.json`
    - **Windows**: `%USERPROFILE%\.agentsecrets\session.json`
@@ -29,7 +28,6 @@ To communicate with the proxy directly, your client must perform three steps:
    - `X-AS-Session-Token`: The token parsed from `session.json`.
    - `X-AS-Target-URL`: The absolute HTTPS URL of the target API.
    - An injection directive (e.g., `X-AS-Inject-Bearer: STRIPE_KEY` or `X-AS-Inject-Header-X-Api-Key: SENDGRID_KEY`).
-:::
 
 ---
 
