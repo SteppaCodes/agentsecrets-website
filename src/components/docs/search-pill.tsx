@@ -18,7 +18,9 @@ const SUGGESTED_SECTIONS = [
       'proxy/overview',
       'integrations/claude-desktop',
       'zero-knowledge-difference',
-      'concepts/proxy-model',
+      'agent-identity/overview',
+      'projects/organizing',
+      'audit/summary'
     ],
   },
 ];
@@ -32,7 +34,9 @@ function resolveSectionMeta(id: string) {
     'proxy/overview': 'Learn how our zero-knowledge proxy keeps your keys safe.',
     'integrations/claude-desktop': 'Connect AgentSecrets directly to your Claude Desktop app.',
     'zero-knowledge-difference': 'Why our security model is superior to traditional vaulting.',
-    'concepts/proxy-model': 'Deep dive into the three-layer proxy security model.',
+    'agent-identity/overview': 'Assign cryptographically verifiable identities to your agents.',
+    'projects/organizing': 'Best practices for managing environments and secret namespaces.',
+    'audit/summary': 'Comprehensive logging of every intercepted request and credential use.',
   };
   return s ? { 
     id: s.id, 
@@ -264,7 +268,7 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                           {results.length} result{results.length !== 1 ? 's' : ''}
                         </h3>
                       </div>
-                      <div className='grid grid-cols-1 sm:grid-cols-2 gap-5'>
+                      <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
                         {results.map((r, idx) => (
                           <motion.button
                             key={r.id}
@@ -273,24 +277,24 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                             transition={{ delay: idx * 0.05 }}
                             onClick={() => navigateTo(r.id, r.label, r.group)}
                             onMouseEnter={() => setActiveIdx(idx)}
-                            className={`p-6 rounded-[20px] text-left border transition-all duration-300 ${
+                            className={`p-6 rounded-[24px] text-left border flex flex-col gap-4 transition-all duration-300 ${
                               activeIdx === idx 
-                                ? 'bg-[#005E50] border-[#005E50] shadow-xl translate-y-[-2px]' 
-                                : 'bg-white border-black/[0.05] hover:border-black/10'
+                                ? 'bg-white border-black/[0.08] shadow-[0_8px_24px_rgba(0,0,0,0.04)] translate-y-[-2px]' 
+                                : 'bg-white border-black/[0.03] shadow-sm'
                             }`}
                           >
-                            <div className='flex items-center gap-3 mb-4'>
-                              <div className={`p-2 rounded-lg ${activeIdx === idx ? 'bg-white/20 text-white' : 'bg-black/[0.03] text-[#1B1B1B]/40'}`}>
-                                <FileText size={16} />
+                            <div className='flex items-center gap-3 mb-2'>
+                              <div className={`text-[#1B1B1B] transition-colors duration-300 ${activeIdx === idx ? 'text-[#0d9488]' : ''}`}>
+                                <FileText size={28} strokeWidth={1.5} />
                               </div>
-                              <span className={`text-[10px] font-bold tracking-widest uppercase ${activeIdx === idx ? 'text-white/60' : 'text-[#1B1B1B]/30'}`}>
+                              <span className='text-[10px] font-bold tracking-widest uppercase text-[#1B1B1B]/40'>
                                 {r.group}
                               </span>
                             </div>
-                            <h4 className={`text-[17px] font-semibold mb-2 leading-tight ${activeIdx === idx ? 'text-white' : 'text-[#1B1B1B]'}`}>
-                              {r.label}
+                            <h4 className={`text-[16px] font-semibold leading-tight transition-colors duration-200 ${activeIdx === idx ? 'text-[#0d9488]' : 'text-[#1B1B1B]'}`}>
+                              {splitToTwoLines(r.label)}
                             </h4>
-                            <p className={`text-[13px] line-clamp-2 leading-relaxed ${activeIdx === idx ? 'text-white/70' : 'text-[#1B1B1B]/40'}`}>
+                            <p className='text-[12px] text-[#1B1B1B]/60 leading-relaxed line-clamp-2 font-medium'>
                               {r.snippet}
                             </p>
                           </motion.button>
@@ -390,7 +394,7 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                             {group.category}
                           </h3>
                           
-                          <div className={`grid grid-cols-1 ${isGettingStarted ? 'lg:grid-cols-3 gap-4 lg:-mx-12' : 'sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:-mx-8'}`}>
+                          <div className={`grid grid-cols-1 ${isGettingStarted ? 'lg:grid-cols-3 gap-4 lg:-mx-12' : 'sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:-mx-8'}`}>
                             {group.items.map((id) => {
                               const meta = resolveSectionMeta(id);
                               if (!meta) return null;
