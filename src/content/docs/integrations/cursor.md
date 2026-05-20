@@ -6,7 +6,11 @@ Cursor has built-in support for MCP (Model Context Protocol) servers. By using t
 
 :::step
 1. Ensure the AgentSecrets CLI is installed and running (`agentsecrets proxy start`).
+:::
+:::step
 2. Add your credentials to AgentSecrets via the CLI (`agentsecrets secrets set STRIPE_KEY=sk_test_...`).
+:::
+:::step
 3. Clone and install the `zero-knowledge-mcp` on your local machine.
 :::
 
@@ -14,10 +18,20 @@ Cursor has built-in support for MCP (Model Context Protocol) servers. By using t
 
 :::step
 1. Open Cursor Settings (`Cmd/Ctrl + Shift + J`).
+:::
+:::step
 2. Navigate to **Features > MCP Servers**.
+:::
+:::step
 3. Click **Add New MCP Server**.
+:::
+:::step
 4. Set the name to `AgentSecrets ZK-MCP`.
+:::
+:::step
 5. Set the type to `command`.
+:::
+:::step
 6. Enter the command to start your ZK-MCP server. Because Cursor doesn't activate virtual environments automatically, you must use the absolute path to your environment's Python executable.
 :::
 

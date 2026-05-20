@@ -6,7 +6,11 @@ AgentSecrets is designed to defend against a specific, modern threat vector: **C
 
 :::step
 1. **Malicious End Users**: Users providing inputs designed to manipulate the LLM (Prompt Injection).
+:::
+:::step
 2. **Compromised Dependencies**: Third-party packages the agent executes (e.g., malicious PyPI packages).
+:::
+:::step
 3. **Malicious LLM Providers**: If you are using an untrusted or logged model endpoint, the context is sent to their servers.
 :::
 

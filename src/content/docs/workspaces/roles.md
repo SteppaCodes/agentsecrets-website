@@ -50,13 +50,17 @@ To grant administrative privileges to an existing workspace member, use the `age
    ```bash
    agentsecrets workspace promote developer@acme.com
    ```
+:::
 
+:::step
 2. **Verify identity:**
    The CLI will prompt you to enter your account password to confirm the promotion. This ensures that the action is performed by the authenticated administrator.
    ```
    Password: 
    ```
+:::
 
+:::step
 3. **Confirm promotion:**
    Once verified, the user will be promoted to the `Admin` role.
    ```
@@ -76,13 +80,17 @@ If a user no longer requires administrative privileges, you can demote them to a
    ```bash
    agentsecrets workspace demote developer@acme.com
    ```
+:::
 
+:::step
 2. **Confirm with password:**
    Enter your administrator password to authorize the change.
    ```
    Password: 
    ```
+:::
 
+:::step
 3. **Verify change:**
    The user's role is updated in the workspace.
    ```

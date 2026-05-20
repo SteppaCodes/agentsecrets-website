@@ -16,10 +16,14 @@ The onboarding flow relies on the AgentSecrets client-side cryptosystem. When yo
    ```bash
    agentsecrets workspace invite new-developer@acme.com
    ```
+:::
 
+:::step
 2. **Developer receives the invite:**
    The developer receives an email containing a secure invite link and an invitation token.
+:::
 
+:::step
 3. **Developer accepts the invite:**
    The developer runs the acceptance command in their CLI to join the workspace.
 :::
@@ -35,17 +39,23 @@ The developer needs to run a few simple commands to set up their machine, join t
    ```bash
    brew install The-17/tap/agentsecrets
    ```
+:::
 
+:::step
 2. **Log in or register:**
    ```bash
    agentsecrets login
    ```
+:::
 
+:::step
 3. **Accept the workspace invite:**
    ```bash
    agentsecrets workspace accept --token <invite-token>
    ```
+:::
 
+:::step
 4. **Initialize local workspace and select storage mode:**
    Run the initialization command. This will prompt the developer to choose their preferred storage mode:
    ```bash
@@ -55,11 +65,13 @@ The developer needs to run a few simple commands to set up their machine, join t
    ```bash
    # Keychain Mode (Recommended: stores secrets directly in OS Keychain)
    agentsecrets init --storage-mode 1
+:::
 
    # Standard Mode (Writes secrets to a local .env file)
    agentsecrets init --storage-mode 2
    ```
 
+:::step
 5. **Pull the secrets:**
    ```bash
    agentsecrets secrets pull

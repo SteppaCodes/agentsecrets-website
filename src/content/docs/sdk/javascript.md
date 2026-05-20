@@ -32,7 +32,6 @@ pnpm add @the-17/agentsecrets
 bun add @the-17/agentsecrets
 ```
 
-:::
 
 > [NOTE]
 > The SDK requires the local CLI installed and the proxy daemon running on the host machine. If the proxy is not active, the SDK will attempt to auto-start it by default.

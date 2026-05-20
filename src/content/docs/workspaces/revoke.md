@@ -14,13 +14,17 @@ Only workspace administrators (`Admin`) or the workspace owner can remove member
    ```bash
    agentsecrets workspace members list
    ```
+:::
 
+:::step
 2. **Execute the removal command:**
    Run the `workspace remove` command to revoke their access:
    ```bash
    agentsecrets workspace remove developer@acme.com
    ```
+:::
 
+:::step
 3. **Confirm with password:**
    The CLI will prompt you to enter your administrator password. This authentication is required to decrypt the current workspace key and initiate the key rotation process.
 :::
@@ -46,8 +50,14 @@ When you run `agentsecrets workspace remove`, the CLI automatically rotates the 
 Under the hood, the following zero-knowledge key re-encryption workflow occurs:
 :::step
 1. **New Key Generation**: Your CLI generates a brand-new workspace keypair.
+:::
+:::step
 2. **Secret Re-encryption**: The CLI decrypts all existing secrets using the old workspace key and re-encrypts them using the new workspace key.
+:::
+:::step
 3. **Envelope Recreation**: The CLI fetches the public keys of all *remaining* workspace members, encrypts the new workspace key for each of them, and uploads these new envelopes to the backend.
+:::
+:::step
 4. **Revocation**: The backend deletes the old envelopes. The revoked user can no longer decrypt any new secret updates or fetch new workspace keys.
 :::
 
@@ -57,7 +67,9 @@ Since the revoked developer may still have local copies of the active keys, you 
 :::step
 1. **Rotate values at the provider:**
    Generate new API keys or change passwords at the service provider (e.g., Stripe, AWS, GitHub).
+:::
 
+:::step
 2. **Update the secrets in AgentSecrets:**
    Run the `secrets set` command to update the values. This will encrypt them with the new workspace key and sync them to the remaining team members:
    ```bash

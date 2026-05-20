@@ -25,8 +25,14 @@ Operating autonomous AI agents without identity declarations exposes production 
 
 :::step
 1. **Undetectable Prompt Injections**: If an LLM is manipulated via prompt injection to exfiltrate data, the malicious outbound API call will appear in your logs as `anonymous`. You will have no way of knowing which agent was compromised or which user prompt initiated the breach.
+:::
+:::step
 2. **Lack of Granular Control**: You cannot apply per-agent Access Control Lists (ACLs). An anonymous agent that only needs access to a weather API will also be able to request your Stripe or database credentials if they are present in the same workspace.
+:::
+:::step
 3. **No Isolated Revocation**: If you detect an anomaly from a single running script, you cannot terminate its access independently. You must stop the entire local proxy or revoke the workspace-wide service key, causing a full outage for all other running agents.
+:::
+:::step
 4. **Compliance Violations**: Security frameworks (such as SOC 2 or ISO 27001) require clear audit trails and attribution for non-human entity actions. Anonymous agent calls violate the core principle of non-repudiation.
 :::
 
@@ -66,12 +72,9 @@ Authorization: Bearer <your_jwt_token>
 
 Transitioning your agents from anonymous to declared is a simple process that immediately improves visibility.
 
-:::step
 ### 1. Identify client initializations
 Locate where the `AgentSecrets` SDK or proxy endpoints are called in your codebase.
-:::
 
-:::step
 ### 2. Declare the Agent ID
 Modify the initialization to pass an `agent_id` representing the specific agent's role:
 
@@ -84,16 +87,13 @@ client = AgentSecrets()
 from agentsecrets import AgentSecrets
 client = AgentSecrets(agent_id="email-dispatcher")
 ```
-:::
 
-:::step
 ### 3. Verify in the logs
 Restart your agent, run a test call, and check that the identity level has successfully upgraded to `"declared"`:
 
 ```bash
 agentsecrets proxy logs --last 1
 ```
-:::
 
 > [WARNING]
 > While Declared Identity resolves visibility issues, it does not prevent identity spoofing. An agent or process can easily claim to be any identity. For production environments, you should migrate to cryptographically verified **Issued Identity** (see [Issuing Cryptographic Tokens](./tokens-issue.md)).

@@ -13,7 +13,11 @@ When running `agentsecrets mcp install`, the CLI modifies your local MCP configu
 
 :::step
 1. **Unsupported AI Assistant:** Ensure you are using a supported AI assistant that reads standard MCP config paths.
+:::
+:::step
 2. **File Permissions:** Check if the CLI has write access to your AI assistant's configuration directory.
+:::
+:::step
 3. **Manual Installation:** You can manually add the AgentSecrets MCP server to your config file:
    ```json
    "mcpServers": {
@@ -34,6 +38,8 @@ Once installed, the AgentSecrets MCP server exposes two primary tools to the AI:
 If the agent claims it doesn't have these tools:
 :::step
 1. Completely restart your AI assistant (e.g., quit and reopen Claude Desktop).
+:::
+:::step
 2. Ensure the `agentsecrets` binary is in your system's `$PATH` so the AI assistant can execute the `"command": "agentsecrets"` instruction.
 :::
 

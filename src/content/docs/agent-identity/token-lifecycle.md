@@ -8,16 +8,13 @@ Managing the lifecycle of Agent Identity Tokens is critical to maintaining a sec
 
 You can list all tokens issued for a specific agent name to monitor active connections and track their activity.
 
-:::step
 ### 1. Run the list command
 Use the `agent token list` command, specifying the target agent's name:
 
 ```bash
 agentsecrets agent token list "billing-processor"
 ```
-:::
 
-:::step
 ### 2. Inspect active connections
 The CLI returns a table displaying metadata for all tokens associated with that agent:
 
@@ -31,7 +28,6 @@ tok_9a2b3c4d  2026-05-19 12:00:00   2026-05-20 01:12:00   active
 * **CREATED**: The timestamp when the token was generated.
 * **LAST USED**: The timestamp when the credential proxy last authenticated a request using this token.
 * **STATUS**: The current state of the token (e.g., `active` or `revoked`).
-:::
 
 ---
 
@@ -39,21 +35,16 @@ tok_9a2b3c4d  2026-05-19 12:00:00   2026-05-20 01:12:00   active
 
 If a token is exposed, or if a container or VM hosting an agent is terminated, you must revoke the token immediately.
 
-:::step
 ### 1. Identify the Token ID
 Run `agentsecrets agent token list` to identify the ID of the token you wish to revoke (e.g., `tok_7f9b8c2d`).
-:::
 
-:::step
 ### 2. Execute the revocation command
 Run the `revoke` command with the token ID and agent name:
 
 ```bash
 agentsecrets agent token revoke tok_7f9b8c2d --agent="billing-processor"
 ```
-:::
 
-:::step
 ### 3. Verify revocation
 List the tokens again to ensure the status is updated or the token is removed:
 
@@ -68,7 +59,6 @@ Host: api.agentsecrets.com
 Authorization: Bearer <user_session_jwt>
 ```
 Once executed, the token ID is blocklisted. The proxy syncs this blocklist within seconds, and any subsequent API calls using the revoked token will fail with a `401 Unauthorized` status.
-:::
 
 ---
 
@@ -103,7 +93,11 @@ Currently, agent tokens remain active indefinitely until they are explicitly rev
    ```bash
    agentsecrets agent token issue "billing-processor" --ttl 7d
    ```
+:::
+:::step
 2. **Automatic Rotation SDKs**: Out-of-the-box support in the SDK to dynamically exchange expiring tokens in the background without process restarts.
+:::
+:::step
 3. **Idle Token Auto-Deactivation**: A workspace-level policy that automatically revokes any token that has not made a call to the proxy within a configurable window (e.g., 30 days).
 :::
 

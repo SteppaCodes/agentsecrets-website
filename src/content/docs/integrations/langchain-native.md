@@ -15,12 +15,17 @@ When building LangChain tools (`@tool` or `BaseTool`), you traditionally inject 
    ```bash
    agentsecrets secrets set STRIPE_KEY=sk_live_...
    ```
+:::
+:::step
 2. **Authorize the domain**:
    ```bash
    agentsecrets workspace allowlist add api.stripe.com
    ```
+:::
+:::step
 3. **Build the Tool**:
    Instead of using `os.environ["STRIPE_KEY"]`, configure your Python `requests` client to use the proxy injection headers:
+:::
 
    ```python
    import requests
@@ -50,7 +55,6 @@ When building LangChain tools (`@tool` or `BaseTool`), you traditionally inject 
        
        return response.text
    ```
-:::
 
 By defining your LangChain tools this way, the agent can reason about the tool and invoke it, but the agent's memory window and process environment remain completely free of the `STRIPE_KEY`.
 

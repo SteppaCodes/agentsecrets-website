@@ -81,7 +81,6 @@ const response = await fetch('http://localhost:8765/proxy', {
 ```
 The JavaScript SDK is on the roadmap. Until then, route requests through the HTTP proxy using the injection headers shown above.
 
-:::
 
 ---
 

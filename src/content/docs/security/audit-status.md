@@ -9,7 +9,11 @@ AgentSecrets is currently undergoing a comprehensive, independent third-party se
 The ongoing audit covers the following components:
 :::step
 1. **The local Go proxy**: Verifying TLS interception, SSRF protection, and memory safety during injection.
+:::
+:::step
 2. **The E2EE Cryptography**: Validating the AES-256-GCM implementation, ECDH key exchanges for team sharing, and Argon2id key derivation.
+:::
+:::step
 3. **The CLI Sync Engine**: Ensuring that ciphertext blobs are not susceptible to replay attacks or downgrade attacks.
 :::
 

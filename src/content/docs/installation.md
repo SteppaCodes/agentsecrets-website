@@ -46,7 +46,6 @@ go install github.com/The-17/agentsecrets/cmd/agentsecrets@latest
 
 Builds from source and places the binary in your `$GOPATH/bin`. Ensure `$GOPATH/bin` is in your `$PATH`.
 
-:::
 
 ## Verifying your installation
 
@@ -81,7 +80,6 @@ pip install --upgrade agentsecrets-cli
 ```bash
 go install github.com/The-17/agentsecrets/cmd/agentsecrets@latest
 ```
-:::
 
 > [TIP]
 > Run `agentsecrets --version` after upgrading to confirm the new version is active.

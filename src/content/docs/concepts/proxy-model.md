@@ -20,13 +20,29 @@ The sequence:
 
 :::step
 1. Your agent sends a request to `localhost:8765` with a key name in an injection header
+:::
+:::step
 2. The proxy validates the target domain against the allowlist
+:::
+:::step
 3. The proxy retrieves the key name from the request header
+:::
+:::step
 4. The proxy looks up the corresponding value in the OS keychain
+:::
+:::step
 5. The proxy decrypts the value in its own process memory
+:::
+:::step
 6. The proxy constructs the outbound HTTP request with the decrypted value injected in the appropriate position (bearer token, header, query param, etc.)
+:::
+:::step
 7. The proxy sends the request to the target API
+:::
+:::step
 8. The proxy receives the response, scans it for credential echoes, and redacts if found
+:::
+:::step
 9. The proxy returns the API response to the caller and writes an audit log entry
 :::
 

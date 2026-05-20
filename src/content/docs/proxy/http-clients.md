@@ -14,7 +14,9 @@ To communicate with the proxy directly, your client must perform three steps:
 1. **Locate and read the session file**:
    - **macOS/Linux**: `~/.agentsecrets/session.json`
    - **Windows**: `%USERPROFILE%\.agentsecrets\session.json`
+:::
    
+:::step
 2. **Parse the JSON config**:
    The file contains the active daemon port and the session authentication token:
    ```json
@@ -23,7 +25,9 @@ To communicate with the proxy directly, your client must perform three steps:
      "port": 8765
    }
    ```
+:::
 
+:::step
 3. **Construct the request**:
    Send a request to `http://localhost:<port>/proxy` containing these three headers:
    - `X-AS-Session-Token`: The token parsed from `session.json`.

@@ -15,8 +15,14 @@ agentsecrets proxy start
 When you run this command, the proxy:
 :::step
 1. Resolves your active project configuration from `.agentsecrets/project.json`.
+:::
+:::step
 2. Connects to your local OS Keychain (macOS Keychain, Windows Credential Manager, or Linux Secret Service) to prepare for secure, hardware-backed secret decryption.
+:::
+:::step
 3. Pulls down the latest domain allowlist and credential revocation lists from the AgentSecrets backend (storing only encrypted ciphertext or cryptographic hashes).
+:::
+:::step
 4. Spawns a background worker process and binds an HTTP server to `127.0.0.1:8765`.
 :::
 
@@ -102,7 +108,6 @@ The shutdown sequence:
 For development environments or production headless servers where you want the proxy to run persistently across reboots, you can configure it as a system service.
 
 ### 1. Linux (systemd)
-:::step
 Create a systemd service file at `/etc/systemd/system/agentsecrets.service`:
 
 ```ini
@@ -130,10 +135,8 @@ sudo systemctl daemon-reload
 sudo systemctl enable agentsecrets
 sudo systemctl start agentsecrets
 ```
-:::
 
 ### 2. macOS (launchd)
-:::step
 Create a plist file at `/Library/LaunchDaemons/com.agentsecrets.proxy.plist`:
 
 ```xml
@@ -168,10 +171,8 @@ Load and start the service:
 ```bash
 sudo launchctl load -w /Library/LaunchDaemons/com.agentsecrets.proxy.plist
 ```
-:::
 
 ### 3. Node.js PM2 (Cross-Platform)
-:::step
 If you already use PM2 for process management in your Node.js ecosystem, you can add the proxy to your `ecosystem.config.js` file:
 
 ```javascript
@@ -195,4 +196,3 @@ Start the application:
 ```bash
 pm2 start ecosystem.config.js
 ```
-:::

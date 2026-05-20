@@ -10,7 +10,11 @@ By default, every project supports three canonical environments:
 
 :::step
 1. **development** (`dev`): Used by local developer machines. This is typically the default environment context.
+:::
+:::step
 2. **staging**: Used for pre-production testing or continuous integration pipelines.
+:::
+:::step
 3. **production** (`prod`): Houses live, high-privilege credentials. Access to production secrets is usually restricted to specific owners, production agent identities, or CI/CD runner tokens.
 :::
 

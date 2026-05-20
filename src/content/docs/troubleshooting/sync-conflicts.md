@@ -42,6 +42,8 @@ When running `agentsecrets secrets push` or `secrets pull`, you might encounter 
    ```bash
    agentsecrets secrets pull
    ```
+:::
+:::step
 2. **Pushing Local Changes:** If you modified a secret locally but another teammate pushed a newer version, your push will be rejected. You must pull the latest changes first, re-apply your update locally, and then push.
 :::
 

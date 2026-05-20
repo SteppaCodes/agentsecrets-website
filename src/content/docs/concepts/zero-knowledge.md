@@ -57,8 +57,14 @@ When you push a secret to cloud sync, the following happens on your machine befo
 
 :::step
 1. Your workspace key is retrieved from your OS keychain
+:::
+:::step
 2. The secret value is encrypted using AES-256-GCM with a key derived from your workspace key via Argon2id
+:::
+:::step
 3. The encrypted blob, nonce, and authentication tag are sent to the server
+:::
+:::step
 4. Your workspace key never leaves your machine
 :::
 

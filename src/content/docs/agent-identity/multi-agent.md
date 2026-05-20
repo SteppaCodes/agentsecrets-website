@@ -10,7 +10,6 @@ If these agents share a single flat pool of environment variables, any vulnerabi
 
 The recommended design pattern for multi-agent systems is to instantiate separate `AgentSecrets` client objects or proxy configurations for each agent role, rather than sharing a single global client.
 
-:::step
 ### 1. Issue tokens for each agent role
 Generate separate cryptographic tokens for each agent in your swarm:
 
@@ -19,9 +18,7 @@ agentsecrets agent token issue "swarm-researcher"
 agentsecrets agent token issue "swarm-writer"
 agentsecrets agent token issue "swarm-publisher"
 ```
-:::
 
-:::step
 ### 2. Configure the SDK clients
 Instantiate separate client instances in your orchestration code:
 
@@ -46,9 +43,7 @@ publisher_secrets = AgentSecrets(
     agent_token="agt_ws01hxyz_publisherToken..."
 )
 ```
-:::
 
-:::step
 ### 3. Attach secrets clients to agent tools
 Ensure each agent's tool executable block uses its designated secrets client:
 
@@ -64,7 +59,6 @@ def search_web(query: str) -> str:
     )
     return response.json()
 ```
-:::
 
 ---
 
@@ -91,21 +85,17 @@ Because AgentSecrets does not expose plaintext values to the agent's runtime mem
 
 When you detect this anomaly:
 
-:::step
 ### 1. Identify the compromised agent token
 Run the list command to find the active token ID:
 ```bash
 agentsecrets agent token list "swarm-researcher"
 ```
-:::
 
-:::step
 ### 2. Revoke the token
 Revoke the Researcher's token immediately:
 ```bash
 agentsecrets agent token revoke tok_researcher_id --agent="swarm-researcher"
 ```
-:::
 
 The `swarm-researcher` is immediately locked out from resolving any credentials through the proxy. However, the `swarm-writer` and `swarm-publisher` continue operating normally. Your application remains partially active, avoiding a complete service outage while you patch the prompt injection vulnerability.
 

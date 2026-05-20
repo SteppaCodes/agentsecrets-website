@@ -14,16 +14,16 @@ if (typeof window !== "undefined") {
     startOnLoad: false,
     theme: "base",
     themeVariables: {
-      primaryColor: "#00FF87",
-      primaryTextColor: "#FFFFFF",
-      primaryBorderColor: "#00FF87",
-      lineColor: "#FFFFFF",
+      primaryColor: "rgba(0, 127, 106, 0.08)",
+      primaryTextColor: "#1B1B1B",
+      primaryBorderColor: "#007F6A",
+      lineColor: "#1B1B1B",
       secondaryColor: "#007F6A",
-      tertiaryColor: "#0A0A0A",
-      mainBkg: "#111111",
-      nodeBorder: "#00FF87",
-      clusterBkg: "#1A1A1A",
-      titleColor: "#FFFFFF",
+      tertiaryColor: "#FAFAFA",
+      mainBkg: "#FAFAFA",
+      nodeBorder: "#007F6A",
+      clusterBkg: "rgba(0,0,0,0.02)",
+      titleColor: "#1B1B1B",
     },
     fontFamily: "var(--font-sans)",
   });
@@ -516,8 +516,8 @@ export default function MarkdownRenderer({ content, id: sectionId }: { content: 
           text-decoration: line-through;
           text-decoration-color: rgba(0,0,0,0.2);
         }
-        .mermaid-loading { padding: 40px; background: #111; border-radius: 12px; margin: 24px 0; color: #666; text-align: center; }
-        .mermaid-wrap { margin: 32px 0; display: flex; justify-content: center; background: #0A0A0A; padding: 40px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
+        .mermaid-loading { padding: 40px; background: #FAFAFA; border-radius: 12px; margin: 24px 0; color: #666; text-align: center; border: 1px solid rgba(0,0,0,0.08); }
+        .mermaid-wrap { margin: 32px 0; display: flex; justify-content: center; background: #FAFAFA; padding: 40px; border-radius: 16px; border: 1px solid rgba(0,0,0,0.08); overflow-x: auto; }
         .code-block-wrapper { position: relative; margin: 24px 0; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,0,0,0.08); background: #FAFAFA; }
         .code-block-wrapper .code-copy-btn { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.06); border-radius: 8px; color: #666; cursor: pointer; opacity: 0; transition: all 0.2s ease; z-index: 10; }
         .code-block-wrapper:hover .code-copy-btn { opacity: 1; }

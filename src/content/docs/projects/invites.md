@@ -15,9 +15,17 @@ agentsecrets workspace invite alice@acme.com
 ### The Onboarding Flow
 :::step
 1. Alice receives an email invitation containing a secure acceptance link.
+:::
+:::step
 2. She clicks the link to authenticate and create her AgentSecrets account.
+:::
+:::step
 3. She installs the CLI and runs `agentsecrets login`.
+:::
+:::step
 4. During login, her local CLI generates her personal cryptographic keypair and establishes trust with the Workspace root key.
+:::
+:::step
 5. She pulls the secrets for any project using `agentsecrets secrets pull`.
 :::
 

@@ -44,7 +44,13 @@ Transitioning from plaintext `.env` files to AgentSecrets is designed to be a fr
 
 :::step
 1. **Initialize the workspace**: Run `agentsecrets init --storage-mode 1` to initialize the project in zero-knowledge Keychain mode.
+:::
+:::step
 2. **Import existing configurations**: Run `agentsecrets secrets push` to read your current `.env` file, locally encrypt the contents using AES-256-GCM, and save them directly in the OS Keychain.
+:::
+:::step
 3. **Clean up filesystem**: Delete the plaintext `.env` files from disk.
+:::
+:::step
 4. **Update execution command**: Run your command using the runtime execution wrapper (`agentsecrets env -- <command>`) or route requests through the local proxy.
 :::

@@ -15,11 +15,16 @@ CrewAI tools are fundamentally Python functions or classes. To secure them, repl
    ```bash
    agentsecrets secrets set GITHUB_TOKEN=ghp_abc123...
    ```
+:::
+:::step
 2. **Authorize the domain**:
    ```bash
    agentsecrets workspace allowlist add api.github.com
    ```
+:::
+:::step
 3. **Build the CrewAI Tool**:
+:::
 
    ```python
    import requests
@@ -47,7 +52,6 @@ CrewAI tools are fundamentally Python functions or classes. To secure them, repl
                return response.text
            return f"Failed to fetch issues: {response.status_code}"
    ```
-:::
 
 When your CrewAI agent decides to use the `FetchGitHubIssuesTool`, it provides the `repo_name` argument. The tool sends the request to the local AgentSecrets proxy, which resolves `GITHUB_TOKEN` from your OS Keychain, injects it, and forwards it to GitHub. The agent only receives the JSON list of issues.
 

@@ -10,16 +10,13 @@ By using cryptographic tokens, you ensure that every secret resolution is fully 
 
 You generate agent tokens using the AgentSecrets CLI. Generating a token registers the agent identity in the workspace (if it doesn't already exist) and outputs a unique, one-time-visible token value.
 
-:::step
 ### 1. Run the issue command
 Open your terminal and run the `agent token issue` command, passing the name of the agent:
 
 ```bash
 agentsecrets agent token issue "billing-processor"
 ```
-:::
 
-:::step
 ### 2. Copy the token value
 The command will output the newly generated cryptographic token:
 
@@ -34,12 +31,9 @@ This token value is shown ONLY ONCE. Copy and store it securely immediately.
 The server stores only a cryptographic SHA-256 hash of this token for validation.
 It cannot be recovered if lost.
 ```
-:::
 
-:::step
 ### 3. Store the token securely
 Save the token in your production environment variables (`AGENTSECRETS_TOKEN`) or a secure secret manager (e.g. AWS Secrets Manager or Kubernetes Secrets) to inject into your running agent container.
-:::
 
 ---
 
@@ -56,6 +50,8 @@ $$\text{agt\_} + \text{workspace\_prefix} + \text{\_} + \text{cryptographic\_pay
 When the proxy receives an agent token, it performs two verification steps:
 :::step
 1. **Signature Check**: It decodes the payload and verifies the cryptographic signature locally using the workspace's public key (retrieved during initialization). This requires zero network roundtrips.
+:::
+:::step
 2. **Revocation Check**: It queries its local cache (which synced with the cloud backend) to verify that the token's unique ID (`tok_7f9b8c2d`) has not been revoked.
 :::
 

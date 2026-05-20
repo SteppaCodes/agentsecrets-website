@@ -25,13 +25,17 @@ This guide walks you through migrating from `dotenv-vault` to AgentSecrets, achi
    ```bash
    npx dotenv-vault decrypt
    ```
+:::
 
+:::step
 2. **Initialize your AgentSecrets workspace:**
    Initialize a new project and workspace in your directory:
    ```bash
    agentsecrets init
    ```
+:::
 
+:::step
 3. **Import your secrets:**
    Push your decrypted local `.env` file into AgentSecrets. This command automatically encrypts each credential value locally and stores it in your secure OS Keychain:
    ```bash
@@ -41,16 +45,21 @@ This guide walks you through migrating from `dotenv-vault` to AgentSecrets, achi
    ```bash
    agentsecrets secrets list
    ```
+:::
 
+:::step
 4. **Remove dotenv-vault files and keys:**
    Clean up your repository by deleting the dotenv-vault configuration and encrypted keys. Run:
    ```bash
    rm .env.vault .env.project .env.keys .env
    ```
    Remove any `DOTENV_KEY` environment variables from your shell profile, system environment, or hosting provider configuration.
+:::
 
+:::step
 5. **Update your code integration:**
    Remove the `dotenv-vault` setup from your application code:
+:::
    
    **Before (Node.js):**
    ```javascript
@@ -74,7 +83,6 @@ This guide walks you through migrating from `dotenv-vault` to AgentSecrets, achi
      }
    });
    ```
-:::
 
 ---
 
