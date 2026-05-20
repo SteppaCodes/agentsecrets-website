@@ -64,6 +64,7 @@ curl http://localhost:8765/proxy \
   -H "X-AS-Agent-ID: billing-processor"
 ```
 
+:::
 
 Declared identity is suitable for multi-agent systems where audit log clarity matters but you trust the agents running and do not need per-token revocation.
 
@@ -97,6 +98,7 @@ curl http://localhost:8765/proxy \
   -H "X-AS-Agent-Token: agt_ws01hxyz_4kR9mNpQ..."
 ```
 
+:::
 
 Use issued identity for production multi-agent systems, agents with access to sensitive secrets, and any situation where you need to revoke a single agent's access immediately.
 

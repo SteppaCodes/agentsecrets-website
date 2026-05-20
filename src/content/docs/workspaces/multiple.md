@@ -20,9 +20,7 @@ All CLI commands run within the context of the active workspace. You can view, s
      Acme Engineering  (shared)          5 members
      Billing Service   (shared)          2 members
    ```
-:::
 
-:::step
 2. **Switch the active workspace:**
    Switch your context to another workspace using its name:
    ```bash
@@ -32,9 +30,7 @@ All CLI commands run within the context of the active workspace. You can view, s
    ```
    ✓ Switched active workspace to "Acme Engineering".
    ```
-:::
 
-:::step
 3. **Verify the change:**
    Run `status` to confirm your active workspace context:
    ```bash

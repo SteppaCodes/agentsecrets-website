@@ -15,11 +15,7 @@ agentsecrets project create "my-ai-assistant"
 When you run this command, AgentSecrets performs several local actions:
 :::step
 1. **Cloud Registration**: It registers the project ID securely in your cloud workspace.
-:::
-:::step
 2. **Context Creation**: It generates a local `.agentsecrets/project.json` file in your current working directory.
-:::
-:::step
 3. **Environment Provisioning**: It provisions three default environments (`development`, `staging`, `production`) and automatically switches your context to `development`.
 :::
 

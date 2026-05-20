@@ -33,11 +33,7 @@ Because the real API keys do not exist in the agent's environment or code variab
 When you push secrets:
 :::step
 1. The CLI encrypts the secrets locally using your Workspace Master Key.
-:::
-:::step
 2. The ciphertext is sent to the server.
-:::
-:::step
 3. The server stores only the encrypted bytes.
 :::
 

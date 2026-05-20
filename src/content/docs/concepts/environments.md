@@ -34,14 +34,8 @@ When AgentSecrets needs to determine the active environment, it checks in this o
 
 :::step
 1. `AGENTSECRETS_ENV` environment variable — highest priority, intended for CI/CD pipelines
-:::
-:::step
 2. `.agentsecrets/project.json` in the current directory — per-project, set by `agentsecrets environment switch` from that project root
-:::
-:::step
 3. Global config `selected_environment` — fallback across all projects
-:::
-:::step
 4. `development` — hardcoded default if none of the above is set
 :::
 

@@ -31,8 +31,6 @@ This means that if you organize your code into separate directories, context swi
 :::step
 1. `cd ~/code/billing-api`
    (AgentSecrets automatically detects the billing project config and loads Stripe keys).
-:::
-:::step
 2. `cd ~/code/support-agent`
    (AgentSecrets seamlessly drops the billing context and loads the OpenAI keys for the agent).
 :::

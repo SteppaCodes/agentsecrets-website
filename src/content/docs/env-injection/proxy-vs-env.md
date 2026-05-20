@@ -40,11 +40,7 @@ Using `agentsecrets env -- <command>`, AgentSecrets reads requested keys from th
 Use `agentsecrets env` when:
 :::step
 1. **Running legacy CLI tools**: Traditional scripts and services that require environment variables and cannot be configured to use HTTP proxies.
-:::
-:::step
 2. **Local test execution**: Running tests via `agentsecrets env -- npm test` or `agentsecrets env -- pytest` where prompt injection is not a risk.
-:::
-:::step
 3. **Internal developer workflows**: Securing database passwords and credentials on developer machines without writing plaintext `.env` files to disk.
 :::
 
@@ -55,10 +51,6 @@ Use `agentsecrets env` when:
 Use the local proxy or SDK when:
 :::step
 1. **Deploying autonomous AI agents**: Any agent that processes user-generated queries, handles files, or uses tools dynamically.
-:::
-:::step
 2. **Handling untrusted code or plugins**: If your application loads third-party plugins, packages, or LLM-assisted runtimes.
-:::
-:::step
 3. **Enforcing network egress policies**: Restricting outgoing requests to allowed domains, preventing compromised packages from exfiltrating data.
 :::

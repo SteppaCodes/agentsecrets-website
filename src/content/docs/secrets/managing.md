@@ -10,17 +10,9 @@ Most workflows follow the same lifecycle:
 
 :::step
 1. Set a secret
-:::
-:::step
 2. The value is encrypted locally
-:::
-:::step
 3. The encrypted blob syncs to the cloud
-:::
-:::step
 4. The proxy resolves the value at runtime
-:::
-:::step
 5. Agents reference the key name, not the value
 :::
 
@@ -57,14 +49,8 @@ This prompts for confirmation before writing to all three environments.
 ### What happens internally
 :::step
 1. The CLI reads your workspace encryption key from `~/.agentsecrets/config.json`.
-:::
-:::step
 2. Encrypts each value locally using `AES-256-GCM`.
-:::
-:::step
 3. Sends the encrypted blob to the AgentSecrets API, the server stores the blob only.
-:::
-:::step
 4. If your storage mode is Keychain, also writes the value to your OS keychain.
 :::
 

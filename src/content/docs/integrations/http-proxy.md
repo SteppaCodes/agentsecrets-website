@@ -11,11 +11,7 @@ The proxy runs locally on `http://localhost:8765` and acts as a transport-layer 
 To route a request through the proxy, you modify three parts of your standard HTTP call:
 :::step
 1. Change the actual request URL to `http://localhost:8765/proxy`.
-:::
-:::step
 2. Provide the destination URL in the `X-AS-Target-URL` header.
-:::
-:::step
 3. Provide the key reference in an injection header (e.g., `X-AS-Inject-Bearer`).
 :::
 

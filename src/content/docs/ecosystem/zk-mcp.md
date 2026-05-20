@@ -46,28 +46,20 @@ Notice the complete absence of an `env` block. The agent passes only a **key nam
    ```bash
    agentsecrets init
    ```
-:::
-:::step
 2. **Clone the ZK MCP repository**:
    ```bash
    git clone https://github.com/The-17/zero-knowledge-mcp
    cd zero-knowledge-mcp
    make install
    ```
-:::
-:::step
 3. **Store your credentials**:
    ```bash
    agentsecrets secrets set GITHUB_TOKEN=ghp_your_token
    ```
-:::
-:::step
 4. **Allowlist the target domains**:
    ```bash
    agentsecrets workspace allowlist add api.github.com
    ```
-:::
-:::step
 5. **Start the Proxy**:
    ```bash
    agentsecrets proxy start

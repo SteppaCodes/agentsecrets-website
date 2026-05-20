@@ -13,14 +13,10 @@ To rotate an existing secret (e.g., you rolled your Stripe API key in the Stripe
    ```bash
    agentsecrets secrets set STRIPE_KEY=sk_live_new12345
    ```
-:::
-:::step
 2. **Push the Update**: Push the newly encrypted ciphertext to the AgentSecrets synchronization server.
    ```bash
    agentsecrets secrets push
    ```
-:::
-:::step
 3. **Notify Teammates**: Instruct your team or CI/CD pipelines to pull the latest changes.
    ```bash
    agentsecrets secrets pull

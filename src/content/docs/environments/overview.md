@@ -81,14 +81,8 @@ When the CLI needs to determine which environment to use, it resolves in this or
 
 :::step
 1. `AGENTSECRETS_ENV` environment variable
-:::
-:::step
 2. Project configuration
-:::
-:::step
 3. Global configuration
-:::
-:::step
 4. `development`
 :::
 

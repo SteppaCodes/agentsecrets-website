@@ -54,11 +54,7 @@ X-AS-Inject-Bearer: STRIPE_KEY
 You do not need to manage the session token manually when using the official SDKs. The AgentSecrets SDK automatically:
 :::step
 1. Locates the session file on the local filesystem.
-:::
-:::step
 2. Reads the current token.
-:::
-:::step
 3. Injects the `X-AS-Session-Token` header into every request made through `client.call()`.
 :::
 

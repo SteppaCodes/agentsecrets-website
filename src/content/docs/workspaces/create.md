@@ -29,9 +29,7 @@ Workspace names must be alphanumeric and can contain spaces, dashes, or undersco
    ```bash
    agentsecrets workspace create "Billing Team"
    ```
-:::
 
-:::step
 2. **Verify workspace creation:**
    Listing your workspaces will show both your default personal workspace and the newly created shared workspace.
    ```bash
@@ -42,17 +40,13 @@ Workspace names must be alphanumeric and can contain spaces, dashes, or undersco
    * personal      (your-username)   ← active
      Billing Team  (shared)          1 member
    ```
-:::
 
-:::step
 3. **Switch to the new workspace:**
    Switch to the new workspace to begin creating projects and configuring allowlists.
    ```bash
    agentsecrets workspace switch "Billing Team"
    ```
-:::
 
-:::step
 4. **Verify the active context:**
    Check the active workspace and environment:
    ```bash
@@ -75,9 +69,7 @@ Once a shared workspace is created, you can invite team members immediately. Inv
    ```bash
    agentsecrets workspace invite dev1@example.com dev2@example.com
    ```
-:::
 
-:::step
 2. **Wait for acceptance:**
    Invited members will receive an email containing a secure link. They can accept it via the CLI or web dashboard. Once accepted, their local CLI generates its own keypair and exchanges public keys with your workspace.
 :::

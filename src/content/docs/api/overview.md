@@ -28,11 +28,7 @@ The backend operates under strict **Zero-Knowledge** constraints.
 All encryption and decryption happen locally on your machine:
 :::step
 1. When you run `agentsecrets init` or create a workspace, a symmetric **Workspace Key** is generated locally.
-:::
-:::step
 2. When you invite team members, your local CLI fetches their public keys from the backend, encrypts the Workspace Key for them, and uploads the encrypted key envelope to the backend.
-:::
-:::step
 3. Secrets are encrypted locally using AES-GCM prior to being pushed to the cloud. The backend only sees base64-encoded encrypted blobs.
 :::
 

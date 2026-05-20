@@ -11,8 +11,6 @@ With AgentSecrets, onboarding takes 30 seconds.
    ```bash
    agentsecrets workspace invite dev@yourcompany.com
    ```
-:::
-:::step
 2. **They accept and pull:**
    The developer runs the following commands:
    ```bash
