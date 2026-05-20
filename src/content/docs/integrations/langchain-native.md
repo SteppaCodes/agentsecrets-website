@@ -1,39 +1,63 @@
-# LangChain Native Integration (Coming Soon)
+# LangChain Integration
 
-AgentSecrets is building a native `BaseTool` implementation for LangChain and LangGraph.
+AgentSecrets integrates natively with LangChain to ensure your agents can authenticate with external APIs without ever holding the plaintext credentials in their context or memory.
 
-When building complex agentic workflows in LangChain, tools often require extensive access to third-party APIs. Passing these credentials via environment variables exposes them to potential leakage via LLM context windows or malicious tool arguments.
+---
 
-## How it will work
+## The Zero-Knowledge Tool Pattern
 
-The native integration will provide an `AgentSecretsTool` class that handles HTTP routing through the local proxy automatically.
+When building LangChain tools (`@tool` or `BaseTool`), you traditionally inject API keys into the tool's environment or initialization parameters. With AgentSecrets, you configure the tool to route its underlying HTTP client through the local AgentSecrets proxy.
 
-### Example Preview
+### Example: Custom LangChain Tool
 
-```python
-from langchain.agents import initialize_agent, AgentType
-from langchain.llms import OpenAI
-from agentsecrets.integrations.langchain import AgentSecretsTool
+:::step
+1. **Store your secret**:
+   ```bash
+   agentsecrets secrets set STRIPE_KEY=sk_live_...
+   ```
+2. **Authorize the domain**:
+   ```bash
+   agentsecrets workspace allowlist add api.stripe.com
+   ```
+3. **Build the Tool**:
+   Instead of using `os.environ["STRIPE_KEY"]`, configure your Python `requests` client to use the proxy injection headers:
 
-# Define a tool that requires authentication
-github_repo_tool = AgentSecretsTool(
-    name="GitHub Repo Fetcher",
-    description="Fetches a list of repositories for a user",
-    endpoint="https://api.github.com/users/{username}/repos",
-    method="GET",
-    auth_type="bearer",
-    key_name="GITHUB_TOKEN" # Key name only, value stays in OS keychain
-)
+   ```python
+   import requests
+   from langchain_core.tools import tool
 
-llm = OpenAI(temperature=0)
-agent = initialize_agent(
-    tools=[github_repo_tool], 
-    llm=llm, 
-    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION
-)
+   @tool
+   def fetch_stripe_balance() -> str:
+       """Fetches the current account balance from Stripe."""
+       
+       # The proxy runs on localhost:8765
+       proxies = {
+           "http": "http://localhost:8765",
+           "https": "http://localhost:8765"
+       }
+       
+       # Tell the proxy which credential to resolve
+       headers = {
+           "X-AS-Target-URL": "https://api.stripe.com/v1/balance",
+           "X-AS-Inject-Bearer": "STRIPE_KEY"
+       }
+       
+       # Send the request to the proxy
+       response = requests.get(
+           "http://localhost:8765/proxy", 
+           headers=headers
+       )
+       
+       return response.text
+   ```
+:::
 
-agent.run("What repositories does The-17 own on GitHub?")
-```
+By defining your LangChain tools this way, the agent can reason about the tool and invoke it, but the agent's memory window and process environment remain completely free of the `STRIPE_KEY`.
 
-> [TIP]
-> This integration is currently in early beta. In the meantime, you can build custom LangChain tools by subclassing `BaseTool` and making requests using the standard `agentsecrets` Python client.
+---
+
+## Native LangChain Python SDK (Coming Soon)
+
+A native Python SDK for LangChain is currently in development. It will provide a zero-knowledge HTTP client and a native `AgentSecretsTool` class that automatically handles proxy routing, certificate verification, and header injection.
+
+Until the native SDK is released, use the HTTP proxy routing method described above.

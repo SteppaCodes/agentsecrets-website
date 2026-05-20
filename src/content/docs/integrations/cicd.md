@@ -1,46 +1,88 @@
-# Using AgentSecrets in CI/CD
+# CI/CD Integration
 
-## Why CI/CD environments need special handling
+AgentSecrets can be utilized seamlessly in Continuous Integration and Continuous Deployment (CI/CD) pipelines to securely inject testing or deployment credentials without exposing them in CI configuration files or job runners.
 
-Content for this section is coming soon.
+---
 
-## Using agentsecrets env in CI
+## The Workflow
 
-Content for this section is coming soon.
+In a CI/CD environment, you typically run AgentSecrets in **Environment Injection** mode (`agentsecrets env --`). 
 
-## GitHub Actions setup
+Because CI environments are ephemeral and headless, you authenticate the AgentSecrets CLI by issuing an Agent Token, injecting it via a single repository secret, and running your test suite.
 
-Content for this section is coming soon.
+---
 
-## GitLab CI setup
+## Step-by-Step CI/CD Configuration
 
-Content for this section is coming soon.
+### 1. Issue a CI Token
+From your local machine, generate a token for your CI environment (e.g. staging or production):
+```bash
+agentsecrets identity issue --name "github-actions-ci" --role editor
+```
+*Note: Save the output token (`ws01...`). It will only be shown once.*
 
-## Avoiding secrets in pipeline logs
+### 2. Add the Token to your CI Provider
+Store the token as a masked repository secret in your CI provider (e.g., GitHub Secrets, GitLab CI Variables, or AWS CodePipeline parameters). Name the variable `AGENTSECRETS_TOKEN`.
 
-Content for this section is coming soon.
+### 3. Update your Pipeline Configuration
 
-## Service account identity for CI agents
-
-Content for this section is coming soon.
-
-# Using AgentSecrets in CI/CD
-
-For CI/CD pipelines, use the `AGENTSECRETS_ENV` environment variable to set the active environment without modifying `project.json`:
+#### Example: GitHub Actions
 
 ```yaml
-# GitHub Actions example
-- name: Run agent
-  env:
-    AGENTSECRETS_ENV: production
-  run: |
-    agentsecrets login
-    agentsecrets secrets pull
-    agentsecrets proxy start
-    python run_agent.py
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        
+    - name: Install AgentSecrets CLI
+      run: npm install -g @the-17/agentsecrets
+      
+    - name: Install Dependencies
+      run: npm ci
+      
+    - name: Run Tests with Zero-Knowledge Injection
+      env:
+        # The CLI automatically detects this environment variable for authentication
+        AGENTSECRETS_TOKEN: ${{ secrets.AGENTSECRETS_TOKEN }}
+      run: |
+        # Injects the latest secrets directly into the test suite memory
+        agentsecrets env -- npm test
 ```
 
-`AGENTSECRETS_ENV` takes the highest priority in environment resolution, overriding anything set in `project.json` or global config. This makes it safe to run production workflows in CI without modifying any project files.
+#### Example: GitLab CI
 
-For service accounts in CI, use issued agent identity with a token stored as a CI secret — not user credentials.
+```yaml
+stages:
+  - test
 
+run_tests:
+  stage: test
+  image: node:18
+  before_script:
+    - npm install -g @the-17/agentsecrets
+    - npm ci
+  script:
+    # AGENTSECRETS_TOKEN is defined in GitLab CI/CD Variables
+    - agentsecrets env -- npm test
+```
+
+---
+
+## Security Benefits in CI
+
+- **No Plaintext Syncing**: Test suites and deploy scripts fetch the latest encrypted credentials dynamically at runtime. If a secret is rotated centrally, the next CI job automatically receives the new key without requiring manual updates to GitHub Secrets.
+- **Audit Trails**: Every CI/CD run that pulls credentials generates an audit log attributed to the `"github-actions-ci"` agent token, ensuring compliance and visibility into pipeline secret consumption.

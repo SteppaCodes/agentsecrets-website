@@ -1,23 +1,34 @@
 # Integrations Overview
 
-AgentSecrets is designed to be deeply integrated into the AI agent ecosystem. Because AgentSecrets intercepts credentials at the transport layer via a local proxy, it inherently supports **any HTTP client in any language**. 
+AgentSecrets is designed to act as the universal credential infrastructure for the AI era. Because it operates at the process boundary and transport layer, it can integrate with virtually any application, framework, or AI agent without requiring you to rewrite your codebase.
 
-However, we provide specialized documentation and native SDKs for popular AI frameworks and desktop applications to ensure a seamless developer experience.
+---
 
-## Supported Platforms
+## Supported Integration Methods
 
-### IDEs and Desktop Apps
-- **[Claude Desktop](/docs/integrations/claude-desktop)**: Connect tools to Claude securely.
-- **[Cursor](/docs/integrations/cursor)**: Give Cursor's AI authenticated tools without exposing keys.
+You can integrate AgentSecrets into your workflow using any of the following methods, depending on your architecture and security requirements:
 
-### Frameworks (Native Support)
-- **[Zero-Knowledge MCP](/docs/ecosystem/zk-mcp)**: Build Model Context Protocol servers without credentials.
-- **[CrewAI (Coming Soon)](/docs/integrations/crewai-native)**: Drop-in support for CrewAI agents.
-- **[LangChain (Coming Soon)](/docs/integrations/langchain-native)**: Native `BaseTool` wrappers for LangChain.
+### 1. HTTP Proxy (Zero-Knowledge)
+The most secure method for autonomous AI agents. AgentSecrets runs a local proxy daemon on port `8765`. Your application routes standard API calls through the proxy using `X-AS-Inject-Bearer` or related headers. The proxy resolves the credential from the OS Keychain, injects it, and forwards the request.
+- **Best for:** LangChain, CrewAI, AutoGen, and custom agents.
+- **Security:** Complete. Credentials never touch your process memory.
+- [Read the HTTP Proxy Guide](http-proxy.md)
 
-### Universal Support
-- **[Any HTTP Proxy](/docs/integrations/http-proxy)**: If your language isn't supported yet, simply configure your HTTP client (e.g., `axios`, `requests`, `curl`) to route traffic through `http://localhost:8765`.
+### 2. Environment Injection (Process Spawning)
+The highest compatibility method. You run your normal command prefixed with `agentsecrets env --`. AgentSecrets resolves your keys from the keychain and injects them as standard environment variables directly into the child process at launch time.
+- **Best for:** Legacy tools, standard web applications (Next.js, Django, Spring), CI/CD pipelines, and local test suites.
+- **Security:** Moderate. Credentials never touch your disk, but they are accessible in process RAM.
+- [Read the Environment Injection Guide](../env-injection/any-process.md)
 
-## Why Native Integrations Matter
+### 3. Native Framework SDKs
+Drop-in SDK clients for popular AI frameworks that automatically route calls through the AgentSecrets proxy or interact directly with the OS Keychain.
+- **Best for:** Developers who want native Python or Node.js typings and seamless integration with existing agent toolkits.
+- **Security:** Complete. Wraps the proxy methodology into native code.
+- [Read the LangChain Guide](langchain-native.md)
+- [Read the CrewAI Guide](crewai-native.md)
 
-While the HTTP proxy works universally, native integrations (like our Python SDK or the ZK-MCP) handle the proxy routing, TLS certificate verification, and error handling automatically. They provide a frictionless developer experience where you only need to specify the `key_name`.
+### 4. Model Context Protocol (MCP) Servers
+A zero-knowledge integration for AI desktop tools (like Cursor, Claude Desktop, and Windsurf). The AgentSecrets MCP server exposes a local API call tool to the assistant over stdio, allowing the AI to query external APIs without ever holding the API keys in its context window.
+- **Best for:** AI IDEs and desktop assistants.
+- **Security:** Complete.
+- [Read the MCP Guide](../sdk/zero-knowledge-mcp.md)

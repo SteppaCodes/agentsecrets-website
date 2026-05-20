@@ -1,47 +1,58 @@
-# CrewAI Native Integration (Coming Soon)
+# CrewAI Integration
 
-AgentSecrets is currently building a native, drop-in integration for CrewAI. 
+CrewAI allows you to orchestrate autonomous AI agents. By integrating AgentSecrets, your CrewAI agents can execute actions against authenticated external APIs without risking credential exposure during tool execution or agent reasoning loops.
 
-CrewAI's architecture relies on autonomous agents utilizing tools to accomplish tasks. Currently, most CrewAI developers pass API keys into agent environments using `.env` files or direct hardcoding.
+---
 
-## The Upcoming Integration
+## Securing CrewAI Tools
 
-With the native integration, you will simply wrap your CrewAI execution block with the `AgentSecrets` SDK context manager or decorator.
+CrewAI tools are fundamentally Python functions or classes. To secure them, replace any direct environment variable lookups (`os.getenv`) with calls routed through the AgentSecrets local proxy.
 
-### Example Preview
+### Example: A Zero-Knowledge GitHub Tool
 
-```python
-from crewai import Agent, Task, Crew
-from agentsecrets import AgentSecrets
+:::step
+1. **Store your credential**:
+   ```bash
+   agentsecrets secrets set GITHUB_TOKEN=ghp_abc123...
+   ```
+2. **Authorize the domain**:
+   ```bash
+   agentsecrets workspace allowlist add api.github.com
+   ```
+3. **Build the CrewAI Tool**:
 
-# Initialize the proxy client
-client = AgentSecrets()
+   ```python
+   import requests
+   from crewai.tools import BaseTool
 
-# Define your tools using key names, not values
-@tool
-def fetch_user_data(user_id: str):
-    """Fetches user data from the CRM API."""
-    response = client.call(
-        f"https://api.crm.example.com/users/{user_id}",
-        bearer="CRM_API_KEY" # Reference only!
-    )
-    return response.json()
+   class FetchGitHubIssuesTool(BaseTool):
+       name: str = "fetch_github_issues"
+       description: str = "Fetches the latest open issues from a GitHub repository."
 
-# Create your agents
-researcher = Agent(
-    role='CRM Researcher',
-    goal='Gather complete user context',
-    tools=[fetch_user_data],
-    verbose=True
-)
+       def _run(self, repo_name: str) -> str:
+           # Define proxy routing headers
+           headers = {
+               "X-AS-Target-URL": f"https://api.github.com/repos/{repo_name}/issues",
+               "X-AS-Inject-Bearer": "GITHUB_TOKEN",
+               "Accept": "application/vnd.github.v3+json"
+           }
+           
+           # Make the request through AgentSecrets
+           response = requests.get(
+               "http://localhost:8765/proxy",
+               headers=headers
+           )
+           
+           if response.status_code == 200:
+               return response.text
+           return f"Failed to fetch issues: {response.status_code}"
+   ```
+:::
 
-# ... define tasks and crew ...
+When your CrewAI agent decides to use the `FetchGitHubIssuesTool`, it provides the `repo_name` argument. The tool sends the request to the local AgentSecrets proxy, which resolves `GITHUB_TOKEN` from your OS Keychain, injects it, and forwards it to GitHub. The agent only receives the JSON list of issues.
 
-# Run the crew
-result = crew.kickoff()
-```
+---
 
-By doing this, even if the `researcher` agent attempts to dump its context or experiences prompt injection from user data, the `CRM_API_KEY` value is physically not present in the Python process memory to be leaked.
+## Native CrewAI SDK (Coming Soon)
 
-> [NOTE]
-> This integration is in active development. If you need CrewAI support immediately, you can use the `AgentSecrets` Python SDK directly within your custom tools today.
+A native `crewai-agentsecrets` extension is currently in development. It will provide base tool classes that automatically inherit zero-knowledge network routing. Until it is available, the standard HTTP proxy method is fully supported and recommended.
