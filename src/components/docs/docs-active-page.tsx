@@ -285,9 +285,9 @@ export default function DocsActivePage({ activeId, content }: DocsActivePageProp
         <div className="hidden lg:block" />
         <main 
           ref={contentRef} 
-          className="docs-content" 
+          className="docs-content px-5 md:px-16 pt-[80px] md:pt-[100px] pb-[120px]" 
           style={{ 
-            padding: "100px 64px 120px 64px", width: "100%", height: "calc(100vh - 60px)", 
+            width: "100%", height: "calc(100vh - 60px)", 
             marginTop: 60, overflowY: "auto", scrollBehavior: "smooth", 
             display: "flex", flexDirection: "column", alignItems: "center" 
           }}

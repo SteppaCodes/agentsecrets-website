@@ -55,21 +55,22 @@ export default function ModelSection() {
       className='flex flex-col items-center bg-white pt-[10vh] md:pt-[15vh] pb-16 md:pb-[120px] scroll-mt-24'
       style={{ paddingRight: 'clamp(16px, 5vw, 100px)', paddingLeft: 'clamp(16px, 5vw, 100px)' }}
     >
-      <div className='w-full max-w-[1200px] mx-auto'>
+      <div className='w-full max-w-[1200px] mx-auto flex flex-col items-center'>
 
-        {/* Section Label */}
-        <span
-          ref={labelRef}
-          className='block text-[13px] font-medium tracking-wide text-[#007F6A] font-poppins mb-8'
-        >
-          MODEL
-        </span>
+        <div className='w-full max-w-[820px]'>
+          {/* Section Label */}
+          <span
+            ref={labelRef}
+            className='block text-[13px] font-medium tracking-wide text-[#007F6A] font-poppins mb-8 text-left'
+          >
+            MODEL
+          </span>
 
-        {/* Body Text */}
-        <div
-          ref={bodyRef}
-          className='text-[clamp(18px,1.5vw,24px)] font-light leading-[1.65] tracking-[-0.01em] text-[#1B1B1B] max-w-[820px]'
-        >
+          {/* Body Text */}
+          <div
+            ref={bodyRef}
+            className='text-[clamp(18px,1.5vw,24px)] font-light leading-[1.65] tracking-[-0.01em] text-[#1B1B1B] text-left'
+          >
           <p className="mb-10">
             Every secrets tool built before the agentic era was designed around the same assumption: the application is trusted.
           </p>
