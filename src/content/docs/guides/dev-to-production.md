@@ -1,50 +1,14 @@
-# Deploying from Dev to Production
+# Deploying from Dev to Production (Coming Soon)
 
-Moving an AgentSecrets-powered application from development to production requires switching from a local developer environment to a headless server environment.
+Currently, AgentSecrets is optimized strictly for **local development environments**. The proxy daemon relies heavily on native OS Keychains (macOS Keychain, Windows Credential Manager, Linux Secret Service) to ensure zero-knowledge hardware-backed security.
 
-## 1. Ensure Production Secrets Exist
-:::step
+Because of this architecture, moving an AgentSecrets-powered application to a headless server environment (like a cloud VM or a Kubernetes pod) is not currently supported out of the box.
 
-First, ensure your `production` environment is fully populated with secrets:
+## The Roadmap: The Cloud Resolver
 
-```bash
-agentsecrets environment switch production
-agentsecrets secrets list
-```
-:::
+We are actively developing the **Cloud Resolver**. Once released, it will allow headless servers to securely authenticate using Service Tokens, fetch encrypted credential payloads from the AgentSecrets backend, and resolve them directly in memory without needing an OS Keychain.
 
-## 2. Generate a Service Token
-:::step
-
-Your server cannot run `agentsecrets login` to authenticate interactively. Instead, you need a Service Token.
-
-Generate one in the web dashboard or via CLI:
-```bash
-agentsecrets account generate-token --role server
-```
-:::
-
-## 3. Configure the Server
-:::step
-
-On your production server (e.g., AWS EC2, DigitalOcean Droplet, Kubernetes pod), set the `AGENTSECRETS_TOKEN` environment variable.
-
-```bash
-export AGENTSECRETS_TOKEN="ast_live_12345..."
-export AGENTSECRETS_ENV="production"
-```
-:::
-
-## 4. Run the Proxy Sidecar
-:::step
-
-In production, the proxy typically runs as a sidecar container or a background daemon.
-
-```bash
-agentsecrets proxy start
-```
-
-Because the `AGENTSECRETS_TOKEN` is present, the proxy will authenticate, pull the `production` secrets down from the cloud, hold them in encrypted memory, and begin routing traffic immediately.
-
-Your application code does not need to change! It continues making requests to `localhost:8765` using the key names.
-:::
+Until the Cloud Resolver is released, if you are deploying to production:
+1. Continue using standard environment variables or `.env` files on your server.
+2. Rely on traditional Infrastructure as Code (IaC) secret injection methods like HashiCorp Vault, AWS Secrets Manager, or Kubernetes Secrets for your production deployments.
+3. Use AgentSecrets exclusively to secure your local development and testing environments.

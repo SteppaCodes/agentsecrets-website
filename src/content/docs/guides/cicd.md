@@ -1,30 +1,14 @@
-# Using AgentSecrets in CI/CD
+# Using AgentSecrets in CI/CD (Coming Soon)
 
-This guide covers how to use AgentSecrets in automated pipelines where the local binary and interactive authentication are not available. This workflow uses the cloud resolver, which is on the roadmap. Until it ships, the recommended approach for CI/CD is the `agentsecrets env` command with a service token.
+Currently, AgentSecrets is designed strictly for **local development environments**. The underlying encryption and proxy models require the native OS Keychain (macOS Keychain, Windows Credential Manager, Linux Secret Service) to ensure hardware-backed security.
 
-### Current approach — agentsecrets env in CI
+Because CI/CD pipelines (like GitHub Actions, GitLab CI, or CircleCI) run in ephemeral, headless containers without persistent user keychains, **AgentSecrets cannot currently be used to inject credentials into automated pipelines.**
 
-Until the cloud resolver ships, the recommended CI/CD pattern is to install the CLI, authenticate with a non-interactive method, and use `agentsecrets env` to inject credentials into your pipeline processes.
+## The Roadmap
 
-```yaml
-# GitHub Actions example
-- name: Install AgentSecrets
-  run: npm install -g @the-17/agentsecrets
+We are actively developing headless support. In the future, you will be able to:
+1. Issue a non-interactive Service Token from the CLI.
+2. Store that Service Token in your CI/CD provider's secret manager.
+3. Use the `agentsecrets env` command to securely pull and inject the required environment credentials directly into your build scripts and test runners.
 
-- name: Run deployment
-  env:
-    AGENTSECRETS_TOKEN: ${{ secrets.AGENTSECRETS_SERVICE_TOKEN }}
-  run: agentsecrets env -- ./deploy.sh
-```
-
-Store the service token in your CI/CD platform's secrets store (GitHub Actions secrets, GitLab CI variables, etc.). The token is used by the CLI to authenticate and pull the right credentials for the active environment.
-
-Set the environment using the `AGENTSECRETS_ENV` environment variable:
-
-```yaml
-- name: Deploy to production
-  env:
-    AGENTSECRETS_TOKEN: ${{ secrets.AGENTSECRETS_SERVICE_TOKEN }}
-    AGENTSECRETS_ENV: production
-  run: agentsecrets env -- ./deploy.sh
-```
+Until this feature is released, please continue using your CI/CD provider's built-in secret management capabilities for pipeline credentials.
