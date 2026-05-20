@@ -1,18 +1,26 @@
-# Using AgentSecrets with a Monorepo
+# Using AgentSecrets in a Monorepo
 
-## One workspace, multiple projects
+AgentSecrets handles Monorepos (e.g., Turborepo, Nx, Lerna) seamlessly by allowing you to define distinct Projects within a single Workspace.
 
-Content for this section is coming soon.
+## Project Structure
 
-## Per-service secrets scoping
+If you have a frontend Next.js app and a backend Python API, you should create two separate projects.
 
-Content for this section is coming soon.
+```bash
+agentsecrets project create frontend
+agentsecrets project create backend
+```
 
-## Switching context between services
+## Running the Proxy
 
-Content for this section is coming soon.
+You only need to run one instance of the proxy per machine. The proxy listens on port `8765`. 
 
-## Shared secrets across projects
+When your frontend or backend processes make requests through the proxy, the proxy automatically knows which project context to use based on the local `.agentsecrets` directory or the `AGENTSECRETS_PROJECT_ID` environment variable you provide to the process.
 
-Content for this section is coming soon.
+## Environment Variables
 
+For Monorepos that still rely on `.env` files for non-sensitive configuration (like `PORT=3000`), you can use the AgentSecrets injection command to seamlessly merge the cloud secrets with your local files:
+
+```bash
+agentsecrets run -- npm run dev
+```

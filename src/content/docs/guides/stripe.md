@@ -1,22 +1,52 @@
-# Securing a Stripe Integration End-to-End
+# Stripe Integration
 
-## Prerequisites
+Integrating Stripe into your agentic workflow using AgentSecrets is straight-forward and ensures your PCI-relevant API keys never leak into the LLM context.
 
-Content for this section is coming soon.
+## 1. Store your Stripe Key
 
-## Storing the Stripe key
+```bash
+agentsecrets secrets set STRIPE_KEY=sk_test_...
+```
 
-Content for this section is coming soon.
+## 2. Allowlist the Domain
 
-## Allowlisting api.stripe.com
+```bash
+agentsecrets workspace allowlist add api.stripe.com
+```
 
-Content for this section is coming soon.
+## 3. Make Requests via Proxy
 
-## Making the call through the proxy
+You can use the AgentSecrets Python SDK directly:
 
-Content for this section is coming soon.
+```python
+from agentsecrets import AgentSecrets
+client = AgentSecrets()
 
-## Verifying in the audit log
+response = client.call(
+    "https://api.stripe.com/v1/customers",
+    bearer="STRIPE_KEY"
+)
+```
 
-Content for this section is coming soon.
+### Using the Official Stripe SDK
 
+If you prefer using the official `stripe-python` library, you can configure it to route traffic through the proxy and pass the reference key instead of the actual key:
+
+```python
+import stripe
+import os
+
+# Set the key to the reference name
+stripe.api_key = "STRIPE_KEY"
+
+# Route traffic through the local proxy
+stripe.proxy = "http://localhost:8765"
+# Or disable SSL verification if your proxy uses a self-signed cert
+# stripe.verify_ssl_certs = False
+
+# Make a request!
+customers = stripe.Customer.list()
+```
+
+> [NOTE]
+> The Stripe SDK automatically sends the `Authorization: Bearer <api_key>` header. Because you set the `api_key` to `"STRIPE_KEY"`, the proxy intercepts this header, replaces the string `"STRIPE_KEY"` with the actual key from your keychain, and sends it to Stripe.

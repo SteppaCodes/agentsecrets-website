@@ -1,22 +1,34 @@
-# Common Installation Issues
+# Installation Issues
 
-## Homebrew: tap not found
+If you encounter issues while installing the AgentSecrets CLI, refer to the solutions below based on your package manager.
 
-Content for this section is coming soon.
+## Homebrew (macOS / Linux)
 
-## npm: global install permissions
+**Error:** `Error: The-17/tap/agentsecrets is not a valid tap`
+**Solution:** Ensure you typed the tap name correctly. Run:
+```bash
+brew update
+brew install The-17/tap/agentsecrets
+```
 
-Content for this section is coming soon.
+**Error:** `Command not found: agentsecrets`
+**Solution:** Homebrew might not be in your system's PATH. Add `/opt/homebrew/bin` (Apple Silicon) or `/usr/local/bin` (Intel) to your `~/.zshrc` or `~/.bashrc`.
 
-## pip: break-system-packages flag
+## NPM
 
-Content for this section is coming soon.
+**Error:** `EACCES: permission denied`
+**Solution:** Do not use `sudo npm install -g`. Instead, configure npm to use a directory you own:
+```bash
+mkdir ~/.npm-global
+npm config set prefix '~/.npm-global'
+export PATH=~/.npm-global/bin:$PATH
+npm install -g @the-17/agentsecrets
+```
 
-## Go: GOPATH and binary location
+## Pip
 
-Content for this section is coming soon.
-
-## PATH not updated after install
-
-Content for this section is coming soon.
-
+**Error:** `externally-managed-environment`
+**Solution:** Modern Python environments prevent global pip installs to avoid breaking OS packages. Use `pipx` instead:
+```bash
+pipx install agentsecrets-cli
+```

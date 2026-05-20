@@ -111,7 +111,10 @@ export const DOCS_SECTIONS = [
   { id: "sdk/python", group: "SDK", label: "Python SDK" },
   { id: "sdk/python-reference", group: "SDK", label: "Python API Reference" },
   { id: "sdk/javascript", group: "SDK", label: "JavaScript SDK (Soon)" },
-  { id: "sdk/zero-knowledge-mcp", group: "SDK", label: "ZK MCP Server" },
+
+  // Ecosystem
+  { id: "ecosystem/overview", group: "Ecosystem", label: "Ecosystem Overview" },
+  { id: "ecosystem/zk-mcp", group: "Ecosystem", label: "Zero-Knowledge MCP Server" },
 
   // API & Backend
   { id: "api/overview", group: "API & Backend", label: "API & Backend Overview" },

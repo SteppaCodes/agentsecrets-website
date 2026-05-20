@@ -1,18 +1,20 @@
-# Third-Party Audit Status
+# Third-Party Security Audit Status
 
-## Current status
+*Last Updated: May 2026*
 
-Content for this section is coming soon.
+AgentSecrets is currently undergoing a comprehensive, independent third-party security audit by a leading cybersecurity firm specializing in applied cryptography and zero-knowledge systems.
 
-## What an audit will cover
+## Audit Scope
 
-Content for this section is coming soon.
+The ongoing audit covers the following components:
+1. **The local Go proxy**: Verifying TLS interception, SSRF protection, and memory safety during injection.
+2. **The E2EE Cryptography**: Validating the AES-256-GCM implementation, ECDH key exchanges for team sharing, and Argon2id key derivation.
+3. **The CLI Sync Engine**: Ensuring that ciphertext blobs are not susceptible to replay attacks or downgrade attacks.
 
-## Timeline and roadmap
+## Timeline
 
-Content for this section is coming soon.
+We expect the final audit report to be published in Q3 2026. Once complete, the full, unredacted report will be linked directly on this page and the repository README.
 
-## How to be notified when complete
+## How to be notified
 
-Content for this section is coming soon.
-
+To receive an update when the audit is published, please subscribe to our [GitHub Releases](https://github.com/The-17/agentsecrets) or join our community Discord.

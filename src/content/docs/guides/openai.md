@@ -1,22 +1,46 @@
-# Securing an OpenAI Integration End-to-End
+# OpenAI Integration
 
-## Prerequisites
+When building AI Agents, you are almost always calling an LLM provider like OpenAI. It is critical to secure the OpenAI API key, just like any other tool credential.
 
-Content for this section is coming soon.
+## 1. Store your OpenAI Key
 
-## Storing the OpenAI key
+```bash
+agentsecrets secrets set OPENAI_API_KEY=sk-proj-...
+```
 
-Content for this section is coming soon.
+## 2. Allowlist the Domain
 
-## Allowlisting api.openai.com
+```bash
+agentsecrets workspace allowlist add api.openai.com
+```
 
-Content for this section is coming soon.
+## 3. Using the Official OpenAI SDK
 
-## Making the call
+You can easily configure the official OpenAI Python SDK to use the AgentSecrets proxy. 
 
-Content for this section is coming soon.
+```python
+from openai import OpenAI
+import httpx
 
-## Identity and logging
+# Route HTTP traffic through the local proxy
+proxy_client = httpx.Client(proxy="http://localhost:8765")
 
-Content for this section is coming soon.
+# Initialize the client using the KEY NAME, not the value
+client = OpenAI(
+    api_key="OPENAI_API_KEY",
+    http_client=proxy_client
+)
 
+# The SDK uses the key name. The proxy swaps it out!
+chat_completion = client.chat.completions.create(
+    messages=[
+        {
+            "role": "user",
+            "content": "Say this is a test",
+        }
+    ],
+    model="gpt-4o",
+)
+```
+
+By doing this, even if a user maliciously tricks the agent into dumping its initialized variables, the `client.api_key` only holds the string `"OPENAI_API_KEY"`. The real key is completely safe from prompt injection.

@@ -1,18 +1,22 @@
 # Session Token Errors
 
-## Missing session token in request
+If you encounter `401 Unauthorized` errors related to "Invalid or Expired Session Token", your CLI session has expired.
 
-Content for this section is coming soon.
+## Understanding Sessions
 
-## Token mismatch
+When you run `agentsecrets login`, the CLI authenticates with the AgentSecrets API and stores a short-lived session token locally. This token is required to synchronize encrypted blobs to the cloud.
 
-Content for this section is coming soon.
+For security, session tokens expire after 7 days of inactivity.
 
-## Proxy restarted and token changed
+## How to Fix
 
-Content for this section is coming soon.
+Simply log in again to refresh your token:
 
-## How to retrieve the current session token
+```bash
+agentsecrets login
+```
 
-Content for this section is coming soon.
+Your local keychain (containing your actual encrypted values) is never deleted when a session expires. You will not lose any secrets; you simply need to re-authenticate to push or pull changes.
 
+> [NOTE]
+> If you are using AgentSecrets in a CI/CD pipeline, you should use a **Service Token** instead of a user session token. Service tokens can be generated from the Web Dashboard and do not expire unless manually revoked.

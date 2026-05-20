@@ -1,26 +1,29 @@
-# Rotating a Compromised Credential
+# Rotating Credentials
 
-## Immediate containment steps
+If an API key is compromised or reaches its lifecycle end, you need to rotate it.
 
-Content for this section is coming soon.
+AgentSecrets makes rotation seamless across your entire team and production environments simultaneously.
 
-## Deleting the compromised secret
+## Step 1: Update the Secret
 
-Content for this section is coming soon.
+Generate the new API key in the provider's dashboard (e.g., Stripe, OpenAI). Then, update the secret in AgentSecrets:
 
-## Setting the new value
+```bash
+agentsecrets secrets set STRIPE_KEY=sk_test_NEW_VALUE --all-envs
+```
 
-Content for this section is coming soon.
+Using the `--all-envs` flag ensures the new key is applied to `development`, `staging`, and `production` instantly (if applicable).
 
-## Pushing to cloud sync
+## Step 2: Push to Cloud
 
-Content for this section is coming soon.
+Push the new encrypted blob to the sync server:
 
-## Verifying in the audit log
+```bash
+agentsecrets secrets push
+```
 
-Content for this section is coming soon.
+## Step 3: Team Updates
 
-## Checking for exposure window
+Your teammates simply run `agentsecrets secrets pull` to receive the new key. 
 
-Content for this section is coming soon.
-
+Production servers running the proxy as a sidecar will automatically poll for changes (or can be triggered via webhook) and update their in-memory keychain without requiring a restart or redeployment of your application code!
