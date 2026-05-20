@@ -15,27 +15,12 @@ AgentSecrets removes the value from that space entirely. The agent passes a key 
 
 ## How it fits into your stack
 
-AgentSecrets sits between your AI agent and the APIs it calls. It does not replace your existing secrets manager for your application code — it is purpose-built for the agent credential problem specifically.
+AgentSecrets provides two core execution paths depending on your workflow:
 
-```
-Your AI Agent
-     │
-     │  passes key name only
-     ▼
-AgentSecrets Proxy (localhost:8765)
-     │
-     │  resolves value from OS keychain
-     │  injects at transport layer
-     ▼
-External API (Stripe, OpenAI, etc.)
-     │
-     │  returns API response only
-     ▼
-Your AI Agent receives the response
-     (never the credential value)
-```
+1. **The Credential Proxy (for AI Agents)**: Intercepts HTTP/HTTPS requests at the transport layer, resolving key names from the OS keychain and injecting credential values on the fly. This prevents credentials from entering the agent's context or memory.
+2. **Environment Injection (for Developers & CLI Tools)**: Runs tools, scripts, or servers using `agentsecrets env -- <command>`. This injects secrets directly into the process environment variables at runtime without writing them to disk (replacing `.env` files completely).
 
-The proxy is local. The credential never leaves your machine as plaintext. The agent receives the API response and nothing else.
+Both modes run locally, ensuring credentials never leave your machine as plaintext.
 
 ## License
 

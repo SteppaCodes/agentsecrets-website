@@ -12,7 +12,7 @@ export async function GET() {
   
   let output = `# AgentSecrets\n\n`;
   output += `AgentSecrets is zero-knowledge secrets management and credential infrastructure for the AI era.\n\n`;
-  output += `It provides a local proxy that intercepts requests from AI agents, resolves actual API credentials from local OS Keychain, and injects them at the transport layer, ensuring the agent never sees the credentials.\n\n`;
+  output += `It provides both a secure local credential proxy for transport-layer key injection (ensuring AI agents never see credentials in context) and a command-line environment injector (\`agentsecrets env\`) to run developer workflows, tools, and scripts securely without storing credentials in plaintext files like \`.env\`.\n\n`;
   output += `## Key Features\n`;
   output += `- **Zero-Knowledge Sync**: E2E encrypted local key database. The cloud server cannot decrypt your keys.\n`;
   output += `- **The No get() Principle**: AI agents only hold key names. Credentials exist in-memory only during transit.\n`;
