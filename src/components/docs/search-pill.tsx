@@ -157,6 +157,9 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
       const r = await search(query);
       setResults(r);
       setActiveIdx(0);
+      requestAnimationFrame(() => {
+        document.getElementById('search-scroll-container')?.scrollTo({ top: 0 });
+      });
     }, 120);
     return () => clearTimeout(timer);
   }, [query, search]);
@@ -248,6 +251,7 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
       <AnimatePresence>
         {showPanel && (
           <motion.div
+            id='search-scroll-container'
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -263,7 +267,7 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                 {hasQuery ? (
                   results.length > 0 ? (
                     <>
-                      <div className='text-center mb-10'>
+                      <div className='text-center mb-6'>
                         <h3 className='text-[13px] font-medium text-[#1B1B1B]/30 tracking-wide'>
                           {results.length} result{results.length !== 1 ? 's' : ''}
                         </h3>
@@ -287,7 +291,7 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                                 {r.label}
                               </h4>
                               <p 
-                                className='text-[13px] sm:text-[14px] leading-[1.6] line-clamp-3 font-medium text-[#1B1B1B]/40 group-hover:text-[#0d9488] transition-colors duration-300'
+                                className='text-[13px] sm:text-[14px] leading-[1.6] line-clamp-3 font-medium text-[#1B1B1B]/70 group-hover:text-[#0d9488] transition-colors duration-300'
                                 style={{ textWrap: 'pretty' } as any}
                               >
                                 {r.snippet}
@@ -295,7 +299,7 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
                             </div>
 
                             <div className='mt-auto pt-4'>
-                              <span className={`flex items-center justify-center gap-2 text-[11px] sm:text-[12px] font-bold px-4 sm:px-6 py-2.5 rounded-[12px] border w-full transition-all duration-300 ${activeIdx === idx ? 'opacity-100 text-[#0d9488] border-[#0d9488]' : 'opacity-50 text-[#1B1B1B] border-black/10'}`}>
+                              <span className={`flex items-center justify-center gap-2 text-[11px] sm:text-[12px] font-bold px-4 sm:px-6 py-2.5 rounded-[12px] border w-full transition-all duration-300 ${activeIdx === idx ? 'opacity-100 text-[#0d9488] border-[#0d9488]' : 'text-[#1B1B1B]/90 border-black/20 hover:border-black/30'}`}>
                                 Go to section
                                 <ChevronRight 
                                   size={14} 
