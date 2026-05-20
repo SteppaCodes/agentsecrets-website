@@ -32,7 +32,7 @@ After logging in, attempt to start the proxy again.
 
 The proxy needs access to your OS keychain (to resolve secrets) and the `~/.agentsecrets/config.json` file. On some headless Linux servers or WSL environments, OS keychain access might require unlocking or configuring dbus/secret-service.
 
-> [!WARNING]
+> [WARNING]
 > If you are running AgentSecrets inside a CI/CD pipeline or a headless Docker container, ensure you are using the correct environment configuration for headless keyring access.
 
 **Solution:** Check the proxy status and local configuration integrity:
@@ -49,5 +49,5 @@ agentsecrets proxy logs --last 10
 ```
 Look for explicit error messages during the `BOOT` phase.
 
-> [!TIP]
+> [TIP]
 > The proxy strictly binds to `127.0.0.1` (localhost) for security. It will purposefully fail to start if you attempt to bind it to `0.0.0.0` without explicit overrides, as exposing the proxy to the local network is a severe security risk.

@@ -22,7 +22,7 @@ The API acts as an orchestrator for the following resources:
 
 The backend operates under strict **Zero-Knowledge** constraints.
 
-> [!IMPORTANT]
+> [IMPORTANT]
 > The backend structurally cannot decrypt your secrets. Plaintext credential values never enter the cloud.
 
 All encryption and decryption happen locally on your machine:

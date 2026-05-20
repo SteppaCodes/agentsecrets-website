@@ -33,7 +33,7 @@ To authenticate a request, include the token in the `Authorization` header as a 
 Authorization: Bearer <your_jwt_or_agent_token>
 ```
 
-> [!NOTE]
+> [NOTE]
 > For internal resolver calls, the backend accepts `Authorization: Bearer <resolver_service_key>` or matches the service key against a custom internal header, falling back to User JWT authentication if service key validation is not enforced.
 
 ---

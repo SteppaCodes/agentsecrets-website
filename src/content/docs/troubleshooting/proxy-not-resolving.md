@@ -19,7 +19,7 @@ curl -s http://localhost:8765/proxy \
   -H "X-Target-Url: https://api.stripe.com/v1/charges"
 ```
 
-> [!TIP]
+> [TIP]
 > The secret name must exactly match the name in your active environment. Run `agentsecrets secrets list` to verify the exact key names available in your local keychain.
 
 ## 2. Secret Not Present in Active Environment

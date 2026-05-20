@@ -40,7 +40,7 @@ If the agent uses `api_call` but receives an error:
 - **Domain Blocked:** The agent attempted to contact a domain not in your workspace allowlist. You must add it: `agentsecrets workspace allowlist add <domain>`.
 - **Invalid Secret Name:** The agent tried to inject a secret that doesn't exist. Tell the agent to use the `list_secrets` tool to verify available key names first.
 
-> [!TIP]
+> [TIP]
 > Every MCP call uses the exact same internal proxy engine as the HTTP proxy. You can debug MCP requests by viewing the proxy audit logs:
 > ```bash
 > agentsecrets proxy logs --last 5

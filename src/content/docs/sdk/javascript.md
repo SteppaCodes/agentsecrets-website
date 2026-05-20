@@ -1,6 +1,6 @@
 # JavaScript SDK
 
-> [!NOTE]
+> [NOTE]
 > **COMING SOON** — This feature or documentation page is currently in development.
 
 ## What this will cover

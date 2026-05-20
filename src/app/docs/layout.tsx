@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
+import Nav from "@/components/nav";
+import DocsLayoutWrapper from "@/components/docs/docs-layout-wrapper";
 
 export const metadata: Metadata = {
   title: "AgentSecrets Docs — How to Keep API Keys Hidden from AI Agents",
@@ -31,14 +34,27 @@ export const metadata: Metadata = {
   },
 };
 
-import Nav from "@/components/nav";
-import DocsLayoutWrapper from "@/components/docs/docs-layout-wrapper";
-
-export default function DocsLayout({
+export default async function DocsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const headersList = await headers();
+  const userAgent = headersList.get("user-agent") || "";
+  
+  // Detect if User-Agent is an LLM agent, search bot, crawler, or if custom headers are present
+  const isLLM = /gptbot|gpt-bot|claude|anthropic|cohere|google-extended|commoncrawl|semrush|bot|crawler|agent/i.test(userAgent) || 
+                headersList.get("x-is-llm") === "true";
+
+  if (isLLM) {
+    // Deliver lightweight clean content directly to LLMs, cutting out side-navigation tokens
+    return (
+      <main className="docs-content-only" style={{ padding: "40px", maxWidth: "800px", margin: "0 auto" }}>
+        {children}
+      </main>
+    );
+  }
+
   return (
     <>
       <div className="grid-bg" style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }} />

@@ -21,14 +21,14 @@ The AgentSecrets cloud backend only stores AES-256-GCM ciphertext. The encryptio
 
 ## System Architecture
 
-:::mermaid
+```mermaid
 graph TD;
     A[AI Agent] -->|Request with KEY_NAME| B(Local Proxy);
     B -->|Lookup| C[(OS Keychain)];
     B -->|TLS Injection| D{Upstream API};
     D -->|Response| B;
     B -->|Response| A;
-:::
+```
 
 ## What We Do NOT Protect Against (Out of Scope)
 

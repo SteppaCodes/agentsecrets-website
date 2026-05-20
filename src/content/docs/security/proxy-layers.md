@@ -2,14 +2,14 @@
 
 The AgentSecrets local proxy is the heart of the zero-knowledge model. It sits between your AI agent and the external internet.
 
-:::mermaid
+```mermaid
 flowchart LR
     A[Agent Request] --> B[TLS Interception]
     B --> C[Domain Allowlist]
     C --> D[Header Redaction]
     D --> E[Key Resolution & Injection]
     E --> F[Upstream API]
-:::
+```
 
 ## Layer 1: The Domain Allowlist
 

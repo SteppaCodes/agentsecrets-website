@@ -1,6 +1,6 @@
 # Secret Rotation
 
-> [!NOTE]
+> [NOTE]
 > **COMING SOON**: This feature or documentation page is currently in development. Automated secret rotation is on the roadmap and not yet available.
 
 

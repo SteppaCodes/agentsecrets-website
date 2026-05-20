@@ -14,7 +14,7 @@ AgentSecrets synchronizes your active environment (`development`, `staging`, or 
 - The cloud state acts as the source of truth for your team.
 - The proxy maintains a **continuous 10-second background sync cycle** that automatically pulls down cryptographic revocations.
 
-> [!NOTE]
+> [NOTE]
 > All cloud sync operations use `pkg/crypto`. AgentSecrets never uploads plaintext secrets; everything is encrypted with your workspace's master key before leaving your machine.
 
 ## Identifying Sync Conflicts
@@ -43,5 +43,5 @@ When running `agentsecrets secrets push` or `secrets pull`, you might encounter 
    ```
 2. **Pushing Local Changes:** If you modified a secret locally but another teammate pushed a newer version, your push will be rejected. You must pull the latest changes first, re-apply your update locally, and then push.
 
-> [!CAUTION]
+> [CAUTION]
 > Avoid manually deleting keys from the OS keychain directly via macOS Keychain Access or Windows Credential Manager. Always use `agentsecrets secrets delete` to ensure the deletion and revocation are cryptographically synced to the cloud.

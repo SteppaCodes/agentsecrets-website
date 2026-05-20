@@ -1,4 +1,4 @@
-# Overview
+# What is AgentSecrets?
 
 AgentSecrets is zero-knowledge secrets management and credential infrastructure for the AI era. It covers the full credentials lifecycle for AI agents and AI-assisted development workflows — storing secrets, syncing across environments and teams, detecting drift, switching environments, making authenticated API calls, auditing every call — without a credential value ever entering agent context.
 

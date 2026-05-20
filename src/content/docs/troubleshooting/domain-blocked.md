@@ -11,7 +11,7 @@ If your AI agent's API request fails with a `403 Forbidden` error originating fr
 
 To prevent Server-Side Request Forgery (SSRF) and malicious data exfiltration, the AgentSecrets HTTP Proxy and MCP Server operate on a **deny-by-default** basis. Even if a valid credential is provided, the proxy will refuse to inject the secret or forward the request if the destination domain is not explicitly allowed.
 
-> [!IMPORTANT]
+> [IMPORTANT]
 > Secrets are never accessed from the keychain if the domain is blocked. The allowlist enforcement happens *before* secret resolution.
 
 ## How to Allowlist a Domain
@@ -46,5 +46,5 @@ agentsecrets workspace allowlist list
 - **Subdomains:** The allowlist is strict. If you allowlist `stripe.com`, requests to `api.stripe.com` will still be blocked unless you explicitly allow `api.stripe.com` or use wildcard configurations (if enabled in your workspace).
 - **Internal IP Addresses:** Agents cannot proxy requests to internal network endpoints (e.g., `192.168.x.x` or `10.x.x.x`) unless explicitly allowed. This is a critical protection against internal network scanning.
 
-> [!TIP]
+> [TIP]
 > If you are setting up a new project, run `agentsecrets workspace allowlist log` to view recent allowlist activity and identify any unexpected blocks triggered by your agent.
