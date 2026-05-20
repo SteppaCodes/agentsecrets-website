@@ -3,24 +3,30 @@
 When building AI Agents, you are almost always calling an LLM provider like OpenAI. It is critical to secure the OpenAI API key, just like any other tool credential.
 
 ## 1. Store your OpenAI Key
+:::step
 
 ```bash
 agentsecrets secrets set OPENAI_API_KEY=sk-proj-...
 ```
+:::
 
 ## 2. Allowlist the Domain
+:::step
 
 ```bash
 agentsecrets workspace allowlist add api.openai.com
 ```
+:::
 
 ## 3. Using the Official OpenAI SDK
+:::step
 
 You can easily configure the official OpenAI Python SDK to use the AgentSecrets proxy. 
 
 ```python
 from openai import OpenAI
 import httpx
+:::
 
 # Route HTTP traffic through the local proxy
 proxy_client = httpx.Client(proxy="http://localhost:8765")

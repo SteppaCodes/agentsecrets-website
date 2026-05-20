@@ -9,19 +9,25 @@ All requests to the AgentSecrets API (except for user registration, login, and t
 The backend supports three categories of tokens:
 
 ### 1. User Session Tokens
+:::step
 * **Who uses it**: Human developers via the CLI or web dashboard.
 * **Format**: Standard JWT containing the user's UUID, email, and permissions.
 * **Lifecycle**: Access token expires in 1 hour; Refresh token expires in 6 hours.
 * **Storage**: Saved locally on the developer's machine inside `~/.agentsecrets/token.json`.
+:::
 
 ### 2. Agent Tokens
+:::step
 * **Who uses it**: Credential proxies, MCP servers, or background runners.
 * **Format**: Cryptographically signed agent tokens representing a specific declared identity.
 * **Lifecycle**: Configurable lifecycle (e.g., 24 hours up to 30 days) and scope. Can be revoked at any time.
+:::
 
 ### 3. Service Keys
+:::step
 * **Who uses it**: Internal backend-to-backend resolver components.
 * **Format**: High-entropy static bearer keys configured in the environment (`RESOLVER_SERVICE_KEY`).
+:::
 
 ---
 
@@ -42,18 +48,10 @@ Authorization: Bearer <your_jwt_or_agent_token>
 
 To prevent developers from being logged out during long-running tasks or background syncing (such as the proxy daemon syncing audit logs to the cloud), the CLI API client implements an automatic retry mechanism.
 
-:::step
 1. **401 Detection**: If an API request to a private endpoint fails with a `401 Unauthorized` status (indicating the Access Token has expired), the client pauses.
-:::
-:::step
 2. **Dynamic Refresh**: The client issues a `POST` request to `/api/auth/refresh/` using the stored Refresh Token.
-:::
-:::step
 3. **Save and Retry**: If the refresh is successful, the new Access and Refresh tokens are persisted to `~/.agentsecrets/token.json` and the failed request is re-built and executed exactly once with the new token.
-:::
-:::step
 4. **Concurrency Protection**: The refresh flow is locked using a mutex (`refreshMu`) to ensure that multiple parallel asynchronous requests do not cause a "refresh storm" by hitting the refresh endpoint concurrently.
-:::
 
 ---
 

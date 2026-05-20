@@ -9,20 +9,16 @@ The two recommended deployment patterns are **Sidecar** and **DaemonSet**.
 ---
 
 ## 1. The Sidecar Pattern (Recommended)
+:::step
 
 Deploying the AgentSecrets proxy as a sidecar container within the same Pod as your AI agent is the recommended approach. This provides the highest level of isolation and security.
 
-:::step
 1. **Pod-Level Isolation**
    Each AI agent gets its own dedicated proxy instance. If one agent is compromised, its proxy cannot be used to inject credentials belonging to another agent.
-:::
 
-:::step
 2. **Localhost Routing**
    The AI agent container routes its outbound traffic through `localhost:9090` (the proxy sidecar). Since the proxy is in the same network namespace, this traffic never leaves the Pod unencrypted.
-:::
 
-:::step
 3. **IAM and Identity**
    You can bind specific Kubernetes ServiceAccounts or IAM Roles for Service Accounts (IRSA) to the Pod, ensuring the proxy only has permission to resolve secrets authorized for that specific agent identity.
 :::
@@ -70,20 +66,16 @@ spec:
 ---
 
 ## 2. The DaemonSet Pattern
+:::step
 
 For large-scale, high-density clusters where running a sidecar per pod consumes too much overhead, you can deploy the AgentSecrets proxy as a DaemonSet.
 
-:::step
 1. **Node-Level Injection**
    A single proxy instance runs on every Kubernetes node. All agent pods on that node route their traffic through the node's local proxy instance.
-:::
 
-:::step
 2. **Resource Efficiency**
    This significantly reduces memory and CPU overhead in clusters running hundreds of micro-agents.
-:::
 
-:::step
 3. **Security Tradeoffs**
    Because the proxy is shared across the node, you must rely on Agent Identity tokens passed in the request headers (e.g., `X-Agent-Identity`) to ensure the proxy applies the correct domain allowlists and credential scopes for the calling pod.
 :::

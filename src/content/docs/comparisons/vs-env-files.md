@@ -18,13 +18,19 @@ Plaintext `.env` files have become the default configuration mechanism because o
 AI agents differ from traditional static software because they act dynamically based on prompt instructions, natural language planning, and autonomous tool usage. This introduces critical security gaps if secrets are stored in plaintext on disk:
 
 ### 1. Inherent File Access
+:::step
 Autonomous AI agents are often equipped with file-reading tools (such as file editors, git assistants, or terminal runners) to complete tasks. Because a `.env` file resides inside the project directory as a standard text file, an agent instructed by a malicious user prompt—or during a goal execution loop—can read, log, or leak the `.env` file.
+:::
 
 ### 2. Full Process-Level Exposure
+:::step
 When a `.env` file is loaded via `dotenv.config()`, all credential values are loaded directly into the host process memory (`process.env` in Node.js or `os.environ` in Python). Any code executing within that process, including unverified third-party dependencies, LLM plugins, or sandboxed agent runtimes, can inspect and exfiltrate these environment blocks.
+:::
 
 ### 3. Git Accident Risks
+:::step
 Plaintext files on developer machines are susceptible to accidental git commits. Even with `.gitignore` configured, developer mistakes frequently leak credentials to public version control systems.
+:::
 
 ---
 
@@ -42,15 +48,7 @@ When an AI agent is connected to a traditional `.env` configuration, it is vulne
 
 Transitioning from plaintext `.env` files to AgentSecrets is designed to be a friction-free drop-in replacement:
 
-:::step
 1. **Initialize the workspace**: Run `agentsecrets init --storage-mode 1` to initialize the project in zero-knowledge Keychain mode.
-:::
-:::step
 2. **Import existing configurations**: Run `agentsecrets secrets push` to read your current `.env` file, locally encrypt the contents using AES-256-GCM, and save them directly in the OS Keychain.
-:::
-:::step
 3. **Clean up filesystem**: Delete the plaintext `.env` files from disk.
-:::
-:::step
 4. **Update execution command**: Run your command using the runtime execution wrapper (`agentsecrets env -- <command>`) or route requests through the local proxy.
-:::

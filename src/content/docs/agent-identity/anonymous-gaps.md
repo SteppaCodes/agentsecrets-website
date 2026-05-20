@@ -33,15 +33,9 @@ TIMESTAMP  KEY         TARGET URL                      IDENTITY   LEVEL       ST
 
 These gaps typically stem from three common scenarios:
 
-:::step
 1. **Legacy Scripts**: Older automated scripts that were written before Agent Identity was implemented, which use the default SDK initialization without parameters.
-:::
-:::step
 2. **Direct Proxy Bypass**: HTTP calls routed through the local proxy endpoint (`localhost:8765/proxy`) that include target URLs and injection headers but omit the `X-AS-Agent-ID` or `X-AS-Agent-Token` headers.
-:::
-:::step
 3. **Misconfigured Containers**: Background worker tasks deployed in Docker or Kubernetes where the container orchestrator failed to inject the `AGENTSECRETS_AGENT_ID` or `AGENTSECRETS_TOKEN` environment variables.
-:::
 
 ---
 
@@ -50,9 +44,12 @@ These gaps typically stem from three common scenarios:
 Eliminating anonymous gaps follows a structured verification and upgrade process.
 
 ### 1. Pinpoint the source
+:::step
 Inspect the anonymous log entry to extract diagnostic details. Look at the `timestamp`, the `target_url`, the `key` accessed, and the calling client's IP address. This metadata allows you to locate the physical machine or application server hosting the anonymous caller.
+:::
 
 ### 2. Update the implementation
+:::step
 Once the code or service is located, upgrade it to a declared or cryptographically verified identity.
 
 * **For Python scripts**, pass the agent parameter:
@@ -74,8 +71,10 @@ Once the code or service is located, upgrade it to a declared or cryptographical
     - name: AGENTSECRETS_AGENT_ID
       value: "kubernetes-worker-pod"
   ```
+:::
 
 ### 3. Enforce strict identity verification
+:::step
 Once you have resolved all known anonymous calls, configure your workspace to reject unattributed requests entirely. 
 
 To prevent future anonymous calls, toggle the **Strict Identity** mode via the CLI:
@@ -86,3 +85,4 @@ agentsecrets workspace update --strict-identity=true
 
 [IMPORTANT]
 Enabling Strict Identity causes the credential proxy to block any request that does not contain a declared or issued identity. Anonymous requests will fail with a `403 Forbidden` status. Ensure all services have been migrated before enabling this in production.
+:::

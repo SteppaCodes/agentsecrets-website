@@ -19,13 +19,16 @@ To prevent Server-Side Request Forgery (SSRF) and malicious data exfiltration, t
 You can authorize domains using the AgentSecrets CLI. This action requires an admin role within your workspace.
 
 ### 1. Identify the Blocked Domain
+:::step
 Check your proxy audit logs to see exactly which domain was blocked:
 ```bash
 agentsecrets proxy logs --last 5
 ```
 Look for entries with `"action": "blocked_by_allowlist"`.
+:::
 
 ### 2. Add the Domain to the Allowlist
+:::step
 Use the `workspace allowlist add` command to authorize the domain:
 ```bash
 agentsecrets workspace allowlist add api.stripe.com
@@ -34,12 +37,15 @@ You can also add multiple domains at once:
 ```bash
 agentsecrets workspace allowlist add api.stripe.com api.github.com
 ```
+:::
 
 ### 3. Verify the Allowlist
+:::step
 To ensure the domain was successfully added and propagated:
 ```bash
 agentsecrets workspace allowlist list
 ```
+:::
 
 ## Common Scenarios
 

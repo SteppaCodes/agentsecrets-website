@@ -3,18 +3,23 @@
 Integrating Stripe into your agentic workflow using AgentSecrets is straight-forward and ensures your PCI-relevant API keys never leak into the LLM context.
 
 ## 1. Store your Stripe Key
+:::step
 
 ```bash
 agentsecrets secrets set STRIPE_KEY=sk_test_...
 ```
+:::
 
 ## 2. Allowlist the Domain
+:::step
 
 ```bash
 agentsecrets workspace allowlist add api.stripe.com
 ```
+:::
 
 ## 3. Make Requests via Proxy
+:::step
 
 You can use the AgentSecrets Python SDK directly:
 
@@ -27,6 +32,7 @@ response = client.call(
     bearer="STRIPE_KEY"
 )
 ```
+:::
 
 ### Using the Official Stripe SDK
 

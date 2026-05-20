@@ -43,24 +43,30 @@ In a **Zero-Knowledge MCP** architecture:
 We provide a starter template using FastMCP and Python to help you build and deploy zero-knowledge tools in seconds.
 
 ### 1. Clone the template repository
+:::step
 ```bash
 git clone https://github.com/The-17/zero-knowledge-mcp
 cd zero-knowledge-mcp
 ```
+:::
 
 ### 2. Install dependencies
+:::step
 The template uses `uv` for lightning-fast Python dependency management. Run:
 
 ```bash
 make install
+:::
 # Or manually install with uv:
 uv sync
 ```
 
 ### 3. Store credentials and allowlist the target API
+:::step
 Before running the server, save your credentials in your local OS Keychain and authorize the target domain:
 
 ```bash
+:::
 # Store the Stripe key locally
 agentsecrets secrets set STRIPE_KEY=sk_live_...
 
@@ -162,14 +168,10 @@ Add the server definition using `uv` to execute the Python script:
 
 Because Zero-Knowledge MCP servers do not bundle or configure hardcoded keys, publishing them is incredibly safe:
 
-:::step
 1. **Publish to GitHub/npm/PyPI**: You can push your MCP repository to a public GitHub repository. It contains no `.env` files, no hardcoded strings, and no production credentials.
-:::
-:::step
 2. **Standardized Consuming**: Other developers or servers using your MCP server only need to install the package and run:
    ```bash
    agentsecrets secrets set STRIPE_KEY=their_own_stripe_key
    agentsecrets workspace allowlist add api.stripe.com
    ```
    The published MCP server will automatically hook into their local AgentSecrets proxy, keeping their keys secure on their local machines.
-:::

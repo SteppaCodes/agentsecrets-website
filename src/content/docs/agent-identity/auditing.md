@@ -11,9 +11,12 @@ This guide explains how to query, filter, and export audit logs based on Agent I
 When debugging an integration or conducting a security review, you can filter the audit trail to show only requests made by a specific agent.
 
 ### 1. Identify the agent name
+:::step
 Determine the `agent_id` or registered name you want to query (e.g., `billing-processor`).
+:::
 
 ### 2. Query logs via the CLI
+:::step
 Use the `log list` command with the `--agent` filter:
 
 ```bash
@@ -25,8 +28,10 @@ Or watch the logs in real time:
 ```bash
 agentsecrets proxy logs --agent billing-processor --watch
 ```
+:::
 
 ### 3. Read the output
+:::step
 The CLI returns the chronological call history for that agent:
 
 ```
@@ -34,6 +39,7 @@ TIME      RESULT  METHOD  URL                           KEY         STATUS  DURA
 10:14:02  * OK    POST    api.stripe.com/v1/charges     STRIPE_KEY  200     180ms
 10:14:05  * OK    GET     api.stripe.com/v1/customers   STRIPE_KEY  200     112ms
 ```
+:::
 
 ---
 

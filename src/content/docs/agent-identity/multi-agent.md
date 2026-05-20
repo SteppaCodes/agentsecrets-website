@@ -11,6 +11,7 @@ If these agents share a single flat pool of environment variables, any vulnerabi
 The recommended design pattern for multi-agent systems is to instantiate separate `AgentSecrets` client objects or proxy configurations for each agent role, rather than sharing a single global client.
 
 ### 1. Issue tokens for each agent role
+:::step
 Generate separate cryptographic tokens for each agent in your swarm:
 
 ```bash
@@ -18,12 +19,15 @@ agentsecrets agent token issue "swarm-researcher"
 agentsecrets agent token issue "swarm-writer"
 agentsecrets agent token issue "swarm-publisher"
 ```
+:::
 
 ### 2. Configure the SDK clients
+:::step
 Instantiate separate client instances in your orchestration code:
 
 ```python
 from agentsecrets import AgentSecrets
+:::
 
 # Researcher uses search/database keys
 researcher_secrets = AgentSecrets(
@@ -45,9 +49,11 @@ publisher_secrets = AgentSecrets(
 ```
 
 ### 3. Attach secrets clients to agent tools
+:::step
 Ensure each agent's tool executable block uses its designated secrets client:
 
 ```python
+:::
 # researcher_tools.py
 @tool
 def search_web(query: str) -> str:
@@ -86,18 +92,22 @@ Because AgentSecrets does not expose plaintext values to the agent's runtime mem
 When you detect this anomaly:
 
 ### 1. Identify the compromised agent token
+:::step
 Run the list command to find the active token ID:
 ```bash
 agentsecrets agent token list "swarm-researcher"
 ```
+:::
 
 ### 2. Revoke the token
+:::step
 Revoke the Researcher's token immediately:
 ```bash
 agentsecrets agent token revoke tok_researcher_id --agent="swarm-researcher"
 ```
 
 The `swarm-researcher` is immediately locked out from resolving any credentials through the proxy. However, the `swarm-writer` and `swarm-publisher` continue operating normally. Your application remains partially active, avoiding a complete service outage while you patch the prompt injection vulnerability.
+:::
 
 ---
 
@@ -106,9 +116,12 @@ The `swarm-researcher` is immediately locked out from resolving any credentials 
 When building production pipelines, developers use three main patterns to propagate identity:
 
 ### 1. Explicit Dependency Injection
+:::step
 Pass the scoped `AgentSecrets` client directly into the constructor of your agent class or tool definitions. This is the most robust and readable pattern.
+:::
 
 ### 2. Context Variables (Async propagation)
+:::step
 In asynchronous Python applications (e.g., using FastAPI or Celery), use `contextvars` to store the active agent's token for the duration of a task execution. The proxy transport hook can automatically pull this token and attach it to the `X-AS-Agent-Token` request header:
 
 ```python
@@ -116,6 +129,7 @@ import contextvars
 import httpx
 
 active_agent_token = contextvars.ContextVar("active_agent_token")
+:::
 
 # httpx Client event hook
 def inject_agent_identity(request: httpx.Request):
@@ -127,7 +141,9 @@ def inject_agent_identity(request: httpx.Request):
 ```
 
 ### 3. Sidecar Header Routing
+:::step
 If you run agents in independent microservice containers, configure a single central Credential Proxy sidecar per node. Each container injects its agent-specific environment variable (`AGENTSECRETS_TOKEN`) when spawned, ensuring the local proxy maps the traffic correctly.
 
 > [TIP]
 > Always assign the most restrictive workspace and environment contexts to each agent container. Combining workspace-level allowlists with per-agent tokens ensures a secure defense-in-depth model.
+:::

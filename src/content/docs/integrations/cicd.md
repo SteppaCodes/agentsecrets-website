@@ -15,16 +15,22 @@ Because CI environments are ephemeral and headless, you authenticate the AgentSe
 ## Step-by-Step CI/CD Configuration
 
 ### 1. Issue a CI Token
+:::step
 From your local machine, generate a token for your CI environment (e.g. staging or production):
 ```bash
 agentsecrets identity issue --name "github-actions-ci" --role editor
 ```
 *Note: Save the output token (`ws01...`). It will only be shown once.*
+:::
 
 ### 2. Add the Token to your CI Provider
+:::step
 Store the token as a masked repository secret in your CI provider (e.g., GitHub Secrets, GitLab CI Variables, or AWS CodePipeline parameters). Name the variable `AGENTSECRETS_TOKEN`.
+:::
 
 ### 3. Update your Pipeline Configuration
+:::step
+:::
 
 #### Example: GitHub Actions
 
