@@ -13,32 +13,32 @@ if (typeof window !== 'undefined') {
 
 const FAQ_ITEMS = [
   {
-    question: "What exactly is Zero-Knowledge security?",
-    answer: "Zero-knowledge means our platform never sees or stores your raw secrets. Credentials are encrypted locally and only resolved at the final moment of execution on your secure infrastructure. We manage the identity and the 'keys' to the secrets, but the secrets themselves remain invisible to us."
+    question: "How does AgentSecrets prevent LLM prompt injection attacks from stealing API keys?",
+    answer: "Traditional secrets managers load credentials into process memory or environment variables, which can be easily extracted by an LLM via prompt injection. AgentSecrets uses a local loopback HTTP proxy. Your agent workflows or MCP servers reference keys only by their name (e.g., GITHUB_TOKEN). The local proxy intercepts outbound HTTP requests, fetches the credential from the OS keychain, injects it into the request header at the transport layer, and forwards the request. The agent process only receives the final API response—the raw key value never enters the agent's memory or context."
   },
   {
-    question: "How does the Agent Proxy inject credentials?",
-    answer: "The Agent Proxy acts as a secure intermediary. When your agent makes an LLM call requiring an API key, the proxy intercepts the request, retrieves the secret from your secure vault (using our ZK protocol), injects it into the header, and passes it to the provider."
+    question: "How does Keychain Auth protect secrets from rogue local processes or scripts?",
+    answer: "Standard OS keychains allow any process running under your user session to query and retrieve credentials without sandboxing. AgentSecrets integrates with a connection-bound security daemon (keychain-auth) that uses kernel-level process verification (e.g., SO_PEERCRED on Linux, LOCAL_PEERPID on macOS). It retrieves the caller's true PID, resolves its executable path, verifies its SHA-256 binary hash against a user-approved database, and enforces strict namespace permissions. Unapproved scripts or background malware are blocked from accessing your keys."
   },
   {
-    question: "Is Agent Secrets compatible with all LLMs?",
-    answer: "Yes. Our platform is model-agnostic. Whether you're using OpenAI, Anthropic, local models via Ollama, or custom deployments on AWS/Azure, our SDKs and Proxy layer work seamlessly to manage the underlying authentication."
+    question: "What is the performance overhead and latency of using the local proxy?",
+    answer: "Because the AgentSecrets proxy runs entirely on the loopback interface (localhost), there is zero network transit latency. Resolving credentials from the local OS keychain and performing transport-layer injection introduces a negligible overhead of less than 2-3 milliseconds per request. This is virtually imperceptible compared to the round-trip latency of LLM APIs or upstream network requests."
   },
   {
-    question: "Can I use Agent Secrets with local agents like AutoGPT?",
-    answer: "Absolutely. Any agent that can run our CLI or SDK can benefit from Agent Secrets. Our CLI provides a 'wrap' command that injects secrets into any terminal process, making it perfect for AutoGPT, BabyAGI, and custom local scripts."
+    question: "Does AgentSecrets support multi-environment isolation (Dev, Staging, Prod)?",
+    answer: "Yes. AgentSecrets allows you to define separate environments at the runtime level. You can scope your credentials (e.g., STRIPE_KEY) to development, staging, or production. The local proxy enforces boundaries, preventing local development runs or test agents from accidentally calling production endpoints or injecting production-level keys, keeping your test and live environments strictly separated."
   },
   {
-    question: "How do I handle secret rotation?",
-    answer: "Rotation is handled automatically through our integration layer. You can define rotation policies in your vault (like AWS Secrets Manager or HashiCorp Vault), and Agent Secrets ensures your agents always fetch the latest version."
+    question: "How does the Zero-Knowledge team synchronization work?",
+    answer: "When syncing secrets across a team, credentials are encrypted client-side using NaCl SealedBox (Curve25519) public-key cryptography before being sent to the sync server. The server stores only the encrypted ciphertext. Since the sync server never holds the private key or the plaintext credentials, a compromise of the sync server infrastructure yields zero readable secrets. New team members can onboard and fetch workspace configurations seamlessly without keys ever being exposed in plaintext."
   },
   {
-    question: "Can I self-host the Agent Secrets infrastructure?",
-    answer: "Yes. The core components of Agent Secrets are portable and can be deployed within your VPC or on-premise infrastructure for maximum data sovereignty and compliance."
+    question: "Can I use AgentSecrets offline, and what happens if the sync server is down?",
+    answer: "Yes. AgentSecrets is local-first. All credentials are stored directly in your local OS keychain (macOS Keychain, Linux Secret Service via D-Bus, or Windows Credential Manager). The local proxy operates completely offline without any external network dependencies. Cloud sync is optional and secondary; if the sync server goes offline, your agents and CLI tools continue to function with zero disruption."
   },
   {
-    question: "How is this different from a standard password manager?",
-    answer: "While password managers are for humans, Agent Secrets is for agents. We provide the infrastructure for zero-knowledge injection into LLM tool-calling loops, ensuring that your AI models can use secrets without ever 'knowing' them."
+    question: "Is AgentSecrets compatible with all LLM frameworks and libraries?",
+    answer: "Yes. AgentSecrets is framework-agnostic. Because it injects credentials at the transport layer via a local HTTP proxy, any tool, library, or language that can route HTTP traffic through a proxy is supported. This includes LangChain, CrewAI, AutoGen, LlamaIndex, the official OpenAI and Anthropic SDKs, or even a simple curl command in bash."
   }
 ];
 
@@ -135,21 +135,19 @@ export default function FAQSection() {
                       </div>
                     </button>
                     
-                    <AnimatePresence initial={false}>
-                      {isOpen && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                          className="overflow-hidden"
-                        >
-                          <div className="pb-10 pr-12 text-[15px] md:text-[16px] text-[#1B1B1B]/60 leading-relaxed text-left">
-                            {item.answer}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    <motion.div
+                      initial={false}
+                      animate={{ 
+                        height: isOpen ? 'auto' : 0, 
+                        opacity: isOpen ? 1 : 0 
+                      }}
+                      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pb-10 pr-12 text-[15px] md:text-[16px] text-[#1B1B1B]/60 leading-relaxed text-left">
+                        {item.answer}
+                      </div>
+                    </motion.div>
                   </div>
                 );
               })}

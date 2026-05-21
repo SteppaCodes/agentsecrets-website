@@ -31,14 +31,14 @@ export default function Hero() {
       })
       .catch(() => setStars('92'));
 
-    fetch('https://api.github.com/repos/The-17/agentsecrets/releases/latest')
+    fetch('https://api.github.com/repos/The-17/agentsecrets/tags')
       .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch release');
+        if (!res.ok) throw new Error('Failed to fetch tags');
         return res.json();
       })
       .then(data => {
-        if (data && data.tag_name) {
-          setLatestTag(data.tag_name);
+        if (data && data.length > 0 && data[0].name) {
+          setLatestTag(data[0].name);
         }
       })
       .catch(() => {});

@@ -20,8 +20,8 @@ const BUILD_CATEGORIES = [
     items: [
       {
         id: "sdk-python",
-        title: "Native Python\nIntegration",
-        description: "A native library to integrate AgentSecrets into your Django, FastAPI, or Flask applications. Complete support for all six auth styles.",
+        title: "Native Python\nSDK",
+        description: "Write zero-knowledge tools and agent workflows using our Python client. The SDK routes outbound API calls through the local proxy, keeping credential values out of process memory.",
         icon: <Blocks size={48} strokeWidth={1.5} />,
         cta: "Get Started",
         status: "active"
@@ -29,7 +29,7 @@ const BUILD_CATEGORIES = [
       {
         id: "sdk-js",
         title: "Modern JS/TS\nSDK",
-        description: "Full support for Node.js, Bun, and browser environments. Secure credential injection for modern frontend and backend frameworks.",
+        description: "Integrate zero-knowledge secret injection into Node.js or Bun agent frameworks like LangChain. Credentials are resolved at the transport layer, never in-memory.",
         icon: <Layers size={48} strokeWidth={1.5} />,
         cta: "Coming Soon",
         status: "upcoming"
@@ -45,7 +45,7 @@ const BUILD_CATEGORIES = [
       {
         id: "mcp",
         title: "Zero-knowledge\nMCP",
-        description: "Leverage the Model Context Protocol with full zero-knowledge security. Inject secrets into your MCP servers without ever exposing them to the host.",
+        description: "Build and run Model Context Protocol (MCP) servers where credential values never enter the server's process memory. API keys are injected at the transport layer by the local proxy during outbound tool calls.",
         icon: (
           <svg width="48" height="48" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M12 20C12 15.5817 15.5817 12 20 12C24.4183 12 28 15.5817 28 20" />

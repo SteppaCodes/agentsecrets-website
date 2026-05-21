@@ -80,6 +80,41 @@ const features = [
     title: "Audit\nLog",
     desc: "Every proxied request logged. Key name, endpoint, status, timing. No value field, because there is nowhere to put one.",
   },
+  {
+    icon: (
+      <svg width="48" height="48" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <rect x="6" y="6" width="10" height="10" rx="1" />
+        <rect x="24" y="6" width="10" height="10" rx="1" />
+        <rect x="15" y="24" width="10" height="10" rx="1" />
+        <path d="M11 16V20H15 M29 16V20H25" />
+      </svg>
+    ),
+    title: "Environment\nIsolation",
+    desc: "Enforce strict runtime boundaries between development, staging, and production secrets. Prevents test workflows or local agent runs from accidentally accessing or calling production APIs.",
+  },
+  {
+    icon: (
+      <svg width="48" height="48" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <rect x="8" y="6" width="24" height="28" rx="3" />
+        <circle cx="20" cy="16" r="4" />
+        <path d="M12 28C12 24.5 15.5 24 20 24C24.5 24 28 24.5 28 28" />
+        <line x1="14" y1="12" x2="26" y2="12" />
+      </svg>
+    ),
+    title: "Agent\nIdentity",
+    desc: "Issue a unique, verifiable cryptographic identity to every LLM agent or workflow. Authenticate and authorize secrets access on a per-agent basis rather than using a shared wildcard key.",
+  },
+  {
+    icon: (
+      <svg width="48" height="48" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <rect x="10" y="16" width="20" height="16" rx="2" />
+        <path d="M15 16V11C15 8.2 17.2 6 20 6C22.8 6 25 8.2 25 11V16" />
+        <path d="M17 24L19 26L23 22" />
+      </svg>
+    ),
+    title: "Anti-Impersonation\nKeychain",
+    desc: "Uses kernel-level process verification (PID, binary path, and SHA-256 hash attestation) to restrict OS keychain access. Prevents unauthorized scripts or background malware from querying your keys.",
+  },
 ];
 
 export default function FeaturesGrid() {
