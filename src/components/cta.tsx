@@ -12,7 +12,7 @@ export default function CTA() {
       className="cta"
       style={{
         textAlign: "center",
-        padding: "110px 15px",
+        padding: "110px 80px",
         position: "relative",
         zIndex: 1,
         borderTop: "1px solid var(--border)",

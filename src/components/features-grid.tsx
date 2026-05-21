@@ -1,169 +1,228 @@
 "use client";
+
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import {
-  Key, Zap, Shield, Search, Users, FileText
-} from "lucide-react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const features = [
   {
-    Icon: Key,
-    title: "OS Keychain Storage",
+    icon: (
+      <svg width="48" height="48" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M20 4L36 20L20 36L4 20Z" />
+        <circle cx="20" cy="20" r="4" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+    title: "OS Keychain\nStorage",
     desc: "Credentials live in the OS keychain. macOS Keychain, Linux Secret Service, Windows Credential Manager. No plaintext on disk, no environment variable exposed to neighboring processes.",
-    badge: null,
-    color: "var(--em)",
   },
   {
-    Icon: Zap,
-    title: "Six Auth Styles",
+    icon: (
+      <svg width="48" height="48" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <polygon points="20,4 34,12 34,28 20,36 6,28 6,12" />
+        <circle cx="20" cy="20" r="3" fill="currentColor" stroke="none" />
+        <path d="M20 4V17 M34 12L22.5 18.5 M34 28L22.5 21.5 M20 36V23 M6 28L17.5 21.5 M6 12L17.5 18.5" />
+      </svg>
+    ),
+    title: "Six Auth\nStyles",
     desc: "Bearer, Basic, custom header, query param, JSON body, form field. Every REST and OAuth pattern has a corresponding injection style.",
-    badge: null,
-    color: "var(--am)",
   },
   {
-    Icon: Shield,
-    title: "Domain Allowlist",
+    icon: (
+      <svg width="48" height="48" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <circle cx="20" cy="20" r="16" />
+        <circle cx="20" cy="20" r="8" />
+        <path d="M20 4V12 M20 28V36 M4 20H12 M28 20H36" />
+      </svg>
+    ),
+    title: "Domain\nAllowlist",
     desc: "Deny-by-default. Every outbound request must target an authorized domain. Unauthorized attempts are blocked and logged before injection happens.",
-    badge: null,
-    color: "var(--em)",
   },
   {
-    Icon: Search,
-    title: "Response Redaction",
+    icon: (
+      <svg width="48" height="48" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <line x1="8" y1="12" x2="32" y2="12" />
+        <line x1="8" y1="20" x2="14" y2="20" />
+        <rect x="18" y="17" width="14" height="6" fill="currentColor" stroke="none" />
+        <line x1="8" y1="28" x2="32" y2="28" />
+      </svg>
+    ),
+    title: "Response\nRedaction",
     desc: "If an API echoes a credential back in its response, the proxy catches and redacts it before the agent sees the response.",
-    badge: null,
-    color: "var(--re)",
   },
   {
-    Icon: Users,
-    title: "Team Workspaces",
+    icon: (
+      <svg width="48" height="48" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <circle cx="20" cy="10" r="4" />
+        <circle cx="10" cy="28" r="4" />
+        <circle cx="30" cy="28" r="4" />
+        <path d="M18 13.5L12 24.5 M22 13.5L28 24.5 M14 28H26" />
+      </svg>
+    ),
+    title: "Team\nWorkspaces",
     desc: "Secrets encrypted client-side before upload. The server holds ciphertext. A new developer onboards without anyone sharing credentials over Slack.",
-    color: "var(--vi)",
   },
   {
-    Icon: FileText,
-    title: "Audit Log",
+    icon: (
+      <svg width="48" height="48" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M20 4V36" />
+        <path d="M20 12H30" />
+        <circle cx="30" cy="12" r="3" fill="currentColor" stroke="none" />
+        <path d="M20 20H10" />
+        <circle cx="10" cy="20" r="3" fill="currentColor" stroke="none" />
+        <path d="M20 28H26" />
+        <circle cx="26" cy="28" r="3" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+    title: "Audit\nLog",
     desc: "Every proxied request logged. Key name, endpoint, status, timing. No value field, because there is nowhere to put one.",
-    badge: null,
-    color: "var(--sky)",
+  },
+  {
+    icon: (
+      <svg width="48" height="48" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <rect x="6" y="6" width="10" height="10" rx="1" />
+        <rect x="24" y="6" width="10" height="10" rx="1" />
+        <rect x="15" y="24" width="10" height="10" rx="1" />
+        <path d="M11 16V20H15 M29 16V20H25" />
+      </svg>
+    ),
+    title: "Environment\nIsolation",
+    desc: "Enforce strict runtime boundaries between development, staging, and production secrets. Prevents test workflows or local agent runs from accidentally accessing or calling production APIs.",
+  },
+  {
+    icon: (
+      <svg width="48" height="48" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <rect x="8" y="6" width="24" height="28" rx="3" />
+        <circle cx="20" cy="16" r="4" />
+        <path d="M12 28C12 24.5 15.5 24 20 24C24.5 24 28 24.5 28 28" />
+        <line x1="14" y1="12" x2="26" y2="12" />
+      </svg>
+    ),
+    title: "Agent\nIdentity",
+    desc: "Issue a unique, verifiable cryptographic identity to every LLM agent or workflow. Authenticate and authorize secrets access on a per-agent basis rather than using a shared wildcard key.",
+  },
+  {
+    icon: (
+      <svg width="48" height="48" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <rect x="10" y="16" width="20" height="16" rx="2" />
+        <path d="M15 16V11C15 8.2 17.2 6 20 6C22.8 6 25 8.2 25 11V16" />
+        <path d="M17 24L19 26L23 22" />
+      </svg>
+    ),
+    title: "Anti-Impersonation\nKeychain",
+    desc: "Uses kernel-level process verification (PID, binary path, and SHA-256 hash attestation) to restrict OS keychain access. Prevents unauthorized scripts or background malware from querying your keys.",
   },
 ];
 
-function FeatureCard({
-  feature,
-  index,
-}: {
-  feature: (typeof features)[0];
-  index: number;
-}) {
-  const { Icon, title, desc, badge, color } = feature;
-
-  return (
-    <motion.div
-      className="feat-card"
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{
-        duration: 0.55,
-        delay: index * 0.07,
-        ease: [0.34, 1.56, 0.64, 1],
-      }}
-      whileHover={{
-        y: -5,
-        boxShadow: "0 22px 48px var(--shadow)",
-        borderColor: "var(--border-em)",
-        transition: { type: "spring", stiffness: 350, damping: 22 },
-      }}
-      style={{
-        border: "1px solid var(--border)",
-        borderRadius: 13,
-        padding: 22,
-        background: "var(--bg2)",
-        position: "relative",
-        overflow: "hidden",
-        cursor: "default",
-      }}
-    >
-      {/* Hover glow */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileHover={{ opacity: 1 }}
-        style={{
-          position: "absolute",
-          inset: 0,
-          background: "radial-gradient(ellipse at 10% 0%,rgba(0,255,135,0.07) 0%,transparent 65%)",
-          pointerEvents: "none",
-          transition: "opacity 0.35s",
-        }}
-      />
-
-      {/* Badge */}
-      {badge && (
-        <div
-          style={{
-            position: "absolute",
-            top: 14,
-            right: 14,
-            fontSize: 9,
-            fontWeight: 700,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            padding: "2px 7px",
-            borderRadius: 100,
-            border: "1px solid rgba(255,184,0,0.35)",
-            color: "var(--am)",
-          }}
-        >
-          {badge}
-        </div>
-      )}
-
-      {/* Icon */}
-      <motion.div
-        whileHover={{
-          scale: 1.12,
-          rotate: -6,
-          transition: { type: "spring", stiffness: 420, damping: 16 },
-        }}
-        style={{
-          width: 40,
-          height: 40,
-          borderRadius: 10,
-          background: "rgba(0,255,135,0.07)",
-          border: "1px solid var(--border-em)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          marginBottom: 14,
-        }}
-      >
-        <Icon size={17} color={color} strokeWidth={1.6} />
-      </motion.div>
-
-      <div className="feat-title" style={{ fontSize: 13, fontWeight: 700, marginBottom: 7, position: "relative" }}>
-        {title}
-      </div>
-      <div className="feat-desc" style={{ fontSize: 11, color: "var(--muted)", lineHeight: 1.9, position: "relative" }}>
-        {desc}
-      </div>
-    </motion.div>
-  );
-}
-
 export default function FeaturesGrid() {
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (!containerRef.current) return;
+
+    gsap.from(gsap.utils.toArray(".feature-card"), {
+      opacity: 0,
+      y: 40,
+      scale: 0.95,
+      stagger: 0.1,
+      duration: 1,
+      ease: "power4.out",
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top 70%",
+        toggleActions: "play none none none"
+      }
+    });
+  }, { scope: containerRef });
+
   return (
-    <div
-      id="features"
-      className="feat-grid"
-      style={{
-        display: "grid",
-        gap: 10,
-        marginTop: 48,
-      }}
+    <section 
+      ref={containerRef}
+      id="features" 
+      className="w-full min-h-screen flex items-center justify-center bg-white py-20 px-4 md:px-6 lg:px-8 text-[#1B1B1B] relative z-10 scroll-mt-24"
     >
-      {features.map((f, i) => (
-        <FeatureCard key={f.title} feature={f} index={i} />
-      ))}
-    </div>
+      <div 
+        ref={cardRef}
+        className="w-full max-w-[1150px] mx-auto bg-white rounded-[24px] md:rounded-[32px] p-4 md:p-12 lg:p-16 flex flex-col items-center"
+      >
+        
+        <div className="w-full max-w-fit">
+          {/* Section Label */}
+          <div className="text-[11px] font-bold tracking-[0.15em] uppercase mb-16 opacity-60">
+            FEATURES
+          </div>
+
+        {/* 3-Column Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20">
+          {features.map((f, i) => {
+            const isHovered = hoveredIdx === i;
+            
+            return (
+            <motion.div
+              key={f.title}
+              className="feature-card flex flex-col cursor-pointer transition-opacity duration-500 ease-out"
+              onMouseEnter={() => setHoveredIdx(i)}
+              onMouseLeave={() => setHoveredIdx(null)}
+              animate={{
+                opacity: hoveredIdx !== null && !isHovered ? 0.8 : 1,
+                y: isHovered ? -4 : 0
+              }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+            >
+              {/* Abstract SVG Icon */}
+              <motion.div 
+                style={{ marginBottom: '24px' }}
+                animate={{
+                  scale: isHovered ? 1.1 : 1,
+                  rotate: isHovered ? (i === 5 ? 3 : (i % 2 === 0 ? 3 : -3)) : 0,
+                  color: isHovered ? '#0d9488' : '#1B1B1B'
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 15 }}
+              >
+                {f.icon}
+              </motion.div>
+              
+              {/* Large Editorial Title */}
+              <motion.h3 
+                style={{ 
+                  fontSize: 'clamp(28px, 2.5vw, 36px)', 
+                  lineHeight: '1.1', 
+                  fontWeight: 500, 
+                  letterSpacing: '-0.03em', 
+                  marginBottom: '28px',
+                  maxWidth: '95%',
+                  minHeight: '2.4em',
+                  whiteSpace: 'pre-line'
+                }}
+                animate={{ color: isHovered ? '#0d9488' : '#1B1B1B' }}
+                transition={{ duration: 0.2 }}
+              >
+                {f.title}
+              </motion.h3>
+              
+              {/* Subtle Description Text */}
+              <motion.p 
+                style={{ 
+                  fontSize: '14px', 
+                  lineHeight: '1.65', 
+                  maxWidth: '95%'
+                }}
+                animate={{ color: isHovered ? '#0d9488' : 'rgba(27, 27, 27, 0.7)' }}
+                transition={{ duration: 0.2 }}
+              >
+                {f.desc}
+              </motion.p>
+            </motion.div>
+          )})}
+        </div>
+
+        </div>
+      </div>
+    </section>
   );
 }
