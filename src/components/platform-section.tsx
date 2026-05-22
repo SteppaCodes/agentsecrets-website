@@ -76,6 +76,25 @@ const METHOD_CONTENT: Record<IntegrationMethod, { icon?: React.ReactNode; title:
   }
 };
 
+const escapeHtml = (text: string) =>
+  text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+const highlightOutsideQuotes = (text: string) =>
+  escapeHtml(text)
+    .replace(
+      /\b(agentsecrets|openclaw|curl|node|python|npm|brew|pip|go)\b/gi,
+      '<span style="color: #61afef; font-weight: 500;">$1</span>',
+    )
+    .replace(
+      /(^|\s)(-[HXD]|--)(?=\s|$)/g,
+      '$1<span style="color: #c678dd;">$2</span>',
+    );
+
+const QUOTED_STRING_RE = /"(?:\\.|[^"\\])*"/g;
+
 const renderCodeLine = (line: string, i: number) => {
   if (line.trim().startsWith('#')) {
     return (
@@ -85,18 +104,28 @@ const renderCodeLine = (line: string, i: number) => {
     );
   }
 
-  const html = line
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/\b(agentsecrets|openclaw|curl|node|python|npm|brew|pip|go)\b/g, '<span style="color: #61afef; font-weight: 500;">$1</span>')
-    .replace(/(^|\s)(-[HXD]|\-\-)\b/g, '$1<span style="color: #c678dd;">$2</span>')
-    .replace(/("(\w+)")\s*:/g, '<span style="color: #e06c75;">$1</span>:')
-    .replace(/("(.*?)")/g, '<span style="color: #98c379;">$1</span>');
+  let html = '';
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
 
-  return (
-    <div key={i} dangerouslySetInnerHTML={{ __html: html }} />
-  );
+  while ((match = QUOTED_STRING_RE.exec(line)) !== null) {
+    html += highlightOutsideQuotes(line.slice(lastIndex, match.index));
+
+    const quoted = match[0];
+    const after = line.slice(match.index + quoted.length);
+    const isJsonKey = /^\s*:/.test(after);
+    const escaped = escapeHtml(quoted);
+
+    html += isJsonKey
+      ? `<span style="color: #e06c75;">${escaped}</span>`
+      : `<span style="color: #98c379;">${escaped}</span>`;
+
+    lastIndex = match.index + quoted.length;
+  }
+
+  html += highlightOutsideQuotes(line.slice(lastIndex));
+
+  return <div key={i} dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
 export default function PlatformSection() {
