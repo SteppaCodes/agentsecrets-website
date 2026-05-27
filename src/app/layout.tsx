@@ -49,12 +49,12 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'AgentSecrets — Keep Your API Keys Hidden from AI Agents',
+  title: 'AgentSecrets — Zero-Knowledge Credential Infrastructure for AI Agents',
   description:
-    'Stop pasting secrets into AI chats. AgentSecrets lets your AI agent call any API without ever seeing your credentials. Secure by design, zero-knowledge, works with Claude, MCP, and more.',
+    'Stop exposing credentials to LLMs. AgentSecrets is a zero-knowledge credential infrastructure that lets AI agents call any API by reference, without ever holding raw key values in memory.',
   keywords: [
-    'AI secrets management',
-    'secure secrets management for AI agents',
+    'AI credential infrastructure',
+    'secure credential orchestration for AI agents',
     'zero-knowledge secrets storage',
     'credential management for LLMs',
     'Claude MCP secrets',
@@ -62,10 +62,10 @@ export const metadata: Metadata = {
     'prevent prompt injection key theft',
     'agent security architecture',
     'Zero-Knowledge MCP Server',
-    'OS Keychain secrets manager',
+    'OS Keychain credential infrastructure',
   ],
   openGraph: {
-    title: 'AgentSecrets — Zero-Knowledge Secrets Infrastructure for AI Agents',
+    title: 'AgentSecrets — Zero-Knowledge Credential Infrastructure for AI Agents',
     description:
       'Keep your API keys completely hidden from AI models and LLM agents. Zero-knowledge local credentials proxy with domain egress protection.',
     url: 'https://agentsecrets.theseventeen.co',

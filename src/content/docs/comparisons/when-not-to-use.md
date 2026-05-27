@@ -7,7 +7,7 @@ However, it is not a silver bullet for every infrastructure problem.
 ## Do NOT use AgentSecrets if:
 
 ### 1. You are managing Infrastructure as Code (IaC) Secrets
-If you need to securely inject database passwords into Terraform states or Kubernetes ConfigMaps at provisioning time, use HashiCorp Vault or AWS Secrets Manager. AgentSecrets is a runtime transport proxy, not a provisioning tool.
+If you need to securely inject database passwords into Terraform states or Kubernetes ConfigMaps at provisioning time, use HashiCorp Vault or AWS Secrets Manager. AgentSecrets is a runtime credential infrastructure, not a provisioning tool.
 
 ### 2. You need dynamic, time-bound credentials
 If your architecture requires generating temporary database credentials that expire after 10 minutes, AgentSecrets does not currently support dynamic secret generation. You should use Vault's dynamic secrets engine.

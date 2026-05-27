@@ -2,7 +2,8 @@
 
 HashiCorp Vault is the industry standard for enterprise secrets management. It is incredibly powerful, highly configurable, and provides complex features like dynamic secrets and identity-based access.
 
-However, Vault was built for **trusted applications**, not autonomous AI agents.
+However, Vault was built for **trusted applications**, not autonomous AI agents. AgentSecrets is a zero-knowledge credential infrastructure designed as an extensible host. While Vault secures credentials at rest and during retrieval, AgentSecrets moves credentials below the application runtime using intent attestation (SEC) and process-level sandboxing (Keychain-Auth) to enforce boundaries directly at the execution gateway.
+
 
 ## The Core Difference: Who holds the credential?
 

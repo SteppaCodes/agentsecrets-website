@@ -16,10 +16,10 @@ export const metadata: Metadata = {
     "secure API credentials for AI tools",
     "Claude Desktop setup guide",
     "MCP server secrets",
-    "AI secrets manager",
+    "AI credential infrastructure",
     "zero-knowledge AI proxy",
     "Python SDK for AI agents",
-    "CLI secrets manager",
+    "CLI credential infrastructure",
     "agent credential guide",
   ],
   openGraph: {

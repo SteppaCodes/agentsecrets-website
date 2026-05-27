@@ -10,7 +10,7 @@ If your application is an AI agent, pulling secrets from AWS Secrets Manager bri
 
 ## How AgentSecrets Differs
 
-1. **No `get()` Method**: AgentSecrets never returns a plaintext value to the calling application. It acts as an intercepting proxy, injecting credentials at the transport layer.
+1. **Zero-Knowledge Credential Infrastructure**: AgentSecrets never returns a plaintext value to the calling process. Instead of simple retrieval, it provides transport-layer injection, validated by intent attestation (SEC) and OS process isolation (Keychain-Auth) subsystems.
 2. **Local E2E Encryption**: AWS Secrets Manager encrypts data at rest using AWS KMS. The keys are managed by AWS. AgentSecrets encrypts your secrets locally on your machine using AES-256-GCM *before* syncing them to the cloud. The AgentSecrets servers only ever store ciphertext and cannot decrypt it.
 3. **Developer Experience**: AWS requires configuring IAM roles, policies, and the AWS SDK. AgentSecrets is designed to be as simple as an `.env` file, with a local CLI and automatic cross-environment syncing.
 

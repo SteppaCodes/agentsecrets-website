@@ -15,5 +15,5 @@ If you use Infisical to inject an OpenAI key and a Stripe key into a LangChain a
 ## Summary of Architectural Differences
 
 - **Decryption point:** Infisical decrypts secrets on the server/client during pull/inject actions, whereas AgentSecrets utilizes local OS Keychain decryption keys that never leave the host system.
-- **In-Memory Exposure:** Infisical relies on injecting plaintext values into the environment block of executing commands. AgentSecrets supports both environment injection and runtime transport-layer injection, allowing processes (like AI agents) to query external services without exposing sensitive credentials to the process memory.
+- **In-Memory Exposure:** Infisical relies on injecting plaintext values into the environment block of executing commands. AgentSecrets operates as a zero-knowledge credential infrastructure: it keeps credential values out of the agent's memory and traces entirely, while validating intent (SEC) and sandboxing access (Keychain-Auth) at the transport boundary.
 
