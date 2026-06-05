@@ -12,7 +12,7 @@ The backend supports three categories of tokens:
 * **Who uses it**: Human developers via the CLI or web dashboard.
 * **Format**: Standard JWT containing the user's UUID, email, and permissions.
 * **Lifecycle**: Access token expires in 6 hours; Refresh token uses standard JWT refresh lifetimes.
-* **Storage**: Saved locally on the developer's machine inside `~/.agentsecrets/token.json`.
+* **Storage**: Saved locally on the developer's machine inside the secure OS Keychain (with `token.json` kept empty of sensitive data).
 
 ### 2. Agent Tokens
 * **Who uses it**: Credential proxies, MCP servers, or background runners.
@@ -44,7 +44,7 @@ To prevent developers from being logged out during long-running tasks or backgro
 
 1. **401 Detection**: If an API request to a private endpoint fails with a `401 Unauthorized` status (indicating the Access Token has expired), the client pauses.
 2. **Dynamic Refresh**: The client issues a `POST` request to `/api/auth/refresh/` using the stored Refresh Token.
-3. **Save and Retry**: If the refresh is successful, the new Access and Refresh tokens are persisted to `~/.agentsecrets/token.json` and the failed request is re-built and executed exactly once with the new token.
+3. **Save and Retry**: If the refresh is successful, the new Access and Refresh tokens are persisted to the secure OS Keychain (leaving the local `token.json` file empty of secrets) and the failed request is re-built and executed exactly once with the new token.
 4. **Concurrency Protection**: The refresh flow is locked using a mutex (`refreshMu`) to ensure that multiple parallel asynchronous requests do not cause a "refresh storm" by hitting the refresh endpoint concurrently.
 
 ---

@@ -144,7 +144,7 @@ Connect AgentSecrets to your AI tool using MCP for Claude Desktop and Cursor, or
 ```bash
 agentsecrets mcp install
 ```
-This auto-configures the MCP server for Claude Desktop and Cursor. Restart your AI tool after running this command. You’ll see two new tools available: `api_call` and `list_secrets`.
+This auto-configures the MCP server for Claude Desktop and Cursor. Restart your AI tool after running this command. You’ll see a rich suite of tools available to your assistant, including `api_call`, `list_keys`, and `get_status` (allowing the agent to dynamically inspect connection status, current environment, and project configurations).
 The MCP server communicates over stdio, no network port is opened, and no credential values appear in any config file.
 
 ## Env var injection

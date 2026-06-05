@@ -28,4 +28,4 @@ When you run `agentsecrets secrets push`, your local CLI encrypts the payload us
 
 Because the encryption and decryption happen entirely locally, the AgentSecrets proxy does not require an active internet connection to the AgentSecrets API to function. 
 
-As long as the secrets have been pulled to your local machine (or stored in the OS Keychain), the proxy can resolve and inject credentials completely offline.
+As long as the secrets have been pulled and stored in the native OS Keychain, the proxy can resolve and inject credentials completely offline.

@@ -1,38 +1,82 @@
+---
+title: "The Proxy Model"
+description: "How the Credential Proxy acts as the active credential firewall and security controller of the Zero-Knowledge architecture."
+---
+
 # The Proxy Model
 
-The local proxy is the core of AgentSecrets. Everything else — the CLI, the SDK, the MCP integration, `agentsecrets env` — either manages the credentials the proxy uses or wraps the proxy for specific workflows. Understanding how the proxy works makes the rest of AgentSecrets easier to reason about.
+The local proxy is the core of AgentSecrets. It is the central **Security Controller** and **Active Credential Firewall** of the zero-knowledge architecture. Everything else — the CLI, the SDK, the MCP server, and environment injection tools — either manages the credentials the proxy resolves or wraps proxy connections.
+
+The proxy is not an optional utility that you "opt into"; it is the component that structurally enforces the security rules necessary to keep your zero-knowledge infrastructure secure at runtime.
 
 ---
 
-## What a credential proxy is
+## The Core Security Controller
 
-A credential proxy is a local HTTP server that sits between your agent and the APIs it calls. Instead of your agent making authenticated requests directly, it routes requests through the proxy with a key name. The proxy resolves the value, injects it into the outbound request, and returns only the API response.
+Traditional secrets managers secure credentials *at rest*, but the moment a credential is retrieved for use, protection ends. The application holds the raw value in memory, exposing it to prompt injection, verbose logs, and compromised dependencies.
 
-The agent never performs authentication directly. The proxy performs authentication on its behalf, without the agent ever seeing the credential that was used.
-
----
-
-## How transport-layer injection works
-
-Transport-layer injection means the credential value is added to the HTTP request at the point of transmission, after the request has left the calling process and before it reaches the target API.
-
-The sequence:
-
-1. Your agent sends a request to `localhost:8765` with a key name in an injection header
-2. The proxy validates the target domain against the allowlist
-3. The proxy retrieves the key name from the request header
-4. The proxy looks up the corresponding value in the OS keychain
-5. The proxy decrypts the value in its own process memory
-6. The proxy constructs the outbound HTTP request with the decrypted value injected in the appropriate position (bearer token, header, query param, etc.)
-7. The proxy sends the request to the target API
-8. The proxy receives the response, scans it for credential echoes, and redacts if found
-9. The proxy returns the API response to the caller and writes an audit log entry
-
-At no point does the decrypted value travel back through the proxy to the calling process. It flows only forward — from the proxy into the outbound request.
+AgentSecrets breaks this by using the Credential Proxy as the exclusive gatekeeper:
+1. **Zero-Trust Access Control**: The executing process (an AI agent, tool, or script) only holds a key name (e.g. `STRIPE_KEY`). It has no programmatic way to read the actual value.
+2. **Active Interception**: Outbound requests are routed through the proxy, which decrypts values from the OS Keychain and injects them directly into headers at the transport boundary.
+3. **Layered Inspections**: Before forwarding any request, the proxy checks the workspace allowlist, validates the agent's capabilities, enforces secret constraints, scans responses for credential echoes, redacts leakages, and logs metadata.
 
 ---
 
-## The request lifecycle step by step
+## Transient Proxy Architecture
+
+To maintain the absolute integrity of these security controls, AgentSecrets enforces the proxy model for all workflows, including one-shot actions. 
+
+Instead of writing separate, parallel logic for command line tests or MCP tools (which might bypass telemetry, redaction, or allowlists), AgentSecrets utilizes a unified **Transient Proxy** flow.
+
+Both the CLI `call` command and the built-in MCP server's `api_call` tool call `proxy.CallViaProxy(req)`.
+
+```
+                  ┌──────────────────────┐
+                  │   agentsecrets call  │
+                  └──────────┬───────────┘
+                             │
+                             ▼
+                 Does daemon PID exist &
+                  is process alive?
+                            / \
+                           /   \
+                     No   /     \   Yes
+                         /       \
+                        ▼         ▼
+             ┌──────────────┐   ┌──────────────┐
+             │ Start        │   │ Route to     │
+             │ Transient    │   │ Background   │
+             │ Proxy        │   │ Daemon       │
+             └──────┬───────┘   └──────┬───────┘
+                    │                  │
+                    ├──────────────────┘
+                    │
+                    ▼
+          Enforce All Controls:
+          - Workspace Allowlist Checks
+          - Agent Capabilities Policies
+          - Secret Target Constraints
+          - Response Redactions
+          - Audit & Telemetry Metrics
+                    │
+                    ▼
+          ┌──────────────────┐
+          │ Target API Call  │
+          └──────────────────┘
+```
+
+1. **Daemon Probe**: The client check if the background proxy daemon is already running (by checking `~/.agentsecrets/proxy.pid` and verifying the PID is alive).
+2. **On-the-fly Server**: If the daemon is not running, the client dynamically launches a **transient proxy server** on a free random port.
+3. **Unified Handling**: The request is routed to this local transient server. This ensures that the **exact same security engine** checks allowlists, verifies capabilities, redacts responses, logs audit details, and records telemetry metrics.
+4. **Clean Shutdown**: Once the request completes, the transient server is shut down, and any pending logs are flushed to the cloud backend.
+
+This transient architecture guarantees that security controls are never bypassed and telemetry is consistently gathered, even for one-off CLI calls.
+
+---
+
+## The Request Lifecycle Step by Step
+
+Here is how a request flows through the proxy:
 
 ```
 Agent / calling code
@@ -42,7 +86,7 @@ Agent / calling code
   │  X-AS-Inject-Bearer: STRIPE_KEY
   │
   ▼
-AgentSecrets Proxy
+AgentSecrets Proxy (Daemon or Transient)
   │
   ├─ [1] Check target domain against allowlist
   │       api.stripe.com → authorized → continue
@@ -84,20 +128,7 @@ Agent / calling code receives the API response
 
 ---
 
-## What the agent sees at each step
-
-| Step | What the agent holds |
-|------|---------------------|
-| Before the call | Key name: `"STRIPE_KEY"` |
-| During the proxy request | Key name in request header |
-| While proxy resolves | Nothing, the proxy is handling this independently |
-| After the call | API response: `{"object": "balance", ...}` |
-
-The agent never holds `sk_live_51H...`. At no point in this sequence does the value enter the agent's process.
-
----
-
-## Proxy vs retrieval — side by side
+## Proxy vs Retrieval — Side by Side
 
 | | Retrieval model | Proxy model |
 |---|---|---|
@@ -110,7 +141,7 @@ The agent never holds `sk_live_51H...`. At no point in this sequence does the va
 
 ---
 
-## The six injection styles
+## The Six Injection Styles
 
 The proxy supports six ways to inject credentials into an outbound request, covering all common API authentication patterns:
 

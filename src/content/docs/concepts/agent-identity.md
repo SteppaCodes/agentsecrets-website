@@ -173,3 +173,15 @@ After deletion, every token issued to that agent is immediately invalidated. Cal
 | Production, sensitive secrets | Issued |
 | Need to revoke one agent immediately | Issued |
 | Compliance, cryptographic attribution required | Issued |
+
+---
+
+## Security Enforcements with Identity
+
+Once an agent has a cryptographic or declared identity, you can enforce security policies targeting that specific identity:
+
+1. **[Agent Capabilities](/docs/proxy/agent-capabilities)**: Use `agentsecrets agent policy set` to whitelist or blacklist specific secrets for each agent name.
+2. **[Secret-Level Policies](/docs/proxy/secret-policies)**: Restrict secrets to specific target domains and HTTP methods, or mark sensitive methods (like `POST` or `DELETE`) to require manual approval using `agentsecrets proxy approve`.
+
+By combining identity and policies, AgentSecrets provides a robust credential firewall that stops prompt injection attacks from leaking keys.
+
