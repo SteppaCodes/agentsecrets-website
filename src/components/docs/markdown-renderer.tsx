@@ -323,7 +323,7 @@ export default function MarkdownRenderer({ content, id: sectionId }: { content: 
       };
       childrenArray.forEach(walk);
 
-      const markerRegex = /\[(WARNING|TIP|LIGHTBULB|INFO|NOTE|CAUTION|DANGER|STOP)\]/i;
+      const markerRegex = /\[!?\s*(WARNING|TIP|LIGHTBULB|INFO|NOTE|CAUTION|DANGER|STOP|IMPORTANT)\]/i;
       const match = allText.match(markerRegex);
       
       if (match) {
@@ -331,7 +331,7 @@ export default function MarkdownRenderer({ content, id: sectionId }: { content: 
         const typeStr = match[1].toUpperCase();
         let type: 'warning' | 'tip' | 'info' | 'caution' = 'info';
         
-        if (typeStr === 'WARNING') type = 'warning';
+        if (typeStr === 'WARNING' || typeStr === 'IMPORTANT') type = 'warning';
         else if (typeStr === 'TIP' || typeStr === 'LIGHTBULB') type = 'tip';
         else if (typeStr === 'CAUTION' || typeStr === 'DANGER' || typeStr === 'STOP') type = 'caution';
 
@@ -351,9 +351,10 @@ export default function MarkdownRenderer({ content, id: sectionId }: { content: 
         let markerRemoved = false;
         const clean = (node: any): any => {
           if (typeof node === 'string') {
-            if (!markerRemoved && node.toUpperCase().includes(markerText.toUpperCase())) {
+            const markerIdx = node.toUpperCase().indexOf(markerText.toUpperCase());
+            if (!markerRemoved && markerIdx !== -1) {
               markerRemoved = true;
-              return node.replace(new RegExp(`\\s*\\${markerText}\\s*`, 'i'), "").trim();
+              return (node.slice(0, markerIdx) + node.slice(markerIdx + markerText.length)).trim();
             }
             return node;
           }

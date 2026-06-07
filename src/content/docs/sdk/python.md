@@ -45,6 +45,78 @@ No credentials are passed into the constructor.
 
 ---
 
+## Transparent HTTP client interception (Automatic proxy routing)
+
+In addition to `client.call()`, the Python SDK supports automatic, zero-code interception of outgoing HTTP requests made by standard libraries like `requests` and `httpx`. This allows you to integrate AgentSecrets with third-party SDKs (such as the official `openai` or `stripe` packages) without rewriting any of their internal network calling code.
+
+### How it works
+
+When you initialize the client or call `agentsecrets.init()`, the SDK dynamically patches the core sending methods of `requests` and `httpx` (supporting both synchronous and asynchronous `httpx` clients).
+
+:::step
+1. **Initialize interception**
+   Import `agentsecrets` and call `agentsecrets.init()` at the entry point of your application.
+2. **Configure placeholders**
+   Pass placeholder secret references instead of raw keys to third-party SDK constructors or environment variables. The placeholder format can be:
+   - `Bearer AS_SECRET_<KEY_NAME>` (for standard authorization headers)
+   - `AS_SECRET_<KEY_NAME>` (for general header values)
+3. **Automatic detection**
+   The patched HTTP client automatically scans all outgoing headers. If a placeholder is detected, it strips the placeholder header from the request.
+4. **Proxy redirection**
+   The client redirects the target URL of the request to the local AgentSecrets proxy daemon (`http://localhost:8765/proxy`) and attaches special control headers:
+   - `X-AS-Target-URL`: The original API endpoint.
+   - `X-AS-Method`: The original HTTP method.
+   - `X-AS-Inject-Bearer`: The name of the secret key to inject as a bearer token.
+   - `X-AS-Inject-Header-<name>`: The name of the secret key to inject into the specified custom header.
+5. **Secure resolution**
+   The local proxy resolves the actual credential from the OS Keychain, checks the domain against the workspace allowlist, verifies policies, injects the real key, executes the call, and returns the response safely.
+:::
+
+> [IMPORTANT]
+> The target domain (e.g. `api.openai.com` or `api.stripe.com`) must be added to the workspace allowlist using `agentsecrets workspace allowlist add <domain>` prior to execution. If not authorized, the proxy will reject the request.
+
+### Third-party SDK examples
+
+#### OpenAI integration
+
+```python
+import openai
+import agentsecrets
+
+# Register HTTP client interception hooks
+agentsecrets.init()
+
+# Initialize OpenAI with a placeholder API key.
+# The raw key value never enters your Python process memory or environment space.
+client = openai.OpenAI(api_key="AS_SECRET_OPENAI_API_KEY")
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Hello world!"}]
+)
+
+print(response.choices[0].message.content)
+```
+
+#### Stripe integration
+
+```python
+import stripe
+import agentsecrets
+
+# Register HTTP client interception hooks
+agentsecrets.init()
+
+# Use the placeholder for the Stripe API key
+stripe.api_key = "AS_SECRET_STRIPE_SECRET_KEY"
+
+# Requests are intercepted, routed via local proxy, and injected at the boundary
+balance = stripe.Balance.retrieve()
+print(balance)
+```
+
+---
+
 ## Making calls — client.call()
 
 ### Bearer token

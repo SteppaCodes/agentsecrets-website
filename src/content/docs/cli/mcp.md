@@ -33,7 +33,7 @@ agentsecrets mcp serve
 
 When registered, the MCP server exposes the following tools to the AI assistant:
 
-### 🔑 Credential Operations
+### Credential Operations
 
 #### `api_call`
 Allows the agent to execute an authenticated request. Plaintext credentials are resolved from the OS Keychain and injected at the transport layer by the local proxy.
@@ -61,7 +61,7 @@ Retrieves a table of secret keys and shows which environments (`development`, `s
 
 ---
 
-### ⚙️ Context Management
+### Context Management
 
 #### `get_status`
 Retrieves the active user session email, current project details, and the selected workspace.
@@ -83,7 +83,7 @@ Compares secret keys between two environments (e.g. comparing development vs pro
 
 ---
 
-### 🛡️ Audit & Allowlist
+### Audit & Allowlist
 
 #### `get_proxy_logs`
 Returns the recent entries of the local proxy audit log (times, endpoints, key names, and HTTP statuses; values are never logged).

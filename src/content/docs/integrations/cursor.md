@@ -12,20 +12,26 @@ Cursor has native support for the Model Context Protocol (MCP). By using the nat
 ## Setup Instructions
 
 ### 1. Store Credentials
+:::step
 Ensure you have stored your credentials in your local OS Keychain via the AgentSecrets CLI:
 ```bash
 agentsecrets secrets set STRIPE_KEY=sk_live_...
 ```
+:::
 
 ### 2. Auto-Configure Cursor
+:::step
 Run the native `mcp install` command to automatically register AgentSecrets with your local Cursor editor:
 ```bash
 agentsecrets mcp install
 ```
 This automatically detects your Cursor configuration directory and adds the AgentSecrets MCP definition to your Cursor `mcp.json` file.
+:::
 
 ### 3. Restart Cursor
+:::step
 Restart the Cursor application to load the new MCP server configurations.
+:::
 
 ---
 

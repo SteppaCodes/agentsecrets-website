@@ -1,153 +1,42 @@
-# Python SDK
+# SDK Overview
 
-The Python SDK provides a typed interface for making zero-knowledge calls from your code. It has no `get()` method. There is no way to retrieve a credential value into your calling code — the only operations available keep the value out of your process.
+AgentSecrets SDKs provide a secure, zero-knowledge interface for integrating credentials and API calls into your applications and AI agent workflows. 
 
-## Installation
+Following the **No get() Principle**, our SDKs are structurally incapable of retrieving decrypted secret values into your application's process memory. Instead, they provide clean abstraction layers to route operations through the local secure proxy daemon.
 
-```bash
-pip install agentsecrets
-```
+---
 
-## Initializing the client
+## Supported Integration Models
 
-```python
-from agentsecrets import AgentSecrets
+You can integrate AgentSecrets into your codebase using two distinct methods depending on your requirements:
 
-# Defaults — uses active workspace, project, and environment from global config
-client = AgentSecrets()
+### 1. Transparent HTTP Client Interception (Recommended)
+This method monkey-patches standard HTTP libraries (such as `requests` and `httpx` in Python) upon initialization. Outgoing requests containing special placeholder tokens (e.g. `AS_SECRET_OPENAI_KEY`) are automatically intercepted, stripped of the placeholder, and routed through the local proxy daemon.
 
-# Explicit configuration
-client = AgentSecrets(
-    workspace="Acme Engineering",
-    project="payments-service",
-)
+This enables:
+* **Zero code modifications** to third-party SDKs (such as `openai` or `stripe` clients).
+* **Easy onboarding**: You initialize standard clients with the placeholder token format, and they work out-of-the-box.
+* **Security boundary**: Keys never touch the process memory of your AI agent or main application.
 
-# With agent identity
-client = AgentSecrets(agent_id="billing-processor")
+### 2. Explicit Client Calls
+For custom integrations or if you prefer explicit proxy routing, the SDK provides a unified `client.call()` interface. You pass the target URL, method, body, and the metadata reference names of the credentials to inject (e.g., `bearer="STRIPE_KEY"`). The SDK formats and forwards the request to the proxy.
 
-# With issued token
-client = AgentSecrets(agent_token="agt_ws01hxyz_4kR9mNpQ...")
+---
 
-# Custom proxy port
-client = AgentSecrets(port=9000)
-```
+## Language Support
 
-No credentials are passed into the constructor. Ever.
+We support the following client libraries:
 
-## Making calls — client.call()
+* **Python SDK**: Fully featured, offering explicit client calls, child process spawning (`spawn`), and transparent HTTP client interception. See the [Python SDK Guide](/docs/sdk/python) and [Python API Reference](/docs/sdk/python-reference).
+* **JavaScript/TypeScript SDK**: *Coming Soon* — designed for Node.js, Bun, and Deno environments.
 
-```python
-# Bearer token (Stripe, OpenAI, GitHub, most modern APIs)
-response = client.call(
-    "https://api.stripe.com/v1/balance",
-    bearer="STRIPE_KEY"
-)
+---
 
-# POST request with body
-response = client.call(
-    "https://api.stripe.com/v1/charges",
-    method="POST",
-    bearer="STRIPE_KEY",
-    body={"amount": 1000, "currency": "usd", "source": "tok_visa"}
-)
+## Testing Agent Workflows
 
-# Custom header (SendGrid, Twilio)
-response = client.call(
-    "https://api.sendgrid.com/v3/mail/send",
-    method="POST",
-    header={"X-Api-Key": "SENDGRID_KEY"},
-    body=payload
-)
+To support automated testing and CI/CD pipelines without exposing production keys or requiring a running proxy daemon, the SDKs include mock interfaces (such as `MockAgentSecrets`).
 
-# Query parameter (Google Maps, weather APIs)
-response = client.call(
-    "https://maps.googleapis.com/maps/api/geocode/json",
-    params={"address": "Lagos, Nigeria"},
-    query={"key": "GOOGLE_MAPS_KEY"}
-)
-
-# Basic auth (Jira, legacy REST APIs)
-response = client.call(
-    "https://jira.example.com/rest/api/2/issue/PROJ-1",
-    basic="JIRA_CREDS"
-)
-
-# Multiple credentials in one call
-response = client.call(
-    "https://api.example.com/data",
-    bearer="AUTH_TOKEN",
-    header={"X-Org-ID": "ORG_SECRET"}
-)
-
-# Async variant
-response = await client.async_call(
-    "https://api.openai.com/v1/models",
-    bearer="OPENAI_KEY"
-)
-```
-
-## Response object
-
-| Field | Type | Description |
-|---|---|---|
-| `response.status_code` | `int` | HTTP status code |
-| `response.body` | `str` | Raw response body |
-| `response.json()` | `dict` | Parsed JSON response |
-| `response.headers` | `dict` | Response headers |
-| `response.redacted` | `bool` | True if proxy scrubbed a credential echo |
-| `response.duration_ms` | `int` | Request duration in milliseconds |
-
-There is no field containing the credential value. The response object is structurally incapable of carrying it.
-
-## Spawning processes — client.spawn()
-
-Inject secrets as environment variables into a child process. The calling code never sees the values.
-
-```python
-# Spawn a process with injected environment variables
-result = client.spawn("stripe", ["mcp"])
-result = client.spawn("python", ["manage.py", "runserver"])
-
-# Async variant
-proc = await client.spawn_async("stripe", ["mcp"])
-```
-
-## Management surface
-
-The SDK exposes the full management surface for automation and programmatic workflows:
-
-```python
-# Secrets
-client.secrets.list()
-client.secrets.check(["STRIPE_KEY", "OPENAI_KEY"])
-client.secrets.pull()
-client.secrets.push()
-client.secrets.diff()
-
-# Environments
-client.environments.switch("production")
-client.environments.list()
-
-# Status
-client.status()
-```
-
-## MockAgentSecrets for testing
-
-Test your agent code without a running proxy or real credentials:
-
-```python
-from agentsecrets import MockAgentSecrets
-
-mock = MockAgentSecrets(responses={
-    "https://api.stripe.com/v1/balance": {"object": "balance", "available": [{"amount": 420000}]}
-})
-
-# Use it exactly like the real client
-response = mock.call("https://api.stripe.com/v1/balance", bearer="STRIPE_KEY")
-
-# Assert calls were made
-assert mock.calls[0].key_name == "STRIPE_KEY"
-assert mock.calls[0].url == "https://api.stripe.com/v1/balance"
-# Note: mock.calls[0] has no value field
-```
+These mock clients:
+* Act as drop-in replacements for testing.
+* Record target endpoints, HTTP methods, and key references of calls made.
+* Are physically incapable of returning or accessing raw credential values, maintaining complete zero-knowledge integrity.

@@ -4,7 +4,7 @@ To ensure fine-grained control and zero-trust security when deploying AI agents,
 
 ---
 
-## 🔑 Agent Policies (Capabilities)
+## Agent Policies (Capabilities)
 
 Agent Policies allow you to bind permissions directly to an agent identity. They specify which secrets a given agent token (`agt_...`) can inject.
 
@@ -34,7 +34,7 @@ agentsecrets agent policy set <agent-name> --deny STRIPE_SECRET_KEY,AWS_SECRET_A
 
 ---
 
-## 🔒 Secret Constraints
+## Secret Constraints
 
 Secret Constraints define rules bound to **the secret key itself**, regardless of which agent is requesting it. They restrict the target domains and HTTP methods that are permitted to receive the credential.
 
@@ -72,7 +72,7 @@ agentsecrets secrets constraints <KEY> clear
 
 ---
 
-## 🔄 Runtime Approvals
+## Runtime Approvals
 
 If a secret constraint specifies `request_permission` for an HTTP method and domain, the proxy will temporarily pause the outgoing request and return a `403 Forbidden` response to the agent, specifying that developer approval is required.
 

@@ -1,5 +1,24 @@
 # SDK Reference
 
+## Function: init()
+
+Initializes the AgentSecrets secure credential boundary and registers transparent HTTP client interception for standard libraries (`requests` and `httpx`).
+
+```python
+import agentsecrets
+
+agentsecrets.init(
+    port=None,          # int — custom proxy port, defaults to 8765
+    workspace=None,     # str — workspace name override
+    project=None,       # str — project name override
+    environment=None,   # str — environment name override
+)
+```
+
+Calling `init()` monkey-patches `requests.Session.send`, `httpx.Client.send`, and `httpx.AsyncClient.send`. Any outgoing HTTP request containing a placeholder credential header value (e.g., `"Bearer AS_SECRET_OPENAI_API_KEY"` or `"AS_SECRET_SENDGRID_KEY"`) is automatically routed through the local AgentSecrets proxy daemon to resolve the key at the transport boundary.
+
+---
+
 ## Class: AgentSecrets
 
 ```python

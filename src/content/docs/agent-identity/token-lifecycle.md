@@ -94,16 +94,25 @@ If you have five instances of a billing agent running across five Kubernetes pod
 
 ---
 
-## Token expiry (roadmap)
+## Token Expiry (TTL)
 
-Currently, agent tokens remain active indefinitely until they are explicitly revoked or the parent agent identity is deleted. To further strengthen production security, the following token lifecycle features are on the active product roadmap:
+To limit the lifespan of issued tokens and enforce regular rotation, you can specify an expiration time when registering an agent or issuing a token using the `--expires` (or `-e`) flag:
 
-1. **Configurable TTL (Time-To-Live)**: Specify an expiration date at the time of token creation:
-   ```bash
-   agentsecrets agent token issue "billing-processor" --ttl 7d
-   ```
-2. **Automatic Rotation SDKs**: Out-of-the-box support in the SDK to dynamically exchange expiring tokens in the background without process restarts.
-3. **Idle Token Auto-Deactivation**: A workspace-level policy that automatically revokes any token that has not made a call to the proxy within a configurable window (e.g., 30 days).
+```bash
+# Set token to expire in 30 days during registration
+agentsecrets agent register "billing-processor" --expires 30d
 
-> [NOTE]
-> To implement rotation in the interim, run a cron job or background worker that generates a new token using the CLI, updates the target environment variables, and triggers a rolling restart of your agent processes.
+# Set token to expire in 7 days when issuing a new token
+agentsecrets agent token issue "billing-processor" --expires 7d
+```
+
+The CLI supports durations in days (e.g., `7d`, `30d`, `90d`). The proxy will check the token's expiration timestamp during validation. If a token is expired, the proxy immediately blocks the request and logs an expired audit event.
+
+---
+
+## Roadmap
+
+The following lifecycle features are on the active product roadmap:
+
+1. **Automatic Rotation SDKs**: Out-of-the-box support in the SDK to dynamically exchange expiring tokens in the background without process restarts.
+2. **Idle Token Auto-Deactivation**: A workspace-level policy that automatically revokes any token that has not made a call to the proxy within a configurable window (e.g., 30 days).

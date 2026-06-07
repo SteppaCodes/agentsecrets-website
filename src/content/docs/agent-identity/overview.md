@@ -80,7 +80,6 @@ By inspecting the logs, you can quickly group, filter, or trigger alerts based o
 Agent Identity is not just for auditing; it is the foundation for enforcing fine-grained security policies:
 
 - **[Agent Capabilities](/docs/proxy/agent-capabilities)**: Restrict the set of secrets a specific agent identity can access (using allowlists/denylists).
-- **[Secret-Level Constraints](/docs/proxy/secret-policies)**: Restrict credentials to specific target domains or HTTP methods, or require manual developer approval for sensitive actions.
 
-Together, these form a multi-layered zero-trust credential firewall.
+Together with secret-level constraints, Agent Capabilities form a multi-layered zero-trust credential firewall.
 
