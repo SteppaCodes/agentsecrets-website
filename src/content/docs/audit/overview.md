@@ -10,17 +10,25 @@ AgentSecrets implements a full-governance logging system stored locally in SQLit
 
 ## Why AI Agents Require Forensic Logging
 
+:::step
 ### 1. Non-Deterministic Behavior
 AI agents write code, execute shell commands, and construct API requests on the fly based on LLM reasoning. Standard logs only show the end request; they cannot explain *why* the agent had access to a specific key, or *what* rules were active when the LLM decided to call that endpoint.
+:::
 
+:::step
 ### 2. Rapid Context Shifts
 The agent's security context—such as domain allowlists, agent capabilities, or secret policies—can shift dynamically during a session. A forensic audit must prove the *exact state of the security boundary* when the call was executed, not hours later when the audit is run.
+:::
 
+:::step
 ### 3. Log Tampering & Hijacking
 If an agent escapes its sandbox or a machine is compromised, attackers may attempt to delete, insert, or reorder log records to hide malicious API calls (e.g. data exfiltration). Without cryptographic non-repudiation, logs cannot be trusted during post-incident investigations.
+:::
 
+:::step
 ### 4. Traceable Multi-Layer Enforcement
 To satisfy security administrators and compliance auditors (SOC 2, ISO 27001), you must prove *exactly which firewall layer* authorized or blocked a request. The log must trace evaluations across Agent Capabilities, Workspace Allowlists, and Secret-Level Policies.
+:::
 
 ---
 
@@ -60,10 +68,21 @@ Every forensic log entry is divided into four highly structured, immutable JSON 
 └──────────────────────────────────────────────────────────────────┘
 ```
 
+:::step
 1. **Event Block**: The details of the request execution (timestamp, path, HTTP method, response status code, outcome, latency, and agent token identity).
+:::
+
+:::step
 2. **Snapshot Block**: The state of the system at execution time (active allowlist, project configuration, secrets in scope, agent capabilities snapshot, active secret policy, and keychain connection state).
+:::
+
+:::step
 3. **Enforcement Block**: The decision path showing the results of each firewall layer checked (Capabilities check, Allowlist check, Secret policy check) and which layer triggered the first failure.
-4: **Resolution Block**: The post-call handling metrics (style of injection, response scanning status, credential echo detection, redaction replacements, and SSRF validation status).
+:::
+
+:::step
+4. **Resolution Block**: The post-call handling metrics (style of injection, response scanning status, credential echo detection, redaction replacements, and SSRF validation status).
+:::
 
 ---
 

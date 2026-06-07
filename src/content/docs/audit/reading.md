@@ -6,15 +6,14 @@ AgentSecrets provides multiple log categories and tools to monitor credential ca
 
 ## 1. Interactive Proxy Audit Log (`agentsecrets log`)
 
+:::step
 The `agentsecrets log` command opens an interactive, paginated terminal log viewer. It displays the history of API requests routed through the local credential proxy.
 
 ### Interactive Controls
 
-:::step
 * **Pagination**: Logs are displayed in pages of 20. Press `n` to go to the next page and `p` to go to the previous page.
 * **Detailed View**: Type the number of any row (e.g. `1` to `20`) and press **Enter** to open a detailed breakdown of that specific log entry. If a Forensic log is selected, this displays the full trace of event blocks, enforcement layers, snapshots, and resolution statuses.
 * **Exit**: Press `q` to quit the interactive log viewer.
-:::
 
 ### Filtering Logs
 
@@ -39,11 +38,13 @@ agentsecrets log --domain api.stripe.com --method POST --status-class 4xx
 # Filter by environment and time window
 agentsecrets log --env production --since 24h
 ```
+:::
 
 ---
 
 ## 2. Inspecting Log Details (`agentsecrets log show <id>`)
 
+:::step
 To inspect a single log record by ID:
 ```bash
 agentsecrets log show log_a1b2c3d4
@@ -54,11 +55,13 @@ For forensic logs, this prints a full component trace:
 * **Enforcement Layer Trace**: chronological evaluation results across Capabilities, Allowlist, and Secret Policies.
 * **Resolution Layer**: Injection style, SSRF checks, and response redaction status.
 * **Snapshot State**: The active database size, allowlist domains, project info, and active capabilities policies at execution time.
+:::
 
 ---
 
 ## 3. Cryptographic Chain Verification (`agentsecrets log verify`)
 
+:::step
 Because AI agents write and execute code dynamically, proving the integrity of the audit logs is essential for SOC 2 and ISO 27001 compliance. 
 
 The `log verify` command validates the mathematical signature of the entire chronological SQLite log chain:
@@ -87,11 +90,13 @@ The verify command walks the logs oldest-to-newest, recalculates the SHA-256 has
     Previous ID:   log_z9y8x7w6
   Error: cryptographic audit log verification failed
   ```
+:::
 
 ---
 
 ## 4. Visual State Replay (`agentsecrets log replay <id>`)
 
+:::step
 If a request was blocked or redacted and you need to investigate *why*, you can reconstruct the exact environment state using the visual replay tool:
 
 ```bash
@@ -135,11 +140,13 @@ Credential State: Not injected
 Response Redact:  No redaction
 ─────────────────────────────────────────────────────────
 ```
+:::
 
 ---
 
 ## 5. Static Proxy Audit Log (`agentsecrets proxy logs`)
 
+:::step
 If you want to quickly print the most recent log entries directly to stdout without entering the interactive viewer (for example, to pipe to another tool or check recent history quickly), use `agentsecrets proxy logs`.
 
 ```bash
@@ -152,14 +159,15 @@ agentsecrets proxy logs --secret STRIPE_KEY
 # Filter by environment
 agentsecrets proxy logs --env staging
 ```
+:::
 
 ---
 
 ## 6. Live Log Streaming (`agentsecrets log watch`)
 
+:::step
 To stream audit logs in real-time as your applications or AI agents execute requests:
 
-:::step
 Run the watch command to live stream incoming entries:
 ```bash
 agentsecrets log watch
@@ -175,17 +183,20 @@ agentsecrets log --tail
 
 ## 7. Workspace Allowlist Logs (`agentsecrets workspace allowlist log`)
 
+:::step
 Workspace logs provide an audit trail of administrative configuration changes inside your workspace rather than API proxy calls. They record when domains were added or removed from the proxy allowlist, and which user authorized the change.
 
 ```bash
 # View the list of allowlist modifications
 agentsecrets workspace allowlist log
 ```
+:::
 
 ---
 
 ## 8. Proxy Daemon Status (`agentsecrets proxy status`)
 
+:::step
 To check the operational health of the background proxy process, view its memory usage, sync intervals, and log file sizes:
 
 ```bash
@@ -199,11 +210,13 @@ This command displays:
 * **Last Sync**: The time since the proxy last synchronized its revocation blocklists with the cloud backend.
 * **Audit DB Path**: The local SQLite database path (default `~/.agentsecrets/audit.db`).
 * **Database Size**: The exact size and last modified time of the SQLite log file.
+:::
 
 ---
 
 ## 9. Keychain Auth Security Daemon Audit Log
 
+:::step
 While the proxy audit log records runtime API calls, the local `keychain-auth` daemon maintains its own security audit log. This log is crucial for tracking low-level operating system credentials access and process validations.
 
 ### Log File Location
@@ -223,3 +236,4 @@ You can inspect this log file directly using standard command-line tools:
 # View the last 50 daemon security checks
 tail -n 50 ~/.local/share/keychain-auth/audit.log
 ```
+:::
