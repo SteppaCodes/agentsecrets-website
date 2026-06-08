@@ -30,4 +30,4 @@ agentsecrets audit --env production
 
 ## Integrating with SIEMs
 
-For enterprise teams, AgentSecrets supports exporting audit logs directly to Datadog or Splunk via a webhook configuration in your workspace settings.
+For compliance and security monitoring, you can ingest AgentSecrets audit logs into SIEM providers (like Datadog, Splunk, or Elastic) by exporting them locally via the CLI or downloading them programmatically via the Cloud Server API.

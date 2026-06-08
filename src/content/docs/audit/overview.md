@@ -11,24 +11,16 @@ AgentSecrets implements a full-governance logging system stored locally in SQLit
 ## Why AI Agents Require Forensic Logging
 
 ### 1. Non-Deterministic Behavior
-:::step
 AI agents write code, execute shell commands, and construct API requests on the fly based on LLM reasoning. Standard logs only show the end request; they cannot explain *why* the agent had access to a specific key, or *what* rules were active when the LLM decided to call that endpoint.
-:::
 
 ### 2. Rapid Context Shifts
-:::step
 The agent's security context—such as domain allowlists, agent capabilities, or secret policies—can shift dynamically during a session. A forensic audit must prove the *exact state of the security boundary* when the call was executed, not hours later when the audit is run.
-:::
 
 ### 3. Log Tampering & Hijacking
-:::step
 If an agent escapes its sandbox or a machine is compromised, attackers may attempt to delete, insert, or reorder log records to hide malicious API calls (e.g. data exfiltration). Without cryptographic non-repudiation, logs cannot be trusted during post-incident investigations.
-:::
 
 ### 4. Traceable Multi-Layer Enforcement
-:::step
 To satisfy security administrators and compliance auditors (SOC 2, ISO 27001), you must prove *exactly which firewall layer* authorized or blocked a request. The log must trace evaluations across Agent Capabilities, Workspace Allowlists, and Secret-Level Policies.
-:::
 
 ---
 
@@ -38,7 +30,9 @@ AgentSecrets stores all forensic logs locally in a high-performance SQLite datab
 
 To guarantee log integrity, AgentSecrets implements a **cryptographic chain hash sequence**. Each log entry is mathematically linked to the entry before it:
 
-$$\text{chain_hash} = \text{SHA-256}(\text{previous_entry_id} + \text{current_entry_id} + \text{created_at_RFC3339})$$
+```
+chain_hash = SHA-256(previous_entry_id + current_entry_id + created_at_RFC3339)
+```
 
 * **Immutable History**: If an attacker modifies a row's details, deletes an entry, or tries to reorder logs, the hash chain breaks.
 * **Non-Repudiation**: Running `agentsecrets log verify` walks the chain chronologically, recalculates the hashes, and flags any discrepancy instantly.
@@ -68,25 +62,10 @@ Every forensic log entry is divided into four highly structured, immutable JSON 
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-1. **Event Block**
-   :::step
-   The details of the request execution (timestamp, path, HTTP method, response status code, outcome, latency, and agent token identity).
-   :::
-
-2. **Snapshot Block**
-   :::step
-   The state of the system at execution time (active allowlist, project configuration, secrets in scope, agent capabilities snapshot, active secret policy, and keychain connection state).
-   :::
-
-3. **Enforcement Block**
-   :::step
-   The decision path showing the results of each firewall layer checked (Capabilities check, Allowlist check, Secret policy check) and which layer triggered the first failure.
-   :::
-
-4. **Resolution Block**
-   :::step
-   The post-call handling metrics (style of injection, response scanning status, credential echo detection, redaction replacements, and SSRF validation status).
-   :::
+1. **Event Block**: The details of the request execution (timestamp, path, HTTP method, response status code, outcome, latency, and agent token identity).
+2. **Snapshot Block**: The state of the system at execution time (active allowlist, project configuration, secrets in scope, agent capabilities snapshot, active secret policy, and keychain connection state).
+3. **Enforcement Block**: The decision path showing the results of each firewall layer checked (Capabilities check, Allowlist check, Secret policy check) and which layer triggered the first failure.
+4. **Resolution Block**: The post-call handling metrics (style of injection, response scanning status, credential echo detection, redaction replacements, and SSRF validation status).
 
 ---
 
@@ -96,7 +75,6 @@ AgentSecrets separates logs into three distinct categories to cover the entire l
 
 | Category | Storage Target | Description | How to Query |
 |---|---|---|---|
-| **Runtime Forensic Audit Log** | SQLite (`~/.agentsecrets/audit.db`) | Flat indexable metadata with E2EE-linked JSON snapshots. Tracks all runtime credential usage. | `agentsecrets log` |
+| **Runtime Forensic Audit Log** | SQLite (`~/.agentsecrets/audit.db`) & Cloud Backend (Sync) | Flat indexable metadata with E2EE-linked JSON snapshots. Tracks all runtime credential usage. | `agentsecrets log`, `agentsecrets proxy logs` |
 | **Workspace Policy Log** | Synchronization Server (Cloud Backend) | Audit trail of administrative settings changes (e.g., changes to domain allowlists). | `agentsecrets workspace allowlist log` |
 | **Keychain Auth Security Log** | Plaintext File (`~/.local/share/keychain-auth/audit.log`) | Audit trail of secure daemon authorizations, process hash checks, and OS keychain reads. | View local audit file |
-
