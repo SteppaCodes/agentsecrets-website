@@ -6,7 +6,7 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 
-import { formatMetric } from "@/lib/utils";
+import { formatMetric, getMetrics } from "@/lib/utils";
 import { RollingNumber } from "./rolling-number";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
@@ -18,7 +18,7 @@ export default function StatsSection() {
     total_secrets: 0,
     total_projects: 0,
     total_users: 0,
-    total_proxy_calls: 0,
+    total_requests_handled: 0,
     shared_workspaces: 0,
     total_environments_configured: 0
   });
@@ -42,16 +42,19 @@ export default function StatsSection() {
       })
       .catch(() => {});
 
-    fetch(`/api/metrics?t=${Date.now()}`)
-      .then(res => res.json())
+    getMetrics()
       .then(res => {
-        if (res.status === 'success' && res.data) {
+        if (res && res.status === 'success' && res.data) {
           const d = res.data;
+          const execCount = d.feature_adoption?.command_usage?.exec ?? 0;
+          const envCount = d.feature_adoption?.command_usage?.env ?? 0;
+          const proxyCount = d.security?.total_proxy_calls ?? 0;
+
           setMetrics({
             total_secrets: d.platform?.total_secrets ?? 0,
             total_projects: d.platform?.total_projects ?? 0,
             total_users: d.platform?.total_users ?? 0,
-            total_proxy_calls: d.security?.total_proxy_calls ?? 0,
+            total_requests_handled: execCount + envCount + proxyCount,
             shared_workspaces: d.platform?.shared_workspaces ?? 0,
             total_environments_configured:
               (d.feature_adoption?.environment_distribution?.staging ?? 0) +
@@ -157,8 +160,8 @@ export default function StatsSection() {
       )
     },
     {
-      value: metricsLoaded ? formatMetric(1000 + (metrics.total_proxy_calls || 0)) : "0",
-      label: "Requests Proxied",
+      value: metricsLoaded ? formatMetric(metrics.total_requests_handled) : "0",
+      label: "Requests Handled",
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="m13 2-2 10h8L7 22l2-10H1L13 2Z" />
@@ -203,7 +206,7 @@ export default function StatsSection() {
               margin: '0 auto'
             }}
           >
-            AgentSecrets proxies every outbound request your AI agent makes, silently injecting credentials and enforcing strict domain allowlists. Your keys never touch the agent's context.
+            AgentSecrets provides a zero-knowledge credential infrastructure for AI agents, enforcing layered governance policies and transient injection. Your keys never touch the agent's context.
           </p>
         </div>
 

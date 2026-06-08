@@ -51,6 +51,8 @@ export const DOCS_SECTIONS = [
   { id: "proxy/injection", group: "CLI Reference", label: "How Injection Works", parent: "proxy/overview" },
   { id: "proxy/injection-styles", group: "CLI Reference", label: "Auth Injection Styles", parent: "proxy/overview" },
   { id: "proxy/domain-allowlist", group: "CLI Reference", label: "Domain Allowlist", parent: "proxy/overview" },
+  { id: "proxy/agent-capabilities", group: "CLI Reference", label: "Agent Capabilities", parent: "proxy/overview" },
+  { id: "proxy/secret-policies", group: "CLI Reference", label: "Secret-Level Policies & Approvals", parent: "proxy/overview" },
   { id: "proxy/response-redaction", group: "CLI Reference", label: "Response Body Redaction", parent: "proxy/overview" },
   { id: "proxy/ssrf-protection", group: "CLI Reference", label: "SSRF Protection", parent: "proxy/overview" },
   { id: "proxy/session-token", group: "CLI Reference", label: "Session Token Auth", parent: "proxy/overview" },
@@ -176,6 +178,7 @@ export const DOCS_SECTIONS = [
   { id: "faq", group: "FAQ", label: "Frequently Asked Questions" },
 
   // Changelog
+  { id: "changelog/v3-0-0", group: "Changelog", label: "v3.0.0" },
   { id: "changelog/v2-1-0", group: "Changelog", label: "v2.1.0" },
   { id: "changelog/v2-0-0", group: "Changelog", label: "v2.0.0" },
   { id: "changelog/v1-4-0", group: "Changelog", label: "v1.4.0" },

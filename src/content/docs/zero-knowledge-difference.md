@@ -62,7 +62,7 @@ response = requests.get(
 )
 ```
 
-> [!WARNING]
+> [WARNING]
 > Once `token` is in memory, it is accessible to any third-party dependency, can be logged, and is vulnerable to prompt injection if processed by an LLM.
 
 ### Transport-Layer Injection (The AgentSecrets Model)

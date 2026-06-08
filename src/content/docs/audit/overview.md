@@ -1,117 +1,80 @@
-# Audit Log Schema
+# Forensic Governance & Audit Logging
 
-Every proxy call produces one audit log entry. The schema is the same for the local proxy log and the global backend log.
+In traditional systems, audit logging is treated as a simple event stream—recording what happened (e.g., *Agent X called Stripe at 14:22:01, received a 200, took 143ms*). 
 
-```json
-{
-  "timestamp": "2026-03-20T14:22:01.334Z",
-  "resolution_path": "local",
-  "workspace_id": "ws_01HABC...",
-  "project_id": "proj_01HDEF...",
-  "environment": "production",
-  "agent_id": "billing-processor",
-  "agent_identity_level": "declared",
-  "credential_ref": "STRIPE_KEY",
-  "injection_style": "bearer",
-  "target_domain": "api.stripe.com",
-  "target_url": "https://api.stripe.com/v1/balance",
-  "method": "GET",
-  "status_code": 200,
-  "duration_ms": 245,
-  "redacted": false,
-  "credential_echo": false,
-  "allowlist_snapshot": {
-    "domains": ["api.stripe.com", "api.openai.com"],
-    "captured_at": "2026-03-20T14:22:01.330Z"
-  },
-  "error": null
-}
-```
+For autonomous AI agents, standard event logging is completely insufficient for security and compliance audits. Because AI agents are non-deterministic, dynamic, and execute untrusted inputs, they require a **Forensic Snapshot Log**. 
 
-## Field reference
-
-| Field | Type | Description |
-|---|---|---|
-| `timestamp` | ISO 8601 | UTC timestamp of the call |
-| `resolution_path` | string | `local` for local proxy calls |
-| `workspace_id` | string | Workspace the call was made in |
-| `project_id` | string | Project the credential belongs to |
-| `environment` | string | Active environment at time of call |
-| `agent_id` | string or null | Agent name if declared or issued identity was used |
-| `agent_identity_level` | string | `anonymous`, `declared`, or `issued` |
-| `credential_ref` | string | Key name of the credential used |
-| `injection_style` | string | `bearer`, `basic`, `header`, `query`, `body_field`, `form_field` |
-| `target_domain` | string | Domain of the target API |
-| `target_url` | string | Full URL of the request |
-| `method` | string | HTTP method |
-| `status_code` | int | HTTP status code returned by the API |
-| `duration_ms` | int | Total request duration including injection |
-| `redacted` | bool | True if a credential echo was found and scrubbed in the response |
-| `credential_echo` | bool | Same as `redacted` — included for filter compatibility |
-| `allowlist_snapshot` | object | The domain allowlist at the exact moment of the call |
-| `error` | string or null | Error message if the call failed at the proxy level |
-
-There is no `value` field. The field does not exist in the schema — it is not null, not empty, not redacted. It does not exist.
+AgentSecrets implements a full-governance logging system stored locally in SQLite (`~/.agentsecrets/audit.db`) that captures the entire security boundary and system state at the exact millisecond of every request.
 
 ---
 
-## Architecture
+## Why AI Agents Require Forensic Logging
 
-### Component overview
+### 1. Non-Deterministic Behavior
+AI agents write code, execute shell commands, and construct API requests on the fly based on LLM reasoning. Standard logs only show the end request; they cannot explain *why* the agent had access to a specific key, or *what* rules were active when the LLM decided to call that endpoint.
 
-```
-┌─────────────────────────────────────────────────────┐
-│                  AI Agent / User                    │
-└─────────────────────┬───────────────────────────────┘
-                      │ key name
-                      ▼
-┌─────────────────────────────────────────────────────┐
-│              AgentSecrets CLI / SDK                 │
-│                                                     │
-│  Manages secrets lifecycle                          │
-│  Communicates with proxy                            │
-│  Never reads keychain directly                      │
-└─────────────────────┬───────────────────────────────┘
-                      │ localhost:8765
-                      ▼
-┌─────────────────────────────────────────────────────┐
-│              Local Proxy                            │
-│                                                     │
-│  Validates domain allowlist                         │
-│  Reads from OS keychain                             │
-│  Injects at transport layer                         │
-│  Scans response for credential echoes               │
-│  Writes audit log entry                             │
-└──────────┬──────────────────────┬───────────────────┘
-           │                      │
-           ▼                      ▼
-┌──────────────────┐   ┌──────────────────────────────┐
-│   OS Keychain    │   │        Target API             │
-│                  │   │   api.stripe.com              │
-│  Encrypted       │   │   api.openai.com              │
-│  User-scoped     │   │   any authorized domain       │
-└──────────────────┘   └──────────────────────────────┘
-```
+### 2. Rapid Context Shifts
+The agent's security context—such as domain allowlists, agent capabilities, or secret policies—can shift dynamically during a session. A forensic audit must prove the *exact state of the security boundary* when the call was executed, not hours later when the audit is run.
 
-### Cloud sync architecture
+### 3. Log Tampering & Hijacking
+If an agent escapes its sandbox or a machine is compromised, attackers may attempt to delete, insert, or reorder log records to hide malicious API calls (e.g. data exfiltration). Without cryptographic non-repudiation, logs cannot be trusted during post-incident investigations.
+
+### 4. Traceable Multi-Layer Enforcement
+To satisfy security administrators and compliance auditors (SOC 2, ISO 27001), you must prove *exactly which firewall layer* authorized or blocked a request. The log must trace evaluations across Agent Capabilities, Workspace Allowlists, and Secret-Level Policies.
+
+---
+
+## The Forensic Log Architecture
+
+AgentSecrets stores all forensic logs locally in a high-performance SQLite database under `~/.agentsecrets/audit.db` within the `forensic_audit_events` table. 
+
+To guarantee log integrity, AgentSecrets implements a **cryptographic chain hash sequence**. Each log entry is mathematically linked to the entry before it:
 
 ```
-Your machine
-┌─────────────────────────────────────────────────────┐
-│  CLI generates encryption keys                      │
-│  Private key → OS keychain                          │
-│  Public key → sent to server                        │
-│                                                     │
-│  agentsecrets secrets set KEY=value                 │
-│    → encrypts with workspace key (from keychain)    │
-│    → uploads ciphertext                             │
-│    → server stores encrypted blob                   │
-│                                                     │
-│  agentsecrets secrets pull                          │
-│    → downloads encrypted blob                       │
-│    → decrypts with workspace key (from keychain)    │
-│    → writes to OS keychain                          │
-└─────────────────────────────────────────────────────┘
+chain_hash = SHA-256(previous_entry_id + current_entry_id + created_at_RFC3339)
+```
 
-Server
+* **Immutable History**: If an attacker modifies a row's details, deletes an entry, or tries to reorder logs, the hash chain breaks.
+* **Non-Repudiation**: Running `agentsecrets log verify` walks the chain chronologically, recalculates the hashes, and flags any discrepancy instantly.
+* **Zero Credential Exposure**: No plaintext credential values are ever written to the database. Only key names (e.g., `STRIPE_KEY`) and metadata are recorded.
 
+---
+
+## Schema Component Blocks
+
+Every forensic log entry is divided into four highly structured, immutable JSON blocks alongside flat indexable columns:
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                      ForensicAuditEvent                          │
+│                                                                  │
+│  Flat Fields: id, version, created_at, workspace_id, project_id, │
+│               environment, agent_id, token_id, domain, method,   │
+│               status_code, outcome, latency_ms, chain_hash       │
+│                                                                  │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌─────────────────┐ │
+│  │    Event Block   │  │  Snapshot Block  │  │Enforcement Block│ │
+│  └──────────────────┘  └──────────────────┘  └─────────────────┘ │
+│                                                                  │
+│                        ┌──────────────────┐                      │
+│                        │ Resolution Block │                      │
+│                        └──────────────────┘                      │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+1. **Event Block**: The details of the request execution (timestamp, path, HTTP method, response status code, outcome, latency, and agent token identity).
+2. **Snapshot Block**: The state of the system at execution time (active allowlist, project configuration, secrets in scope, agent capabilities snapshot, active secret policy, and keychain connection state).
+3. **Enforcement Block**: The decision path showing the results of each firewall layer checked (Capabilities check, Allowlist check, Secret policy check) and which layer triggered the first failure.
+4. **Resolution Block**: The post-call handling metrics (style of injection, response scanning status, credential echo detection, redaction replacements, and SSRF validation status).
+
+---
+
+## Log Categories
+
+AgentSecrets separates logs into three distinct categories to cover the entire lifecycle of configuration, security authorization, and runtime credential usage:
+
+| Category | Storage Target | Description | How to Query |
+|---|---|---|---|
+| **Runtime Forensic Audit Log** | SQLite (`~/.agentsecrets/audit.db`) & Cloud Backend (Sync) | Flat indexable metadata with E2EE-linked JSON snapshots. Tracks all runtime credential usage. | `agentsecrets log`, `agentsecrets proxy logs` |
+| **Workspace Policy Log** | Synchronization Server (Cloud Backend) | Audit trail of administrative settings changes (e.g., changes to domain allowlists). | `agentsecrets workspace allowlist log` |
+| **Keychain Auth Security Log** | Plaintext File (`~/.local/share/keychain-auth/audit.log`) | Audit trail of secure daemon authorizations, process hash checks, and OS keychain reads. | View local audit file |

@@ -17,7 +17,7 @@ const features = [
       </svg>
     ),
     title: "OS Keychain\nStorage",
-    desc: "Credentials live in the OS keychain. macOS Keychain, Linux Secret Service, Windows Credential Manager. No plaintext on disk, no environment variable exposed to neighboring processes.",
+    desc: "Credentials reside securely within the native OS keychain—macOS Keychain, Linux Secret Service, or Windows Credential Manager. Plaintext is never written to disk, and no environment variable is exposed for neighboring processes to scrape.",
   },
   {
     icon: (
@@ -27,8 +27,8 @@ const features = [
         <path d="M20 4V17 M34 12L22.5 18.5 M34 28L22.5 21.5 M20 36V23 M6 28L17.5 21.5 M6 12L17.5 18.5" />
       </svg>
     ),
-    title: "Six Auth\nStyles",
-    desc: "Bearer, Basic, custom header, query param, JSON body, form field. Every REST and OAuth pattern has a corresponding injection style.",
+    title: "Zero-Knowledge\nProxy",
+    desc: "All credentialed traffic routes through a secure proxy. Keys are resolved from the keychain and injected at the transport layer, returning only the API response to the agent. Value exposure is prevented in memory, logs, and CLI execution.",
   },
   {
     icon: (
@@ -38,32 +38,32 @@ const features = [
         <path d="M20 4V12 M20 28V36 M4 20H12 M28 20H36" />
       </svg>
     ),
-    title: "Domain\nAllowlist",
-    desc: "Deny-by-default. Every outbound request must target an authorized domain. Unauthorized attempts are blocked and logged before injection happens.",
+    title: "Layered\nEnforcement",
+    desc: "Requests pass through a multi-stage pipeline before key resolution. Agent capabilities restrict credential access, the domain allowlist controls outbound destinations, and secrets policies define usage rules. Each enforcement layer is independent, composable, and extensible.",
   },
   {
     icon: (
       <svg width="48" height="48" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <line x1="8" y1="12" x2="32" y2="12" />
-        <line x1="8" y1="20" x2="14" y2="20" />
-        <rect x="18" y="17" width="14" height="6" fill="currentColor" stroke="none" />
-        <line x1="8" y1="28" x2="32" y2="28" />
+        <rect x="6" y="6" width="10" height="10" rx="1" />
+        <rect x="24" y="6" width="10" height="10" rx="1" />
+        <rect x="15" y="24" width="10" height="10" rx="1" />
+        <path d="M11 16V20H15 M29 16V20H25" />
       </svg>
     ),
-    title: "Response\nRedaction",
-    desc: "If an API echoes a credential back in its response, the proxy catches and redacts it before the agent sees the response.",
+    title: "Secrets\nPolicy",
+    desc: "Define granular usage rules for individual credentials—restricting target endpoints, HTTP methods, and response behavior. Policies can block unauthorized requests or trigger interactive developer approval. This is credential-level governance built for autonomous agent workflows.",
   },
   {
     icon: (
       <svg width="48" height="48" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <circle cx="20" cy="10" r="4" />
-        <circle cx="10" cy="28" r="4" />
-        <circle cx="30" cy="28" r="4" />
-        <path d="M18 13.5L12 24.5 M22 13.5L28 24.5 M14 28H26" />
+        <rect x="8" y="6" width="24" height="28" rx="3" />
+        <circle cx="20" cy="16" r="4" />
+        <path d="M12 28C12 24.5 15.5 24 20 24C24.5 24 28 24.5 28 28" />
+        <line x1="14" y1="12" x2="26" y2="12" />
       </svg>
     ),
-    title: "Team\nWorkspaces",
-    desc: "Secrets encrypted client-side before upload. The server holds ciphertext. A new developer onboards without anyone sharing credentials over Slack.",
+    title: "Agent Identity\n& Capabilities",
+    desc: "Bind agents and workflows to unique cryptographic identities. Scope access permissions to specific projects, environments, and credentials. All execution is cryptographically attributed to a verified identity, eliminating the risks of shared wildcard API keys.",
   },
   {
     icon: (
@@ -77,32 +77,32 @@ const features = [
         <circle cx="26" cy="28" r="3" fill="currentColor" stroke="none" />
       </svg>
     ),
-    title: "Audit\nLog",
-    desc: "Every proxied request logged. Key name, endpoint, status, timing. No value field, because there is nowhere to put one.",
+    title: "Forensic\nAudit Log",
+    desc: "Capture immutable snapshots of the complete system state at the millisecond of execution. Logs record the active allowlists, agent capabilities, secrets policies, and specific pipeline decisions. Instantly verify log integrity or replay events for forensic audit.",
   },
   {
     icon: (
       <svg width="48" height="48" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <rect x="6" y="6" width="10" height="10" rx="1" />
-        <rect x="24" y="6" width="10" height="10" rx="1" />
-        <rect x="15" y="24" width="10" height="10" rx="1" />
-        <path d="M11 16V20H15 M29 16V20H25" />
+        <line x1="8" y1="12" x2="32" y2="12" />
+        <line x1="8" y1="20" x2="14" y2="20" />
+        <rect x="18" y="17" width="14" height="6" fill="currentColor" stroke="none" />
+        <line x1="8" y1="28" x2="32" y2="28" />
       </svg>
     ),
-    title: "Environment\nIsolation",
-    desc: "Enforce strict runtime boundaries between development, staging, and production secrets. Prevents test workflows or local agent runs from accidentally accessing or calling production APIs.",
+    title: "Response\nRedaction",
+    desc: "Prevent credentials from leaking through downstream outputs. If an external API echoes a secret back in its payload, the proxy dynamically redacts it before delivery. The zero-knowledge architecture protects both outbound requests and incoming responses.",
   },
   {
     icon: (
       <svg width="48" height="48" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <rect x="8" y="6" width="24" height="28" rx="3" />
-        <circle cx="20" cy="16" r="4" />
-        <path d="M12 28C12 24.5 15.5 24 20 24C24.5 24 28 24.5 28 28" />
-        <line x1="14" y1="12" x2="26" y2="12" />
+        <circle cx="20" cy="10" r="4" />
+        <circle cx="10" cy="28" r="4" />
+        <circle cx="30" cy="28" r="4" />
+        <path d="M18 13.5L12 24.5 M22 13.5L28 24.5 M14 28H26" />
       </svg>
     ),
-    title: "Agent\nIdentity",
-    desc: "Issue a unique, verifiable cryptographic identity to every LLM agent or workflow. Authenticate and authorize secrets access on a per-agent basis rather than using a shared wildcard key.",
+    title: "Team\nWorkspaces",
+    desc: "Encrypt credentials client-side before cloud synchronization so the server holds only unreadable ciphertext. Onboard developers seamlessly without sharing plaintext credentials over Slack, email, or chat, keeping your configuration files completely zero-disk.",
   },
   {
     icon: (
@@ -112,8 +112,8 @@ const features = [
         <path d="M17 24L19 26L23 22" />
       </svg>
     ),
-    title: "Anti-Impersonation\nKeychain",
-    desc: "Uses kernel-level process verification (PID, binary path, and SHA-256 hash attestation) to restrict OS keychain access. Prevents unauthorized scripts or background malware from querying your keys.",
+    title: "Anti-Impersonation\nKeychain Auth",
+    desc: "Restrict keychain access using kernel-level process verification, validating parent PIDs, binary paths, and SHA-256 signatures. Unauthorized scripts, background malware, and rogue tooling are blocked from querying credentials even if running on the same host.",
   },
 ];
 

@@ -24,4 +24,4 @@ The server stores the blob. It cannot read the JSON keys, the values, or the num
 When you invite a team member to a workspace, they generate an ECDH keypair. You retrieve their public key, encrypt the Workspace Master Key using their public key, and send the encrypted key to the server. When they accept the invite, their local CLI decrypts the Workspace Master Key using their private key.
 
 > [WARNING]
-> Because the server does not hold the keys, **there is no password reset**. If every admin in a workspace loses their local machine and config file, the workspace data is permanently unrecoverable. Keep backups of your `~/.agentsecrets/config.json`.
+> Because the server does not hold the keys, **there is no password reset**. If you lose access to your local machine, the workspace keys are stored securely in the native OS Keychain and can be retrieved by logging in again from a new machine (which performs a secure key exchange with other workspace members). No raw workspace keys are saved in disk-based backup files.

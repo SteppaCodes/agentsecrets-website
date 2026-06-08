@@ -46,6 +46,7 @@ publisher_secrets = AgentSecrets(
     agent_token="agt_ws01hxyz_publisherToken..."
 )
 ```
+:::
 
 ### 3. Attach secrets clients to agent tools
 :::step
@@ -63,6 +64,7 @@ def search_web(query: str) -> str:
     )
     return response.json()
 ```
+:::
 
 ---
 
@@ -136,6 +138,7 @@ def inject_agent_identity(request: httpx.Request):
     except LookupError:
         pass  # Fall back to anonymous or declared environment variables
 ```
+:::
 
 ### 3. Sidecar Header Routing
 :::step

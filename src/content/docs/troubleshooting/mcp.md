@@ -25,9 +25,10 @@ When running `agentsecrets mcp install`, the CLI modifies your local MCP configu
 
 ## Agent Can't See the Tools
 
-Once installed, the AgentSecrets MCP server exposes two primary tools to the AI:
-- `list_secrets`: Allows the agent to see which keys are available (names only, no values).
+Once installed, the AgentSecrets MCP server exposes a rich suite of tools to the AI, including:
+- `list_keys`: Allows the agent to see which keys are available (names only, no values).
 - `api_call`: Routes requests through the zero-knowledge proxy engine.
+- `get_status`: Inspects session, workspace, project, and proxy status.
 
 If the agent claims it doesn't have these tools:
 1. Completely restart your AI assistant (e.g., quit and reopen Claude Desktop).
@@ -38,7 +39,7 @@ If the agent claims it doesn't have these tools:
 If the agent uses `api_call` but receives an error:
 
 - **Domain Blocked:** The agent attempted to contact a domain not in your workspace allowlist. You must add it: `agentsecrets workspace allowlist add <domain>`.
-- **Invalid Secret Name:** The agent tried to inject a secret that doesn't exist. Tell the agent to use the `list_secrets` tool to verify available key names first.
+- **Invalid Secret Name:** The agent tried to inject a secret that doesn't exist. Tell the agent to use the `list_keys` tool to verify available key names first.
 
 > [TIP]
 > Every MCP call uses the exact same internal proxy engine as the HTTP proxy. You can debug MCP requests by viewing the proxy audit logs:

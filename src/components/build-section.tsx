@@ -21,7 +21,7 @@ const BUILD_CATEGORIES = [
       {
         id: "sdk-python",
         title: "Native Python\nSDK",
-        description: "One import, zero rewrites. The SDK transparently monkey-patches `requests` and `httpx` so every outbound call is automatically routed through the local proxy — credential values never touch your process memory.",
+        description: "Secure your agent's integrations at the runtime layer. The Python SDK transparently hooks HTTP clients to the governance proxy, preventing prompt injection leaks without changing your application code.",
         icon: <Blocks size={48} strokeWidth={1.5} />,
         cta: "Get Started",
         href: "/docs/sdk",

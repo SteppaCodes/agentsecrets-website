@@ -53,6 +53,16 @@ export const metadata: Metadata = {
   description:
     'The standard secure credential layer for AI agents, coding assistants (Cursor, Claude), and engineering teams. Call APIs by reference without raw keys in memory. 10-second setup.',
   keywords: [
+    'agentsecrets',
+    'agent-secrets',
+    'secrets for llm',
+    'llm credential governance',
+    'llm secrets security',
+    'ai secrets proxy',
+    'mcp server security',
+    'zero trust secrets manager',
+    'credential proxy for llms',
+    'secure credentials for ai coding tools',
     'AI agents secrets management',
     'secrets infrastructure for AI',
     'agentic secrets infrastructure',

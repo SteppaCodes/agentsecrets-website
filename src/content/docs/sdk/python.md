@@ -45,6 +45,160 @@ No credentials are passed into the constructor.
 
 ---
 
+## Transparent HTTP client interception (Automatic proxy routing)
+
+In addition to explicit `client.call()` invocations, the Python SDK supports automatic, zero-code interception of outgoing HTTP requests made by standard client libraries. This allows you to integrate AgentSecrets with official third-party SDKs (such as the official `openai` or `stripe` packages) without rewriting any of their internal network calling code, retaining full use of their helpers, classes, and streaming parameters.
+
+### The Security Dilemma
+
+Standard API client libraries are designed around a simple but insecure assumption: they require the plaintext credential value to be present in application memory at initialization time. For example:
+
+```python
+# Insecure: raw keys are loaded into process memory, exposing them to log leaks or extraction
+client = openai.OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+```
+
+If an AI agent is hijacked via prompt injection, or if a dependency is compromised, these in-memory credentials can be dumped. 
+
+Normally, enforcing zero-trust security would require you to rewrite all your API logic using custom raw HTTP calls (via `client.call()`), which strips away the ease-of-use of official SDKs. Interception resolves this by allowing you to initialize official SDKs with secure **placeholder strings**, while the underlying library dynamically redirects calls to the secure proxy.
+
+---
+
+### How Interception Works Under the Hood
+
+When you call `agentsecrets.init()`, the SDK dynamically patches (`monkey patches`) the sending pipelines of Python's most popular HTTP libraries:
+
+* `requests.Session.send`
+* `httpx.Client.send` (Synchronous client)
+* `httpx.AsyncClient.send` (Asynchronous client)
+
+Since almost all major Python SDKs (including `openai`, `stripe`, `anthropic`, `google-generativeai`, `pinecone`, `github`, and `sendgrid`) use `requests` or `httpx` internally, patching these three root methods intercepts the network boundary for the entire Python ecosystem.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant AgentCode as AI Agent / Application
+    participant SDK as Official SDK (e.g., OpenAI)
+    participant Patch as Patched HTTP Client (httpx/requests)
+    participant Daemon as Local Proxy Daemon
+    participant Target as Target API (api.openai.com)
+
+    AgentCode->>SDK: client.chat.completions.create(...)
+    Note over SDK: Uses placeholder token:<br/>"AS_SECRET_OPENAI_KEY"
+    SDK->>Patch: send(Request to api.openai.com)
+    Note over Patch: Detects "AS_SECRET_" placeholder.<br/>Strips it.<br/>Rewrites destination to localhost:8765/proxy
+    Patch->>Daemon: POST /proxy with X-AS-Target-URL & X-AS-Inject-Bearer
+    Note over Daemon: Checks Domain Allowlist.<br/>Retrieves key value from OS Keychain.<br/>Injects real key into Authorization header.
+    Daemon->>Target: POST /v1/chat/completions with real key
+    Target-->>Daemon: JSON Response (e.g. Choices)
+    Note over Daemon: Audits request metadata.<br/>Redacts any accidental secret echoes.
+    Daemon-->>Patch: HTTP 200 Response
+    Patch-->>SDK: HTTP 200 Response
+    SDK-->>AgentCode: completions object
+```
+
+### The Request lifecycle
+
+:::step
+1. **Initialize interception**
+   Call `agentsecrets.init()` once at the entry point of your application. This registers the monkey patches.
+2. **Configure placeholders**
+   Pass placeholder references instead of raw keys to third-party SDK constructors. The placeholder format can be:
+   - `Bearer AS_SECRET_<KEY_NAME>` (for standard authorization headers)
+   - `AS_SECRET_<KEY_NAME>` (for general header values or API keys)
+3. **Automatic detection**
+   The patched HTTP client scans all outgoing request headers. If an `AS_SECRET_` placeholder is found, it is stripped from the request headers to ensure it never exits the local boundary.
+4. **Proxy redirection**
+   The client redirects the target URL of the request to the local AgentSecrets proxy daemon (`http://localhost:8765/proxy`) and attaches special control headers:
+   - `X-AS-Target-URL`: The original API endpoint (e.g. `https://api.openai.com/v1/chat/completions`).
+   - `X-AS-Method`: The original HTTP method (e.g. `POST`).
+   - `X-AS-Inject-Bearer`: The name of the secret key to inject as a bearer token.
+   - `X-AS-Inject-Header-<name>`: The name of the secret key to inject into the specified custom header.
+5. **Secure resolution & validation**
+   The local proxy resolves the actual credential from the OS Keychain, checks the domain against the workspace allowlist, verifies policies, injects the real key, executes the call, and returns the response safely.
+:::
+
+> [IMPORTANT]
+> The target domain (e.g. `api.openai.com` or `api.stripe.com`) must be added to the workspace allowlist using `agentsecrets workspace allowlist add <domain>` prior to execution. If not authorized, the proxy will reject the request.
+
+---
+
+### Zero Code-Change Migration (Environment Variables)
+
+Instead of passing placeholders directly in the constructor code, you can define standard SDK environment variables (like `OPENAI_API_KEY` or `STRIPE_API_KEY`) to use the placeholder strings inside your shell or `.env.local` files:
+
+```bash
+# Set placeholders in your shell configuration or env files
+export OPENAI_API_KEY="AS_SECRET_OPENAI_API_KEY"
+export STRIPE_API_KEY="AS_SECRET_STRIPE_SECRET_KEY"
+```
+
+Then, you simply initialize the SDK at startup and use your existing code unchanged:
+
+```python
+import openai
+import stripe
+import agentsecrets
+
+# 1. Register HTTP client interception hooks
+agentsecrets.init()
+
+# 2. These standard clients automatically read from environment variables,
+# receiving the secure placeholders instead of plaintext values.
+openai_client = openai.OpenAI()
+stripe_client = stripe.Charge
+
+# 3. Execution is automatically intercepted and routed securely
+response = openai_client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+```
+
+---
+
+### Code Examples
+
+#### OpenAI integration
+
+```python
+import openai
+import agentsecrets
+
+# Register HTTP client interception hooks
+agentsecrets.init()
+
+# Initialize OpenAI with a placeholder API key.
+# The raw key value never enters your Python process memory or environment space.
+client = openai.OpenAI(api_key="AS_SECRET_OPENAI_API_KEY")
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Hello world!"}]
+)
+
+print(response.choices[0].message.content)
+```
+
+#### Stripe integration
+
+```python
+import stripe
+import agentsecrets
+
+# Register HTTP client interception hooks
+agentsecrets.init()
+
+# Use the placeholder for the Stripe API key
+stripe.api_key = "AS_SECRET_STRIPE_SECRET_KEY"
+
+# Requests are intercepted, routed via local proxy, and injected at the boundary
+balance = stripe.Balance.retrieve()
+print(balance)
+```
+
+---
+
 ## Making calls — client.call()
 
 ### Bearer token

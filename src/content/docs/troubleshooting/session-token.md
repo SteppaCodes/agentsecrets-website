@@ -18,5 +18,14 @@ agentsecrets login
 
 Your local keychain (containing your actual encrypted values) is never deleted when a session expires. You will not lose any secrets; you simply need to re-authenticate to push or pull changes.
 
-> [NOTE]
-> If you are using AgentSecrets in a CI/CD pipeline, you should use a **Service Token** instead of a user session token. Service tokens can be generated from the Web Dashboard and do not expire unless manually revoked.
+## Force Resetting a Session (Logging Out)
+
+If you need to manually clear your session (for example, to switch users or force a clean login state), do not attempt to delete local configuration files:
+* **Do not delete `token.json`**: In v3.0.0, user session tokens are stored securely in the native OS Keychain. Deleting the file on disk will not log you out.
+* **Use the logout command**: Run the following command to securely wipe the session token from your OS Keychain:
+  ```bash
+  agentsecrets logout
+  ```
+
+
+

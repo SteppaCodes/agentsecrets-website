@@ -92,7 +92,19 @@ When an upstream API returns a response, the proxy performs a high-performance s
 While response redaction is highly effective, it operates on exact string matching. Developers should still follow logging best practices and avoid printing raw API payloads.
 
 ### How does the proxy protect against Server-Side Request Forgery (SSRF) and loopback scanning?
-To prevent an agent from using the proxy to scan your private network, the proxy automatically blocks requests to loopback addresses (`127.0.0.1`, `localhost`), private subnet ranges (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), and cloud metadata endpoints (such as AWS metadata `169.254.169.254`).
+To prevent a compromised agent from using the proxy to scan your private network or access internal services, the proxy blocks requests targeting loopback addresses (`127.0.0.1`, `localhost`, `::1`), private subnets (RFC 1918 ranges like `10.0.0.0/8`), and cloud metadata endpoints (`169.254.169.254`). 
+
+The proxy also implements DNS Rebinding prevention by resolving target domains and dialing resolved IPs directly.
+
+If you need to make loopback requests for local testing or mock API development, you can allow localhost bypass specifically by starting the proxy with the `--allow-local-http` flag:
+```bash
+agentsecrets proxy start --allow-local-http
+```
+
+### What is the local proxy session token and does it introduce developer friction?
+To prevent unauthorized local processes, browser scripts, or container escapes from utilizing the proxy without permission, the proxy port requires verification of a pre-shared local session token via the `X-AS-Session-Token` HTTP header. 
+
+This token is generated automatically on proxy startup and stored securely in the native OS Keychain. The `agentsecrets` CLI client and MCP server automatically retrieve and inject this header on outbound calls. Developers experience zero friction during standard operations, while unauthorized external applications are blocked from abusing the local proxy.
 
 ---
 
