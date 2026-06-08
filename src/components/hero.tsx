@@ -6,7 +6,7 @@ import { useGSAP } from '@gsap/react';
 import { SplitText } from 'gsap/SplitText';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-import { formatMetric } from '@/lib/utils';
+import { formatMetric, getMetrics } from '@/lib/utils';
 import { RollingNumber } from './rolling-number';
 
 gsap.registerPlugin(SplitText, ScrollTrigger);
@@ -43,10 +43,9 @@ export default function Hero() {
       })
       .catch(() => {});
 
-    fetch(`/api/metrics?t=${Date.now()}`)
-      .then(res => res.json())
+    getMetrics()
       .then(res => {
-        if (res.status === 'success' && res.data?.platform) {
+        if (res && res.status === 'success' && res.data?.platform) {
           setTotalSecretsStored(res.data.platform.total_secrets);
         }
       })
