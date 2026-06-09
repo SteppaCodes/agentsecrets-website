@@ -27,6 +27,7 @@ export const DOCS_SECTIONS = [
   // CLI Reference
   { id: "cli/account", group: "CLI Reference", label: "Account (init / login)" },
   { id: "cli/docs", group: "CLI Reference", label: "Docs" },
+  { id: "cli/autocompletion", group: "CLI Reference", label: "Shell Autocompletion" },
   { id: "cli/keychain-auth", group: "CLI Reference", label: "Keychain Auth" },
   
   // CLI: Secrets
@@ -173,6 +174,7 @@ export const DOCS_SECTIONS = [
   { id: "troubleshooting/mcp", group: "Troubleshooting", label: "MCP Not Connecting" },
   { id: "troubleshooting/session-token", group: "Troubleshooting", label: "Session Token Errors" },
   { id: "troubleshooting/installation", group: "Troubleshooting", label: "Installation Issues" },
+  { id: "troubleshooting/error-codes", group: "Troubleshooting", label: "Error Codes Reference" },
 
   // FAQ
   { id: "faq", group: "FAQ", label: "Frequently Asked Questions" },

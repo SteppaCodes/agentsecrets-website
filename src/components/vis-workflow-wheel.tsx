@@ -59,13 +59,15 @@ function MobileWorkflow() {
     let mm = gsap.matchMedia();
 
     mm.add("(max-width: 767px)", () => {
-      // Track scroll progress of the container without pinning
+      // Track scroll progress of the container with pinning
       ScrollTrigger.create({
         id: 'mobile-workflow-trigger',
         trigger: containerRef.current,
-        start: 'top 70%',
-        end: 'bottom 30%',
-        scrub: true,
+        start: 'top top',
+        end: '+=250%',
+        pin: true,
+        pinSpacing: true,
+        scrub: 1,
         onUpdate: (self) => {
           const p = self.progress;
           const totalSteps = WORKFLOW_STEPS.length;
@@ -121,15 +123,15 @@ function MobileWorkflow() {
   return (
     <section
       ref={containerRef}
-      className="w-full md:hidden select-none"
-      style={{ backgroundColor: '#0D1512', color: '#FFFFFF', padding: '160px 24px' }}
+      className="w-full h-screen md:hidden select-none flex flex-col justify-between pt-24 pb-8 px-6 relative overflow-hidden"
+      style={{ backgroundColor: '#0D1512', color: '#FFFFFF' }}
     >
       {/* Section Label */}
-      <div className="mobile-wf-label text-center" style={{ marginBottom: '100px' }}>
-        <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-[#34D399]/60 block mb-4">
+      <div className="mobile-wf-label text-center mb-6">
+        <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-[#34D399]/60 block mb-2">
           WORKFLOW
         </span>
-        <h2 className="text-[28px] font-medium tracking-[-0.03em] leading-[1.15] text-white">
+        <h2 className="text-[24px] sm:text-[28px] font-medium tracking-[-0.03em] leading-[1.15] text-white">
           The agent lifecycle,<br />
           <span className="text-white/40">without exposure.</span>
         </h2>
@@ -138,7 +140,7 @@ function MobileWorkflow() {
       {/* Step Labels — horizontal scroll pills */}
       <div 
         ref={pillsContainerRef}
-        className="flex gap-2 overflow-x-auto pb-4 mb-16 -mx-2 px-2 scrollbar-hide"
+        className="flex gap-2 overflow-x-auto pb-2 mb-6 -mx-2 px-2 scrollbar-hide"
       >
         {WORKFLOW_STEPS.map((step, i) => (
           <button
@@ -157,9 +159,9 @@ function MobileWorkflow() {
         ))}
       </div>
 
-      {/* Active Step Content — terminal card with fixed height to prevent layout shift */}
+      {/* Active Step Content — terminal card */}
       <div
-        className="rounded-2xl overflow-hidden flex flex-col justify-between"
+        className="rounded-2xl overflow-hidden flex flex-col justify-between flex-1 min-h-0"
         style={{
           background: 'rgba(255,255,255,0.04)',
           border: '1px solid rgba(255,255,255,0.06)',
@@ -172,10 +174,10 @@ function MobileWorkflow() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="px-6 py-8"
+            className="px-6 py-6"
           >
             {/* Step Number + Label */}
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-3 mb-4">
               <span
                 className="flex items-center justify-center w-[24px] h-[24px] rounded-full text-[11px] font-bold"
                 style={{
@@ -190,9 +192,9 @@ function MobileWorkflow() {
               </span>
             </div>
 
-            {/* Terminal Container with fixed height to prevent layout shift */}
+            {/* Terminal Container */}
             <div className="font-mono text-[12px] leading-relaxed min-h-[130px] flex flex-col justify-start">
-              <div className="text-[#34D399] mb-4 font-medium whitespace-nowrap overflow-x-auto scrollbar-hide">
+              <div className="text-[#34D399] mb-3 font-medium whitespace-nowrap overflow-x-auto scrollbar-hide">
                 {WORKFLOW_STEPS[activeIndex].cmd}
               </div>
               <div className="text-white/60 whitespace-pre-wrap break-all">
@@ -203,7 +205,7 @@ function MobileWorkflow() {
         </AnimatePresence>
 
         {/* Progress bar */}
-        <div className="h-[2px] bg-white/5 w-full">
+        <div className="h-[2px] bg-white/5 w-full mt-auto">
           <div
             className="h-full bg-[#34D399]/40"
             style={{ 
@@ -216,8 +218,7 @@ function MobileWorkflow() {
 
       {/* Footnote */}
       <p 
-        className="text-[12px] text-white/30 text-center leading-relaxed max-w-[300px] mx-auto"
-        style={{ marginTop: '80px' }}
+        className="text-[11px] text-white/30 text-center leading-relaxed max-w-[280px] mx-auto mt-6"
       >
         The agent managed the complete workflow autonomously. No credential value appeared at any step.
       </p>

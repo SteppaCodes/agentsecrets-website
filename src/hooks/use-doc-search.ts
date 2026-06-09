@@ -110,7 +110,7 @@ export function useDocSearch() {
       const boostedScore = r.score * (0.5 + priority);
       if (!seen.has(sectionId) || boostedScore > (seen.get(sectionId)!.score)) {
         seen.set(sectionId, {
-          id: sectionId,
+          id: String(r.id),
           title: r.title,
           group: r.group,
           label: r.title || r.label,
