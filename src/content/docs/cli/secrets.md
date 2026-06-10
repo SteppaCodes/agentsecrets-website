@@ -56,3 +56,36 @@ Compares local state against cloud for the active environment.
 agentsecrets secrets diff --from <env> --to <env>
 ```
 Shows which keys exist in one environment but are missing in another. Does not compare values — only key name coverage.
+
+## agentsecrets secrets policy
+
+Configure and inspect domain and HTTP method restriction policies for individual secret keys.
+
+### agentsecrets secrets policy set
+```bash
+agentsecrets secrets policy set KEY --domains api.stripe.com,api.github.com --methods GET,POST
+agentsecrets secrets policy set KEY --methods GET --action request_permission
+```
+Configures domain and method constraints on a secret key. 
+* `--domains`: A comma-separated list of allowed domains.
+* `--methods`: A comma-separated list of allowed HTTP methods. Any unlisted methods will be blocked if methods are configured.
+* `--action`: The outcome if method constraint matches. Values: `allow`, `deny`, `request_permission`. Default is `allow`.
+
+### agentsecrets secrets policy get
+```bash
+agentsecrets secrets policy get KEY
+```
+Retrieves and displays the policy rules configured for the given secret key.
+
+### agentsecrets secrets policy delete
+```bash
+agentsecrets secrets policy delete KEY
+```
+Clears and deletes all policy rules configured for the given secret key.
+
+### agentsecrets secrets policy list
+```bash
+agentsecrets secrets policy list
+```
+Lists all secret-level policies configured in the current project and active environment.
+
