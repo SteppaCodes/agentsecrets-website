@@ -43,6 +43,20 @@ client = AgentSecrets(auto_start=True)
 
 No credentials are passed into the constructor.
 
+### Agent Token Keychain Resolution
+
+Instead of hardcoding sensitive agent tokens in your code or environment variables, you can store your issued agent tokens directly in the native OS Keychain (via the prompt during `agentsecrets agent token issue`).
+
+In your code, you can reference the token using the format `AGENTNAME_TOKEN` (case-insensitive). The proxy engine will automatically resolve the reference to the actual token value from your keychain at runtime:
+
+```python
+# The SDK passes "BILLING-PROCESSOR_TOKEN" to the proxy,
+# which resolves the actual credential from the OS Keychain.
+client = AgentSecrets(agent_token="BILLING-PROCESSOR_TOKEN")
+```
+
+This keeps your code repos and environments entirely free of raw agent tokens.
+
 ---
 
 ## Transparent HTTP client interception (Automatic proxy routing)
