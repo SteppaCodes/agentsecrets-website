@@ -26,6 +26,7 @@ Below is the complete reference of all error codes used in AgentSecrets, includi
 | **[SYS-403]** | OS | Operating system filesystem permission denied |
 | **[SYS-404]** | OS | State directory or configuration file missing |
 | **[SEC-403]** | Security | Unapproved binary attempting to access keychain |
+| **[LOG-404]** | Audit | Log entry not found in local database |
 | **[ERR-999]** | Fallback | Unhandled or unexpected runtime exception |
 
 ---
@@ -160,6 +161,18 @@ Below is the complete reference of all error codes used in AgentSecrets, includi
 * **Resolution:**
   - Run the CLI command interactively in your main approved terminal window to trigger the registration prompt.
   - Approve the calling process when prompted by the `keychain-auth` daemon.
+
+### LOG-404: Log Entry Not Found
+* **Description:** The requested log ID was not found in your local database.
+* **Common Causes:**
+  - Specifying the row index number (e.g. `3`) instead of the cryptographic Log ID.
+  - The log entry was pruned or belongs to a different workspace environment.
+* **Resolution:**
+  1. Specify the actual Log ID (e.g., `log_01J0A...`) in the command:
+     ```bash
+     agentsecrets log detail log_01J0A8B7...
+     ```
+  2. Use the interactive menu by running `agentsecrets log list` or `agentsecrets log` and selecting the row.
 
 ### ERR-999: Unexpected Runtime Exception
 * **Description:** An unhandled error occurred during CLI execution.
