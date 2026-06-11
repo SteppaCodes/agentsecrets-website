@@ -5,7 +5,7 @@ description: "Why AI agents need identity, how AgentSecrets provides three level
 
 # Agent Identity
 
-> [!NOTE]
+> [NOTE]
 > **Core Concept:** Agent Identity shifts the security perimeter from the *environment* to the *individual agent*.
 
 In traditional software, credentials are loaded at startup by a single trusted process. The process is the identity — if the server has the API key, it's authorized. This model worked because applications were deterministic: they executed pre-written code paths, not arbitrary instructions.
@@ -32,7 +32,7 @@ graph TD
     class B danger;
 ```
 
-> [!WARNING]
+> [WARNING]
 > This creates three structural failures:
 > 1. **No attribution**: Audit logs show *that* a credential was used, but not *who* used it. When a billing spike occurs at 3am, you're left guessing.
 > 2. **No isolation**: A compromised agent has access to every credential in the pool. Prompt injection against one agent is a breach of the entire system.
@@ -55,7 +55,7 @@ AgentSecrets introduces a graduated identity model. Each level adds stronger gua
 ### Level 0: Anonymous
 The default state. The agent makes a request through the proxy without identifying itself. The request is logged, redacted, and allowlisted — but the audit trail shows `anonymous` as the caller.
 
-> [!TIP]
+> [TIP]
 > Use Anonymous identity only during local development when you are the sole developer running a single agent.
 
 ### Level 1: Declared
@@ -66,7 +66,7 @@ Declared identity is extremely useful for debugging multi-agent pipelines in tru
 ### Level 2: Issued (Cryptographic)
 The agent presents a cryptographic token (prefixed with `agt_`) issued by a workspace administrator. The proxy validates the token against the workspace before resolving any credentials.
 
-> [!IMPORTANT]
+> [IMPORTANT]
 > **Why use Issued Tokens?**
 > - **Proof of origin**: Cryptographically ties the request to a specific registered agent.
 > - **Instant revocation**: A single token can be revoked without affecting other agents.
