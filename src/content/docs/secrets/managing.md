@@ -1,132 +1,62 @@
 ---
 title: "Managing Secrets"
-description: "How to add, update, list, and delete credentials using the agentsecrets secrets CLI commands."
+description: "Learn how to store, retrieve, and organize credentials in AgentSecrets using environments and projects."
 ---
 
 # Managing Secrets
 
-The `agentsecrets secrets` commands allow you to store, retrieve, synchronize, and audit credentials for your active project. Every value is encrypted client-side with AES-256-GCM using your workspace key before it leaves your machine. The server only stores ciphertext it mathematically cannot decrypt.
-
-Your agents and workflows reference key names; they never hold or see the raw values.
+AgentSecrets manages your credentials using a secure hierarchy of **Workspaces**, **Projects**, and **Environments** (development, staging, production). Under the hood, secrets are stored in the local OS Keychain and synchronized to the cloud using end-to-end zero-knowledge encryption.
 
 ---
 
-## Secret Workflow
+## Core Principles
 
-Most workflows follow the same lifecycle:
-
-1. You set a secret using the CLI.
-2. The value is encrypted locally using AES-256-GCM.
-3. The encrypted blob is synced to the cloud control plane.
-4. The proxy resolves the value at runtime from your OS Keychain.
-5. AI agents reference the key name, not the value.
-
-Secrets are always scoped to:
-- A specific project.
-- A specific environment namespace (`development`, `staging`, `production`).
-- A key name.
-
-The same key name can exist with different values across `development`, `staging`, and `production`.
+1. **Zero Plaintext Disk Storage**: Secrets are never written to project files or general configuration files on disk. They live in secure system memory or the native OS Keychain.
+2. **Scoping by Environment**: Every secret is scoped to a specific project and environment. This ensures your AI agent in development cannot accidentally access staging or production credentials.
+3. **No Plaintext Access for Agents**: Agents run requests *through* the credential proxy and refer to keys by name. Only the human developer can read plaintext values using the CLI.
 
 ---
 
-## Setting a Secret
+## Basic CLI Operations
 
-Store or update one or more secrets using the `secrets set` command. Values are encrypted locally before being sent to the cloud.
-
-### Usage
-
+### 1. Setting a Secret
+To save a credential value to the local OS Keychain:
 ```bash
-agentsecrets secrets set KEY_NAME=value
+agentsecrets secrets set STRIPE_KEY=sk_test_51...
 ```
-
-Set multiple secrets at once:
-
+To set a secret across all environments simultaneously:
 ```bash
-agentsecrets secrets set STRIPE_KEY=sk_live_... OPENAI_KEY=sk-proj-... GITHUB_TOKEN=ghp_...
+agentsecrets secrets set STRIPE_KEY=sk_test_51... --all-envs
 ```
+*Note: Modifying secrets in the `production` environment or using `--all-envs` requires local account password verification.*
 
-Set the same value across all three environments simultaneously:
-
-```bash
-agentsecrets secrets set ANALYTICS_KEY=value --all-envs
-```
-
-### Production Protection (Password Verification)
-Setting or updating secrets in the `production` environment, or setting them globally across all environments using `--all-envs`, requires password verification.
-* **Interactive Prompt**: The CLI will securely prompt you to enter your AgentSecrets account password:
-  ```
-  Enter your AgentSecrets password:
-  ```
-  The input is hidden. If the password is correct, the change is applied; otherwise, the request is rejected immediately. This protects production environments against rogue scripts or unauthorized local modifications.
-
-### What Happens Internally
-1. The CLI retrieves your workspace encryption key from the secure OS Keychain.
-2. The CLI encrypts each value locally using `AES-256-GCM` with a key derived from the workspace key.
-3. The CLI sends the encrypted blob to the AgentSecrets API, and the server stores the blob.
-4. The CLI saves the decrypted secret value directly into the secure OS Keychain.
-
-### Flags
-| Flag | Description |
-| --- | --- |
-| `--all-envs` | Set the secret in all three environments simultaneously. Requires password verification. |
-
----
-
-## Listing Secrets
-
+### 2. Listing Secret Keys
+To view all configured secret keys in the active project and environment:
 ```bash
 agentsecrets secrets list
 ```
+*This command lists key names and cross-environment coverage status, but never displays secret values.*
 
-Lists key names only, never values. The output shows cross-environment coverage so you can see which keys are missing in which environments without switching context:
-
-```
-Environment: development
-
-Key              DEV  STAGING  PROD
-DATABASE_URL      *      *      *
-OPENAI_KEY        *      *      -
-SENDGRID_KEY      *      -      -
-STRIPE_KEY        *      *      *
-
-Showing cached keys. Use --remote for latest from cloud.
-```
-
-`*` means the key is present in that environment; `-` means it is absent.
-
-### Flags
-| Flag | Description |
-| --- | --- |
-| `--remote` | Fetch the latest key list from the cloud instead of the local cache. |
-
----
-
-## Deleting a Secret
-
+### 3. Retrieving a Secret (Developer Only)
+To view a plaintext secret value in your terminal:
 ```bash
-agentsecrets secrets delete KEY_NAME
+agentsecrets secrets get STRIPE_KEY
 ```
+> [!CAUTION]
+> This command is intended solely for human developers. AI agents and scripts should never invoke `secrets get`.
 
-Deletes a secret from the active environment. The CLI removes the key from:
-- The remote API database.
-- Your local OS Keychain.
-- Your `.env` file (if using Storage Mode 2).
-
-When your active environment is `production`, you are prompted to confirm before the deletion proceeds.
+### 4. Deleting a Secret
+To delete a secret from the active environment:
+```bash
+agentsecrets secrets delete STRIPE_KEY
+```
 
 ---
 
-## Naming Conventions
+## Cloud Synchronization & Operations
 
-Key names must be uppercase strings with underscores as separators. This matches standard environment variable conventions.
-
-Good names:
-```
-STRIPE_KEY
-OPENAI_API_KEY
-GITHUB_TOKEN
-DATABASE_URL
-```
-
-Do not encode the environment in the key name (e.g. do not use `STRIPE_KEY_PRODUCTION`). The active environment context scopes which value is resolved.
+Explore the guides below to manage advanced secrets workflows:
+* **[Pushing to Cloud Sync](./push)**: Encrypt and back up your local credentials to the workspace cloud.
+* **[Pulling from Cloud Sync](./pull)**: Download workspace credentials onto a new development machine.
+* **[Diffing Secrets](./diff)**: Compare local state against the cloud or trace drift between environments.
+* **[Importing from .env](./import-env)**: Seamlessly migrate traditional dotenv setups to the secure keychain.

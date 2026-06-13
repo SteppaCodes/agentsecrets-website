@@ -43,6 +43,20 @@ client = AgentSecrets(auto_start=True)
 
 No credentials are passed into the constructor.
 
+### Agent Token Keychain Resolution
+
+Instead of hardcoding sensitive agent tokens in your code or environment variables, you can store your issued agent tokens directly in the native OS Keychain (via the prompt during `agentsecrets agent token issue`).
+
+In your code, you can reference the token using the format `AGENTNAME_TOKEN` (case-insensitive). The proxy engine will automatically resolve the reference to the actual token value from your keychain at runtime:
+
+```python
+# The SDK passes "BILLING-PROCESSOR_TOKEN" to the proxy,
+# which resolves the actual credential from the OS Keychain.
+client = AgentSecrets(agent_token="BILLING-PROCESSOR_TOKEN")
+```
+
+This keeps your code repos and environments entirely free of raw agent tokens.
+
 ---
 
 ## Transparent HTTP client interception (Automatic proxy routing)
@@ -99,7 +113,6 @@ sequenceDiagram
 
 ### The Request lifecycle
 
-:::step
 1. **Initialize interception**
    Call `agentsecrets.init()` once at the entry point of your application. This registers the monkey patches.
 2. **Configure placeholders**
@@ -116,7 +129,6 @@ sequenceDiagram
    - `X-AS-Inject-Header-<name>`: The name of the secret key to inject into the specified custom header.
 5. **Secure resolution & validation**
    The local proxy resolves the actual credential from the OS Keychain, checks the domain against the workspace allowlist, verifies policies, injects the real key, executes the call, and returns the response safely.
-:::
 
 > [IMPORTANT]
 > The target domain (e.g. `api.openai.com` or `api.stripe.com`) must be added to the workspace allowlist using `agentsecrets workspace allowlist add <domain>` prior to execution. If not authorized, the proxy will reject the request.
@@ -153,6 +165,23 @@ response = openai_client.chat.completions.create(
     model="gpt-4o",
     messages=[{"role": "user", "content": "Hello!"}]
 )
+```
+
+Alternatively, you can populate these environment variables programmatically at startup using the `credential` helper instead of hardcoding raw placeholder strings in your shell or env files:
+
+```python
+import os
+import openai
+from agentsecrets import init, credential
+
+# Initialize the secure interception hooks
+init()
+
+# Dynamically set the environment variable to the placeholder reference
+os.environ["OPENAI_API_KEY"] = credential.OPENAI_API_KEY  # Resolves dynamically to "AS_SECRET_OPENAI_API_KEY"
+
+# OpenAI SDK picks up the placeholder and routes calls through the local proxy
+client = openai.OpenAI()
 ```
 
 ---
@@ -360,7 +389,7 @@ status = client.status()
 Test your agent code without a running proxy or real credentials:
 
 ```python
-from agentsecrets import MockAgentSecrets
+from agentsecrets.testing import MockAgentSecrets
 
 mock = MockAgentSecrets(
     responses={
@@ -398,7 +427,7 @@ assert mock.calls[0].environment == "development"
 ## Error handling
 
 ```python
-from agentsecrets import AgentSecrets, AgentSecretsError, ProxyNotRunningError, KeyNotFoundError
+from agentsecrets import AgentSecrets, AgentSecretsError, AgentSecretsNotRunning, SecretNotFound
 
 client = AgentSecrets()
 
@@ -407,10 +436,10 @@ try:
         "https://api.stripe.com/v1/balance",
         bearer="STRIPE_KEY"
     )
-except ProxyNotRunningError:
+except AgentSecretsNotRunning:
     # Proxy is not running — start it with agentsecrets proxy start
     pass
-except KeyNotFoundError:
+except SecretNotFound:
     # STRIPE_KEY does not exist in the current project/environment
     pass
 except AgentSecretsError as e:

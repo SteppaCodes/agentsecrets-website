@@ -559,8 +559,8 @@ export default function SearchPill({ onMenuClick, onNavigate }: SearchPillProps)
             opacity: 1, 
             y: 0, 
             width: 'auto',
-            backgroundColor: isFocused ? '#005E50' : '#F1F1F4',
-            borderColor: isFocused ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.1)'
+            backgroundColor: isFocused ? '#005E50' : '#E2E2E5',
+            borderColor: isFocused ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.15)'
           }}
           transition={{
             opacity: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },

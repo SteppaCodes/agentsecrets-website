@@ -6,8 +6,8 @@ Rather than a simple secrets manager or proxy, AgentSecrets serves as an **exten
 
 | Subsystem / Layer | System | What It Solves | Security Property |
 | :--- | :--- | :--- | :--- |
-| **Credential Infrastructure** | AgentSecrets (Host) | Agent credential theft & lifecycle management | Extensible zero-knowledge infrastructure: credentials resolved and injected at runtime without agent exposure |
-| **Capability Bounding Subsystem** | [Keychain-Auth](https://github.com/The-17/keychain-auth) | Static, long-lived, over-privileged credentials | OS-level keychain integration with process identity validation and dynamic session bounding |
+| **Credential Infrastructure** | AgentSecrets (Host) | Agent credential theft & lifecycle management | Credential values are structurally absent from the agent execution context |
+| **Capability Bounding Subsystem** | [Keychain-Auth](https://github.com/The-17/keychain-auth) | Static, long-lived, over-privileged credentials | Symmetric keys are cryptographically isolated in daemon memory, bound by process-hash verification to prevent credential access by unauthorized local processes |
 
 Each subsystem represents an independent security primitive. When combined, they guarantee that:
 1. **Agents cannot leak credentials** because they never hold them (AgentSecrets Core).
@@ -43,24 +43,6 @@ Integrates directly with the OS security layers, verifying the cryptographic has
 
 ---
 
-## How It Fits Into Your Stack
-
-AgentSecrets sits directly between your AI agent (or execution environment) and the external APIs it calls. It acts as the security infrastructure, intercepting outbound requests, validating permission scopes, and injecting keys securely at the transport layer.
-
-```mermaid
-flowchart TD
-    A["Agent Request (Key Names Only)"] --> B["TLS Interception Proxy (localhost:8765)"]
-    B --> C["Domain Allowlist & SSRF Check"]
-    C --> D["Anti-Impersonation Check (Keychain-Auth)"]
-    D --> E["Secure Key Resolution (OS Keychain)"]
-    E --> F["Credential Injection & Outbound Request"]
-    F --> G["Upstream API Endpoint (External)"]
-    G --> H["Response Redaction & Security Scan"]
-    H --> I["Clean Response to Agent"]
-```
-
----
-
 ## Execution Modes
 
 AgentSecrets provides three core execution paths depending on your workflow:
@@ -70,6 +52,28 @@ AgentSecrets provides three core execution paths depending on your workflow:
 3. **Direct CLI Calls (for Quick Tests)**: Use `agentsecrets call` to make one-shot authenticated requests from the command line. The proxy resolves the key and injects the credential for a single request without needing to start the background proxy daemon.
 
 These execution paths ensure credentials never leave your environment as plaintext.
+
+---
+
+## How It Fits Into Your Stack
+
+AgentSecrets sits directly between your AI agent (or execution environment) and the external APIs it calls. It acts as the security infrastructure, intercepting outbound requests, validating local session tokens, evaluating agent capabilities, validating domain and secret-level policies, and injecting keys securely at the transport layer.
+
+```mermaid
+flowchart TD
+    A["Agent Request (Key Names, agt_Token)"] --> B["Verify Local Pre-Shared Session Token (X-AS-Session-Token)"]
+    B --> C["Verify Agent Capabilities (Token Whitelist/Blacklist)"]
+    C --> D["Evaluate Secret-Level Policy (Allowed Domains/Methods/Approvals)"]
+    D --> E["SSRF & DNS Rebinding Defenses"]
+    E --> F["Check Domain Allowlist"]
+    F --> G["Keychain-Auth Process Hash Validation"]
+    G --> H["Resolve Decrypted Secret (OS Keychain)"]
+    H --> I["Inject Credential & Forward Outbound Request"]
+    I --> J["Receive Upstream Response"]
+    J --> K["Response Redaction & Security Scan"]
+    K --> L["Append Cryptographically Chained Entry to audit.db"]
+    L --> M["Clean Response to Agent"]
+```
 
 ## License
 

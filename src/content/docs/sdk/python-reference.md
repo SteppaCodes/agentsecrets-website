@@ -123,7 +123,7 @@ No field containing a credential value exists on the response object.
 ## Class: MockAgentSecrets
 
 ```python
-from agentsecrets import MockAgentSecrets
+from agentsecrets.testing import MockAgentSecrets
 
 mock = MockAgentSecrets(
     responses=None,     # dict — {url: response_body} for URL matching

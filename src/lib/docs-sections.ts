@@ -27,6 +27,7 @@ export const DOCS_SECTIONS = [
   // CLI Reference
   { id: "cli/account", group: "CLI Reference", label: "Account (init / login)" },
   { id: "cli/docs", group: "CLI Reference", label: "Docs" },
+  { id: "cli/autocompletion", group: "CLI Reference", label: "Shell Autocompletion" },
   { id: "cli/keychain-auth", group: "CLI Reference", label: "Keychain Auth" },
   
   // CLI: Secrets
@@ -114,6 +115,7 @@ export const DOCS_SECTIONS = [
   { id: "sdk/overview", group: "SDK", label: "SDK Overview" },
   { id: "sdk/python", group: "SDK", label: "Python SDK" },
   { id: "sdk/python-reference", group: "SDK", label: "Python API Reference" },
+  { id: "sdk/manual-testing", group: "SDK", label: "Python SDK Manual Testing" },
   { id: "sdk/javascript", group: "SDK", label: "JavaScript SDK (Soon)" },
 
   // Ecosystem
@@ -173,6 +175,7 @@ export const DOCS_SECTIONS = [
   { id: "troubleshooting/mcp", group: "Troubleshooting", label: "MCP Not Connecting" },
   { id: "troubleshooting/session-token", group: "Troubleshooting", label: "Session Token Errors" },
   { id: "troubleshooting/installation", group: "Troubleshooting", label: "Installation Issues" },
+  { id: "troubleshooting/error-codes", group: "Troubleshooting", label: "Error Codes Reference" },
 
   // FAQ
   { id: "faq", group: "FAQ", label: "Frequently Asked Questions" },

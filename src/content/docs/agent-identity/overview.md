@@ -1,85 +1,193 @@
-# Agent Identity Overview
+---
+title: "Agent Identity CLI Reference"
+description: "How to register agents, issue cryptographic tokens, define access policies, and integrate identities into your agent code."
+---
 
-In a traditional application ecosystem, credentials (like API keys) are typically injected into the application environment at startup, and the application is trusted to use them exactly as programmed. In the agentic era, however, applications are replaced by LLM-powered autonomous agents that interpret natural language, process untrusted inputs, and dynamically generate calls to external APIs. 
+# Agent Identity CLI Reference
 
-Because agents make decisions runtime, traditional static secret injection is insufficient. If a multi-agent system containing a researcher, writer, and executor runs simultaneously, and an unexpected credential leak or billing spike occurs, you must be able to trace *which* agent resolved the credential and *why*. 
+This guide provides the hands-on commands and code examples needed to implement, manage, and verify Agent Identity in your workspaces.
 
-Agent Identity provides the core infrastructure to solve this, offering fine-grained traceability, cryptographic verification, and the ability to isolate and revoke individual agents without affecting the rest of your fleet.
+To understand the security threat models and conceptual foundations of agent identification, read the [Agent Identity Concept Guide](/docs/concepts/agent-identity).
 
 ---
 
-## Why identity matters for agents
+## The Identity CLI Workflow
 
-Standard API key management systems treat the executing environment as a single trusted unit. This model breaks down under agentic workflows for three primary reasons:
+Governing agent access involves four primary commands: registering the agent, setting its security policy, issuing its token, and verifying its audit log.
 
-1. **Prompt Injection Risks**: If an agent reads untrusted user content (such as parsing a webpage or scanning an email), it can be manipulated by malicious text instructions to exfiltrate secrets or make unauthorized API calls. If the executing environment shares a single flat pool of secrets, a compromised agent has access to all of them.
-2. **Attribution and Diagnostics**: When running concurrent agents in pipelines or swarms (e.g., using frameworks like LangChain, CrewAI, or AutoGen), general server logs only show incoming or outgoing requests. They cannot distinguish which agent initiated which call.
-3. **Least Privilege and Revocation**: If a single agent behaves unexpectedly or gets compromised, you should be able to revoke its access immediately. Without identity-based tracking, the only option is to rotate the entire environment's credentials, which causes immediate downtime for all other agents.
-
----
-
-## The three levels
-
-AgentSecrets supports three levels of agent identity, balancing developer velocity with production security.
-
-```mermaid
-graph TD
-    A[Agent Call] --> B{Identity Provided?}
-    B -- No Token/ID --> C[Level 0: Anonymous]
-    B -- agent_id only --> D[Level 1: Declared]
-    B -- agent_token (agt_...) --> E[Level 2: Issued]
-
-    C --> C1[Audit: anonymous]
-    D --> D1[Audit: declared]
-    E --> E1[Cryptographic Signature Checked]
-    E1 --> E2[Audit: issued]
-    E1 -- Invalid/Revoked --> F[401 Unauthorized]
+```
+          1. REGISTER                   2. POLICY SET
+   agentsecrets agent register    agentsecrets agent policy set
+              │                             │
+              ▼                             ▼
+       ┌──────────────┐              ┌──────────────┐
+       │ Registered   │              │ Capabilities │
+       │  Agent ID    │              │  Configured  │
+       └──────┬───────┘              └──────┬───────┘
+              │                             │
+              └──────────────┬──────────────┘
+                             │
+                             ▼
+                        3. ISSUE TOKEN
+                 agentsecrets agent token issue
+                             │
+                             ▼
+                       agt_s8d2k... (Token)
 ```
 
-### 1. Anonymous (Level 0)
-This is the default setting. Calls are made and logged without agent attribution. 
-* **Mechanism**: The agent makes a request to the proxy without specifying an `agent_id` or `agent_token`.
-* **Use Case**: Quick local development, prototyping, single-agent test scripts.
-* **Risk**: High security risk in production. You cannot tell which agent made which call, and you cannot revoke access for one agent without disabling the entire proxy.
+### Step 1: Register the Agent
+Registering creates a logical identity inside your workspace.
 
-### 2. Declared Identity (Level 1)
-Declared identity introduces basic attribution by naming agents.
-* **Mechanism**: The agent self-reports its name (e.g., `billing-agent`) using the `agent_id` parameter in the SDK or the `X-AS-Agent-ID` HTTP header.
-* **Use Case**: Trusted environments, multi-agent debugging, and general log filtering.
-* **Risk**: No verification. Any process or agent can claim to be any name (e.g. a compromised agent could claim to be the `"billing-agent"` to bypass audit suspicion).
+```bash
+agentsecrets agent register my-billing-agent
+```
 
-### 3. Issued (Cryptographic) Identity (Level 2)
-Issued identity enforces cryptographic security and strong attribution.
-* **Mechanism**: The agent uses a token prefixed with `agt_` issued via the Workspace CLI or dashboard. The proxy cryptographically validates the token against the workspace's public key before resolving any secrets.
-* **Use Case**: Production environments, sensitive data pipelines, regulatory compliance.
-* **Benefit**: Complete proof of origin. If a token is compromised, it can be revoked instantly without affecting other tokens or restarting the application.
+* **Options**:
+  * `--project, -p <project-id>`: Scope the agent identity to a specific project. If omitted, the agent operates workspace-wide.
+
+### Step 2: Configure Secrets Capabilities
+By default, newly registered agents have zero access. You must explicitly configure their capability boundary.
+
+To allow access to specific secrets in a project:
+```bash
+agentsecrets agent policy set my-billing-agent --allow STRIPE_SECRET_KEY,PLAID_CLIENT_ID
+```
+
+To deny access to specific secrets (acting as a blacklist):
+```bash
+agentsecrets agent policy set my-billing-agent --deny AWS_ROOT_ACCESS_KEY
+```
+
+* **Options**:
+  * `--allow <keys>`: Comma-separated list of permitted secret keys.
+  * `--deny <keys>`: Comma-separated list of prohibited secret keys (takes precedence).
+
+### Step 3: Issue a Cryptographic Token
+Generate a secure token for Level 2 (Issued) authentication.
+
+```bash
+agentsecrets agent token issue my-billing-agent
+```
+
+This generates a token prefixed with `agt_` (e.g., `agt_3f8a9...`).
+* **OS Keychain Storage**: The CLI automatically stores the issued token in your local OS Keychain. 
+* **Key Reference**: You can use `<AGENTNAME>_TOKEN` (e.g., `MY-BILLING-AGENT_TOKEN`) in your local developer scripts, and the proxy will resolve it directly from the keyring at runtime.
+
+### Step 4: List and Inspect
+To view all registered agents and their scopes in the current workspace:
+```bash
+agentsecrets agent list
+```
+
+To view all active tokens issued for a specific agent:
+```bash
+agentsecrets agent token list my-billing-agent
+```
 
 ---
 
-## How identity flows into the audit log
+## Agent Scoping Boundaries
 
-When the credential proxy intercepts a call and injects a secret, it records the identity level and the agent identifier to the audit log. This entry is signed and synced to the AgentSecrets backend.
+Agents are governed by three hierarchical security boundaries: **Workspace**, **Project**, and **Environment**.
 
-The audit log captures these details across three fields:
+### 1. Workspace-Level Scope
+When you register an agent with `agentsecrets agent register <name>`, it is bound by default to your active workspace. Workspace-scoped agents can access any allowed credentials across all projects in that workspace.
 
-| Field | Anonymous | Declared | Issued |
-|---|---|---|---|
-| `agent_id` | `null` | `"my-agent-name"` | `"my-agent-name"` |
-| `agent_identity_level` | `"anonymous"` | `"declared"` | `"issued"` |
-| `token_fingerprint` | `null` | `null` | `sha256(agt_token_hash)` |
+### 2. Project-Level Scope
+If an agent only performs tasks for a specific project, you should restrict its identity to that project by specifying the `--project` flag during registration:
+```bash
+agentsecrets agent register my-billing-agent --project "my-billing-project"
+```
+Once scoped to a project, the proxy will strictly block this agent if it attempts to request credentials or resolve variables bound to any other project, returning an `agent_project_mismatch` block.
 
-By inspecting the logs, you can quickly group, filter, or trigger alerts based on the caller's identity level.
+### 3. Environment-Level Scope
+By default, an agent's tokens can only be used in the environment they were generated for. When registering an agent or issuing a token, you can bind it to a specific environment (e.g. `development`, `staging`, or `production`):
+```bash
+# Scope initial token during registration
+agentsecrets agent register my-billing-agent --env production
 
-> [NOTE]
-> For issued identity, the cryptographic token fingerprint remains permanently tied to the historical logs. Even if you revoke the token or delete the agent, the history remains intact for forensic auditing.
+# Scope a new token for an existing agent
+agentsecrets agent token issue my-billing-agent --env production
+```
+At runtime, the proxy matches the token's environment scope against the proxy's active running environment. If they mismatch, the proxy blocks resolution immediately with `agent_environment_mismatch`.
+
+### 4. Visualizing Scope in the CLI
+To inspect agent scopes and active attributes:
+* Run `agentsecrets agent list` to see the `SCOPE` column (either `workspace` or the specific project name).
+* Run `agentsecrets agent token list <agent-name>` to see active token IDs, their labels, and expiry dates.
 
 ---
 
-## Identity-Based Security Policies
+## Code Integration
 
-Agent Identity is not just for auditing; it is the foundation for enforcing fine-grained security policies:
+Configure your agent code or environment to present its identity to the credential proxy.
 
-- **[Agent Capabilities](/docs/proxy/agent-capabilities)**: Restrict the set of secrets a specific agent identity can access (using allowlists/denylists).
+### Level 1: Declared Identity (Attribution only)
+Self-report the agent's name. Use this during local multi-agent debugging.
 
-Together with secret-level constraints, Agent Capabilities form a multi-layered zero-trust credential firewall.
+#### Via HTTP Header
+Add the `X-AS-Agent-ID` header to outbound requests:
+```http
+GET https://api.stripe.com/v1/charges
+X-AS-Agent-ID: my-billing-agent
+```
 
+#### Via Python SDK
+```python
+from agentsecrets import client
+
+# Declarative registration in code
+response = client.get(
+    "https://api.stripe.com/v1/charges",
+    agent_id="my-billing-agent"
+)
+```
+
+---
+
+### Level 2: Issued Identity (Cryptographic verification)
+Present the cryptographically signed token. Use this for production and sensitive staging systems.
+
+#### Via Environment Variable (Recommended)
+Set the `AS_AGENT_TOKEN` environment variable in the process space where the agent is running:
+```bash
+export AS_AGENT_TOKEN="agt_3f8a9..."
+```
+The proxy automatically detects this environment variable and uses it to authorize credential requests.
+
+#### Via HTTP Header
+Pass the token in the `X-AS-Agent-Token` header:
+```http
+GET https://api.stripe.com/v1/charges
+X-AS-Agent-Token: agt_3f8a9...
+```
+
+#### Via Python SDK
+```python
+from agentsecrets import client
+
+response = client.get(
+    "https://api.stripe.com/v1/charges",
+    agent_token="agt_3f8a9..."
+)
+```
+
+---
+
+## Revoking an Agent or Token
+
+If an agent is compromised or decommissioned, you can revoke its access instantly without rotating the target credentials.
+
+### Revoking a Single Token
+To invalidate a specific token without deleting the agent identity:
+```bash
+agentsecrets agent token revoke agt_3f8a9...
+```
+
+### Deleting the Agent
+Deleting an agent automatically invalidates all tokens associated with it and wipes its capability policy:
+```bash
+agentsecrets agent delete my-billing-agent
+```
+
+All future requests presenting revoked tokens will immediately fail with a `401 Unauthorized` status at the proxy boundary, and the attempt will be logged in the forensic audit trail.
