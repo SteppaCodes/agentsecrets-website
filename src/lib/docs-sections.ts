@@ -115,6 +115,7 @@ export const DOCS_SECTIONS = [
   { id: "sdk/overview", group: "SDK", label: "SDK Overview" },
   { id: "sdk/python", group: "SDK", label: "Python SDK" },
   { id: "sdk/python-reference", group: "SDK", label: "Python API Reference" },
+  { id: "sdk/manual-testing", group: "SDK", label: "Python SDK Manual Testing" },
   { id: "sdk/javascript", group: "SDK", label: "JavaScript SDK (Soon)" },
 
   // Ecosystem

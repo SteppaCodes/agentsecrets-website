@@ -374,7 +374,7 @@ status = client.status()
 Test your agent code without a running proxy or real credentials:
 
 ```python
-from agentsecrets import MockAgentSecrets
+from agentsecrets.testing import MockAgentSecrets
 
 mock = MockAgentSecrets(
     responses={
@@ -412,7 +412,7 @@ assert mock.calls[0].environment == "development"
 ## Error handling
 
 ```python
-from agentsecrets import AgentSecrets, AgentSecretsError, ProxyNotRunningError, KeyNotFoundError
+from agentsecrets import AgentSecrets, AgentSecretsError, AgentSecretsNotRunning, SecretNotFound
 
 client = AgentSecrets()
 
@@ -421,10 +421,10 @@ try:
         "https://api.stripe.com/v1/balance",
         bearer="STRIPE_KEY"
     )
-except ProxyNotRunningError:
+except AgentSecretsNotRunning:
     # Proxy is not running — start it with agentsecrets proxy start
     pass
-except KeyNotFoundError:
+except SecretNotFound:
     # STRIPE_KEY does not exist in the current project/environment
     pass
 except AgentSecretsError as e:
