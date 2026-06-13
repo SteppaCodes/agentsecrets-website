@@ -113,7 +113,6 @@ sequenceDiagram
 
 ### The Request lifecycle
 
-:::step
 1. **Initialize interception**
    Call `agentsecrets.init()` once at the entry point of your application. This registers the monkey patches.
 2. **Configure placeholders**
@@ -130,7 +129,6 @@ sequenceDiagram
    - `X-AS-Inject-Header-<name>`: The name of the secret key to inject into the specified custom header.
 5. **Secure resolution & validation**
    The local proxy resolves the actual credential from the OS Keychain, checks the domain against the workspace allowlist, verifies policies, injects the real key, executes the call, and returns the response safely.
-:::
 
 > [IMPORTANT]
 > The target domain (e.g. `api.openai.com` or `api.stripe.com`) must be added to the workspace allowlist using `agentsecrets workspace allowlist add <domain>` prior to execution. If not authorized, the proxy will reject the request.
@@ -167,6 +165,23 @@ response = openai_client.chat.completions.create(
     model="gpt-4o",
     messages=[{"role": "user", "content": "Hello!"}]
 )
+```
+
+Alternatively, you can populate these environment variables programmatically at startup using the `credential` helper instead of hardcoding raw placeholder strings in your shell or env files:
+
+```python
+import os
+import openai
+from agentsecrets import init, credential
+
+# Initialize the secure interception hooks
+init()
+
+# Dynamically set the environment variable to the placeholder reference
+os.environ["OPENAI_API_KEY"] = credential.OPENAI_API_KEY  # Resolves dynamically to "AS_SECRET_OPENAI_API_KEY"
+
+# OpenAI SDK picks up the placeholder and routes calls through the local proxy
+client = openai.OpenAI()
 ```
 
 ---
