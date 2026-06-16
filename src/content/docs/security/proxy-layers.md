@@ -42,3 +42,12 @@ Some poorly designed APIs reflect the authorization token back in the response b
 To prevent Server-Side Request Forgery (SSRF), the proxy refuses to resolve loopback addresses (like `127.0.0.1` or `localhost`), internal network CIDRs (`10.0.0.0/8`, `192.168.0.0/16`), or AWS Instance Metadata endpoints (`169.254.169.254`). 
 
 An agent cannot use the proxy to attack your internal network.
+
+## Layer 5: Environment Output Masking (Child Process Redaction)
+
+For integrations that require secrets to be injected directly as environment variables (via `agentsecrets env`), the parent process intercepts the child's standard output (`stdout`) and standard error (`stderr`) streams. 
+
+If the child process attempts to print a secret or its encoding variations (Base64, Hex, URL-encoded, Case variants) to the console, the parent process sanitizes the string and replaces it with `[REDACTED]`. 
+
+To prevent AI agents from circumventing this protection, there is no bypass configuration or command flag.
+

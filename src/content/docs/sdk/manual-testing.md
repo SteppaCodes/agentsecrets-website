@@ -66,7 +66,8 @@ from agentsecrets import AgentSecrets
 
 client = AgentSecrets()
 
-# Target httpbin to inspect request headers
+# Target httpbin to inspect request headers (the proxy will automatically redact
+# the reflected credential in the response before returning it to the SDK).
 response = client.call(
     "https://httpbin.org/headers",
     method="GET",
@@ -80,7 +81,7 @@ print(f"✓ Authorization Injected: {headers.get('Authorization')}")
 ```bash
 python test_call.py
 # Expected Output:
-# ✓ Authorization Injected: Bearer mock_secret_value_12345
+# ✓ Authorization Injected: Bearer [REDACTED]
 ```
 
 ---
@@ -118,8 +119,8 @@ print(f"✓ Intercepted httpx:    {auth_httpx}")
 ```bash
 python test_interception.py
 # Expected Output:
-# ✓ Intercepted requests: Bearer mock_secret_value_12345
-# ✓ Intercepted httpx:    Bearer mock_secret_value_12345
+# ✓ Intercepted requests: Bearer [REDACTED]
+# ✓ Intercepted httpx:    Bearer [REDACTED]
 ```
 
 ---
