@@ -126,15 +126,19 @@ response = client.call(
 ```
 
 ### CLI
-To authenticate calls via the AgentSecrets CLI, pass the token using the `--token` flag, or set the `AS_AGENT_TOKEN` environment variable in your runtime:
+To authenticate calls via the AgentSecrets CLI, pass the token using the `--token` flag, or set the `AS_AGENT_TOKEN` environment variable in your runtime. You can specify either the raw token or a Keychain token reference:
 
 ```bash
-# Option 1: Pass the token via the flag
-agentsecrets call --url https://api.stripe.com/v1/balance --bearer STRIPE_KEY --token tVwXyZ_4kR9mNpQ9aBcDeFgHiJkLmNoPqRs
+# Option 1: Keychain Token Reference (Recommended)
+# Resolves the token for "billing-processor" securely from your OS Keychain
+agentsecrets call --url https://api.stripe.com/v1/balance --bearer STRIPE_KEY --token billing-processor_TOKEN
 
-# Option 2: Set the environment variable
-export AS_AGENT_TOKEN=tVwXyZ_4kR9mNpQ9aBcDeFgHiJkLmNoPqRs
+# Option 2: Keychain Token Reference via Environment Variable
+export AS_AGENT_TOKEN=billing-processor_TOKEN
 agentsecrets call --url https://api.stripe.com/v1/balance --bearer STRIPE_KEY
+
+# Option 3: Direct Raw Token via flag
+agentsecrets call --url https://api.stripe.com/v1/balance --bearer STRIPE_KEY --token tVwXyZ_4kR9mNpQ9aBcDeFgHiJkLmNoPqRs
 ```
 
 ### HTTP

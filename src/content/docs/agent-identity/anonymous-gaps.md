@@ -73,16 +73,4 @@ Once the code or service is located, upgrade it to a declared or cryptographical
   ```
 :::
 
-### 3. Enforce strict identity verification
-:::step
-Once you have resolved all known anonymous calls, configure your workspace to reject unattributed requests entirely. 
 
-To prevent future anonymous calls, toggle the **Strict Identity** mode via the CLI:
-
-```bash
-agentsecrets workspace update --strict-identity=true
-```
-
-[IMPORTANT]
-Enabling Strict Identity causes the credential proxy to block any request that does not contain a declared or issued identity. Anonymous requests will fail with a `403 Forbidden` status. Ensure all services have been migrated before enabling this in production.
-:::
