@@ -19,7 +19,7 @@ agentsecrets agent register "billing-processor"
 ```
 :::
 
-### 2. Copy the initial token
+### 2. Capture the Token & Keychain Storage
 :::step
 The register command will output the newly created agent's metadata and its first cryptographic token:
 
@@ -34,6 +34,21 @@ To use it: export AS_AGENT_TOKEN=tVwXyZ_4kR9mNpQ9aBcDeFgHiJkLmNoPqRs
 ```
 
 The server only stores a cryptographic SHA-256 hash of this token for validation; it cannot be recovered if lost.
+
+#### OS Keychain Prompt
+After generating the token, the CLI will ask interactively:
+```
+Would you like to store this agent token in your local OS Keychain? (y/N)
+```
+* **y (Yes)**: Automatically stores the token in your native OS Keychain. This allows you to reference it in your local developer configurations using the `<AGENTNAME>_TOKEN` format (e.g. `BILLING-PROCESSOR_TOKEN`), which the credential proxy resolves transparently.
+* **N (No)**: Skips keychain integration; you must manually manage the token via environment variables.
+
+#### CLI Flags
+* `--project, -p <project>`: Scope the agent identity to a specific project.
+* `--label, -l <label>`: Label description for the initial token.
+* `--expires, -e <duration>`: Expiry duration for the token (e.g. `30d`, `90d`, `1y`).
+* `--env <name>`: Restrict the token to a specific environment (e.g. `development`, `staging`, `production`).
+* `--save-token`: Auto-save the token to the OS Keychain without prompting (useful for scripts and automated setups).
 :::
 
 ---
@@ -50,7 +65,15 @@ This generates another active token bound to the same `billing-processor` identi
 
 ### 3. Store the token securely
 :::step
-Save the token in your production environment variables (`AGENTSECRETS_TOKEN` or `AS_AGENT_TOKEN`) or a secure secret manager (e.g. AWS Secrets Manager or Kubernetes Secrets) to inject into your running agent container.
+Save the token in your production environment variables (`AS_AGENT_TOKEN`) or a secure secret manager (e.g. AWS Secrets Manager or Kubernetes Secrets) to inject into your running agent container.
+
+Similar to the registration flow, the CLI will prompt you to save the token to the local OS Keychain, or you can bypass it with the `--save-token` flag.
+
+#### CLI Flags
+* `--label, -l <label>`: Label description for this token.
+* `--expires, -e <duration>`: Expiry duration for the token (e.g. `30d`, `90d`).
+* `--env <name>`: Restrict the token to a specific environment.
+* `--save-token`: Auto-save the token to the OS Keychain without prompting.
 :::
 
 ---
