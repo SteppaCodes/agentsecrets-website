@@ -14,57 +14,47 @@ export default function ModelSection() {
   useGSAP(() => {
     if (!sectionRef.current) return;
 
-    // Animate sticky left column elements on scroll
-    gsap.from('.reveal-left-label', {
-      opacity: 0,
-      y: 20,
-      duration: 1,
-      ease: 'power2.out',
+    // Unify left column elements reveal under a single timeline
+    const leftTl = gsap.timeline({
       scrollTrigger: {
-        trigger: '.reveal-left-label',
-        start: 'top 85%',
+        trigger: sectionRef.current,
+        start: 'top 80%',
         toggleActions: 'play none none reverse',
-      },
+      }
     });
 
-    gsap.from('.reveal-left-title', {
-      opacity: 0,
-      y: 30,
-      duration: 1.2,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: '.reveal-left-title',
-        start: 'top 85%',
-        toggleActions: 'play none none reverse',
-      },
-    });
-
-    gsap.from('.reveal-left-p', {
-      opacity: 0,
-      y: 30,
-      duration: 1.2,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: '.reveal-left-p',
-        start: 'top 85%',
-        toggleActions: 'play none none reverse',
-      },
-    });
+    leftTl.fromTo('.reveal-left-label', 
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }
+    )
+    .fromTo('.reveal-left-title',
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 1.0, ease: 'power2.out' },
+      '-=0.6'
+    )
+    .fromTo('.reveal-left-p',
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 1.0, ease: 'power2.out' },
+      '-=0.6'
+    );
 
     // Fade and translate each card as it enters viewport
     const cards = gsap.utils.toArray('.model-card');
     cards.forEach((card: any) => {
-      gsap.from(card, {
-        opacity: 0,
-        y: 40,
-        duration: 1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: card,
-          start: 'top 85%',
-          toggleActions: 'play none none reverse',
-        },
-      });
+      gsap.fromTo(card,
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse',
+          },
+        }
+      );
     });
   }, { scope: sectionRef });
 
@@ -79,13 +69,16 @@ export default function ModelSection() {
         {/* Left Column: Sticky Title & Concept */}
         <div ref={leftColRef} className='md:col-span-5 md:sticky md:top-32 flex flex-col items-start text-left'>
           <span className='reveal-left-label block text-[11px] font-bold tracking-[0.15em] text-[#007F6A] uppercase mb-4'>
-            THE PROBLEM & THE SOLUTION
+            THE RUNTIME BOUNDARY
           </span>
-          <h2 className='reveal-left-title text-[clamp(28px,3vw,38px)] leading-[1.15] tracking-[-0.03em] text-[#1B1B1B] font-semibold mb-6'>
-            Traditional vaults protect keys at rest.<br className='hidden lg:inline' /> AI agents leak them at runtime.
+          <h2 
+            className='reveal-left-title text-[clamp(28px,3vw,38px)] leading-[1.15] tracking-[-0.03em] text-[#1B1B1B] font-semibold mb-6'
+            style={{ fontFamily: 'var(--font-helvetica), sans-serif' }}
+          >
+            Secure agent credentials at runtime.
           </h2>
           <p className='reveal-left-p text-[15px] leading-relaxed text-[#1B1B1B]/60 font-medium max-w-[400px]'>
-            Credentials loaded into environment variables or process memory are fully visible to dynamic agents and assistants. Security in the agentic era requires a runtime that operates credentials without possessing them.
+            Your infrastructure stores the keys. AgentSecrets secures them at the runtime boundary—so AI agents execute authenticated calls without possessing raw values in memory.
           </p>
         </div>
 
@@ -97,7 +90,10 @@ export default function ModelSection() {
             <span className='text-[10px] font-bold tracking-[0.1em] text-[#007F6A] uppercase mb-3 block'>
               VULNERABILITY 01
             </span>
-            <h3 className='text-[20px] md:text-[24px] font-semibold tracking-[-0.02em] mb-4 text-[#1B1B1B]'>
+            <h3 
+              className='text-[20px] md:text-[24px] font-semibold tracking-[-0.02em] mb-4 text-[#1B1B1B]'
+              style={{ fontFamily: 'var(--font-helvetica), sans-serif' }}
+            >
               AI Coding Assistants
             </h3>
             <p className='text-[14px] md:text-[15px] leading-[1.65] text-[#1B1B1B]/70 font-medium mb-6'>
@@ -149,7 +145,10 @@ export default function ModelSection() {
             <span className='text-[10px] font-bold tracking-[0.1em] text-[#007F6A] uppercase mb-3 block'>
               VULNERABILITY 02
             </span>
-            <h3 className='text-[20px] md:text-[24px] font-semibold tracking-[-0.02em] mb-4 text-[#1B1B1B]'>
+            <h3 
+              className='text-[20px] md:text-[24px] font-semibold tracking-[-0.02em] mb-4 text-[#1B1B1B]'
+              style={{ fontFamily: 'var(--font-helvetica), sans-serif' }}
+            >
               Prompt Injection
             </h3>
             <p className='text-[14px] md:text-[15px] leading-[1.65] text-[#1B1B1B]/70 font-medium mb-6'>
@@ -201,7 +200,10 @@ export default function ModelSection() {
             <span className='text-[10px] font-bold tracking-[0.1em] text-[#007F6A] uppercase mb-3 block'>
               THE MODEL
             </span>
-            <h3 className='text-[20px] md:text-[24px] font-semibold tracking-[-0.02em] mb-4 text-[#1B1B1B]'>
+            <h3 
+              className='text-[20px] md:text-[24px] font-semibold tracking-[-0.02em] mb-4 text-[#1B1B1B]'
+              style={{ fontFamily: 'var(--font-helvetica), sans-serif' }}
+            >
               Zero-Knowledge Runtime
             </h3>
             <p className='text-[14px] md:text-[15px] leading-[1.65] text-[#1B1B1B]/70 font-medium mb-6'>

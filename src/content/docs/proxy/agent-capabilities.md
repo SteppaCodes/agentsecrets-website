@@ -88,3 +88,23 @@ The proxy interceptor runs the following validation:
    * Rejects the outbound call immediately (no request leaves your machine).
    * Returns a `403 Forbidden` response to the agent with the error code `capability_denied`.
    * Logs a `BLOCKED` entry to the local proxy audit log for monitoring and governance.
+
+---
+
+## Keyring Caching & Offline Fallback
+
+Agent tokens and their capabilities are normally validated against the cloud backend API. To prevent cloud outages from blocking local development or agent execution loops, AgentSecrets caches token specifications:
+
+### 1. Keyring-Cached Capabilities
+Whenever a token is successfully validated online:
+* The proxy serializes the agent's capabilities policy and saves it securely in the local OS Keychain via `keychain-auth`.
+* It stores a prefix mapping of the token to its agent registration name (`agent_token_<token>`).
+
+### 2. Offline / Outage Fallback
+If the proxy attempts to validate an agent token but the cloud API is unreachable (encountering a status code `>= 500`, TCP connection timeouts, or DNS failures):
+1. The proxy switches dynamically to **Offline Fallback Mode**.
+2. It queries the local OS Keychain for a mapped agent name matching the token.
+3. If found, it reads the agent's cached capabilities policy from the keyring.
+4. The proxy then validates and enforces the whitelist/blacklist scopes locally. If authorized, the request proceeds utilizing local keyring secrets.
+
+This hybrid caching mechanism guarantees that your agents remain fully operational even during complete network or platform outages.

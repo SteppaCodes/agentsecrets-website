@@ -43,6 +43,28 @@ Once run, the local proxy registers a session-based approval for that specific a
 
 ---
 
+## Cloud Synchronization & Read-Through Caching
+
+To guarantee policy consistency across multi-developer environments and headless workers, AgentSecrets implements a synchronized hybrid policy caching pipeline:
+
+### 1. Write-Through Sync
+Whenever you run policy administrative commands:
+* `agentsecrets secrets policy set`
+* `agentsecrets secrets policy delete`
+
+The CLI routes these changes directly to the cloud backend database first. Once the cloud changes are successfully processed, the CLI writes them locally to the secure OS Keychain.
+
+### 2. Read-Through Caching
+When a request passes through the Credential Proxy:
+1. The proxy engine queries the local OS Keychain via `keychain-auth` for the secret's policy.
+2. **Cache Hit**: If found, the policy is evaluated immediately.
+3. **Cache Miss**: If no local policy is found (empty keyring), the proxy performs a read-through fallback. It queries the cloud API (`secrets/get_policy`), retrieves the latest policy structure, caches it inside the secure local OS Keychain, and applies it to the active request. Subsequent calls resolve the policy directly from the local keyring.
+
+### 3. Clean Synchronization (`pull`)
+When running `agentsecrets secrets pull`, the CLI downloads all secret metadata including active policies. If a policy has been deleted or cleared in the cloud, the pull command deletes/purges the policy cache from the local OS Keychain automatically.
+
+---
+
 ## Audit Logs and Monitoring
 
 Any policy block or approval event is logged to the local audit trail. You can view blocked attempts and check why a request was rejected by running:

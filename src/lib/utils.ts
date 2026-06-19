@@ -27,15 +27,6 @@ export function getMetrics(): Promise<any> {
     return Promise.resolve(null);
   }
 
-  const stored = sessionStorage.getItem('agentsecrets_metrics');
-  if (stored) {
-    try {
-      return Promise.resolve(JSON.parse(stored));
-    } catch (e) {
-      // ignore and refetch
-    }
-  }
-
   if (cachedMetricsPromise) {
     return cachedMetricsPromise;
   }
@@ -46,9 +37,6 @@ export function getMetrics(): Promise<any> {
       return res.json();
     })
     .then(json => {
-      if (json && json.status === 'success') {
-        sessionStorage.setItem('agentsecrets_metrics', JSON.stringify(json));
-      }
       return json;
     })
     .catch(err => {

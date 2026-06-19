@@ -21,7 +21,7 @@ The most secure method for autonomous AI agents. AgentSecrets runs a local proxy
 The highest compatibility method. You run your normal command prefixed with `agentsecrets env --`. AgentSecrets resolves your keys from the keychain and injects them as standard environment variables directly into the child process at launch time.
 - **Best for:** Legacy tools, standard web applications (Next.js, Django, Spring), CI/CD pipelines, and local test suites.
 - **Security:** Moderate. Credentials never touch your disk, but they are accessible in process RAM.
-- [Read the Environment Injection Guide](../env-injection/any-process.md)
+- [Read the Environment Injection Guide](/docs/env-injection/any-process)
 :::
 
 ### 3. AI Framework Integrations (LangChain & CrewAI)
@@ -38,5 +38,5 @@ Integrate AgentSecrets with popular AI frameworks (like LangChain and CrewAI) by
 A zero-knowledge integration for AI desktop tools (like Cursor, Claude Desktop, and Windsurf). The AgentSecrets MCP server exposes a local API call tool to the assistant over stdio, allowing the AI to query external APIs without ever holding the API keys in its context window.
 - **Best for:** AI IDEs and desktop assistants.
 - **Security:** Complete.
-- [Read the MCP Guide](../sdk/zero-knowledge-mcp.md)
+- [Read the MCP Guide](/docs/sdk/zero-knowledge-mcp)
 :::
