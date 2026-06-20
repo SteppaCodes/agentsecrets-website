@@ -31,11 +31,11 @@ publishing_client = AgentSecrets(
 Now when you look at the audit log, you can see exactly which agent called what:
 
 ```bash
-agentsecrets log list --agent billing-processor
-agentsecrets log list --agent research-agent
+agentsecrets logs list --agent billing-processor
+agentsecrets logs list --agent research-agent
 
 # Find any calls without identity
-agentsecrets log list --identity anonymous
+agentsecrets logs list --identity anonymous
 ```
 
 ## Issued identity setup

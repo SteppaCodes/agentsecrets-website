@@ -35,7 +35,7 @@ chain_hash = SHA-256(previous_entry_id + current_entry_id + created_at_RFC3339)
 ```
 
 * **Immutable History**: If an attacker modifies a row's details, deletes an entry, or tries to reorder logs, the hash chain breaks.
-* **Non-Repudiation**: Running `agentsecrets log verify` walks the chain chronologically, recalculates the hashes, and flags any discrepancy instantly.
+* **Non-Repudiation**: Running `agentsecrets logs verify` walks the chain chronologically, recalculates the hashes, and flags any discrepancy instantly.
 * **Zero Credential Exposure**: No plaintext credential values are ever written to the database. Only key names (e.g., `STRIPE_KEY`) and metadata are recorded.
 
 ---

@@ -17,10 +17,10 @@ Determine the `agent_id` or registered name you want to query (e.g., `billing-pr
 
 ### 2. Query logs via the CLI
 :::step
-Use the `log list` command with the `--agent` filter:
+Use the `logs list` command with the `--agent` filter:
 
 ```bash
-agentsecrets log list --agent billing-processor
+agentsecrets logs list --agent billing-processor
 ```
 
 Or watch the logs in real time:
@@ -49,15 +49,15 @@ To assess the security posture of your workspace, you can filter logs by the str
 
 * **Find Anonymous Calls**: Locate calls that lack any agent attribution.
   ```bash
-  agentsecrets log list --identity anonymous
+  agentsecrets logs list --identity anonymous
   ```
 * **Find Declared Calls**: Locate calls that report an identity but lack cryptographic signatures.
   ```bash
-  agentsecrets log list --identity declared
+  agentsecrets logs list --identity declared
   ```
 * **Find Issued Calls**: Locate calls verified using cryptographic agent tokens.
   ```bash
-  agentsecrets log list --identity issued
+  agentsecrets logs list --identity issued
   ```
 
 ---
@@ -104,7 +104,7 @@ For compliance auditing or integration with Security Information and Event Manag
 Export logs directly to a JSON file:
 
 ```bash
-agentsecrets log list --agent billing-processor --format json > billing_audit.json
+agentsecrets logs list --agent billing-processor --format json > billing_audit.json
 ```
 
 ### Retrieving via the REST API

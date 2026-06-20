@@ -4,10 +4,10 @@ AgentSecrets provides multiple log categories and tools to monitor credential ca
 
 ---
 
-## 1. Interactive Proxy Audit Log (`agentsecrets log`)
+## 1. Interactive Proxy Audit Log (`agentsecrets logs`)
 
 :::step
-The `agentsecrets log` command opens an interactive, paginated terminal log viewer. It displays the history of API requests routed through the local credential proxy.
+The `agentsecrets logs` command opens an interactive, paginated terminal log viewer. It displays the history of API requests routed through the local credential proxy.
 
 ### Interactive Controls
 
@@ -21,33 +21,33 @@ You can apply various filters to target specific environments, agents, or endpoi
 
 ```bash
 # Filter by a specific agent registration name
-agentsecrets log --agent "billing-processor"
+agentsecrets logs --agent "billing-processor"
 
 # Filter by verification level (anonymous, declared, issued)
-agentsecrets log --identity anonymous
+agentsecrets logs --identity anonymous
 
 # Filter by a specific agent token ID
-agentsecrets log --token tok_7f9b8c2d
+agentsecrets logs --token tok_7f9b8c2d
 
 # Filter by a specific credential key name
-agentsecrets log --credential STRIPE_KEY
+agentsecrets logs --credential STRIPE_KEY
 
 # Filter by target domain, HTTP method, or status class
-agentsecrets log --domain api.stripe.com --method POST --status-class 4xx
+agentsecrets logs --domain api.stripe.com --method POST --status-class 4xx
 
 # Filter by environment and time window
-agentsecrets log --env production --since 24h
+agentsecrets logs --env production --since 24h
 ```
 :::
 
 ---
 
-## 2. Inspecting Log Details (`agentsecrets log show <id>`)
+## 2. Inspecting Log Details (`agentsecrets logs show <id>`)
 
 :::step
 To inspect a single log record by ID:
 ```bash
-agentsecrets log show log_a1b2c3d4
+agentsecrets logs show log_a1b2c3d4
 ```
 
 For forensic logs, this prints a full component trace:
@@ -59,15 +59,15 @@ For forensic logs, this prints a full component trace:
 
 ---
 
-## 3. Cryptographic Chain Verification (`agentsecrets log verify`)
+## 3. Cryptographic Chain Verification (`agentsecrets logs verify`)
 
 :::step
 Because AI agents write and execute code dynamically, proving the integrity of the audit logs is essential for SOC 2 and ISO 27001 compliance. 
 
-The `log verify` command validates the mathematical signature of the entire chronological SQLite log chain:
+The `logs verify` command validates the mathematical signature of the entire chronological SQLite log chain:
 
 ```bash
-agentsecrets log verify
+agentsecrets logs verify
 ```
 
 ### How it works
@@ -94,13 +94,13 @@ The verify command walks the logs oldest-to-newest, recalculates the SHA-256 has
 
 ---
 
-## 4. Visual State Replay (`agentsecrets log replay <id>`)
+## 4. Visual State Replay (`agentsecrets logs replay <id>`)
 
 :::step
 If a request was blocked or redacted and you need to investigate *why*, you can reconstruct the exact environment state using the visual replay tool:
 
 ```bash
-agentsecrets log replay log_a1b2c3d4
+agentsecrets logs replay log_a1b2c3d4
 ```
 
 This renders a step-by-step evaluation breakdown of the three active security layers:
@@ -163,32 +163,32 @@ agentsecrets proxy logs --env staging
 
 ---
 
-## 6. Live Log Streaming (`agentsecrets log watch`)
+## 6. Live Log Streaming (`agentsecrets logs watch`)
 
 :::step
 To stream audit logs in real-time as your applications or AI agents execute requests:
 
 Run the watch command to live stream incoming entries:
 ```bash
-agentsecrets log watch
+agentsecrets logs watch
 ```
 
 Alternatively, you can run the list command with the tail flag:
 ```bash
-agentsecrets log --tail
+agentsecrets logs --tail
 ```
 :::
 
 ---
 
-## 7. Workspace Allowlist Logs (`agentsecrets workspace allowlist log`)
+## 7. Workspace Allowlist Logs (`agentsecrets workspace allowlist logs`)
 
 :::step
 Workspace logs provide an audit trail of administrative configuration changes inside your workspace rather than API proxy calls. They record when domains were added or removed from the proxy allowlist, and which user authorized the change.
 
 ```bash
 # View the list of allowlist modifications
-agentsecrets workspace allowlist log
+agentsecrets workspace allowlist logs
 ```
 :::
 

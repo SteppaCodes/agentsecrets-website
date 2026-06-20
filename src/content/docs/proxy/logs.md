@@ -1,6 +1,6 @@
-# Governance Audit Log
+# Governance Audit Logs
 
-Every AgentSecrets proxy call is logged. The standard proxy log (`agentsecrets proxy logs`) shows recent calls from the local proxy. The governance log (`agentsecrets log`) shows the full backend log with complete context.
+Every AgentSecrets proxy call is logged. The operational proxy daemon logs (`agentsecrets proxy logs`) track local daemon runtime events and connections. The governance audit logs (`agentsecrets logs`) show the cryptographically verified access logs with complete context.
 
 ## What the governance log records
 
@@ -23,24 +23,44 @@ The allowlist snapshot is important for forensics. If the allowlist changes afte
 ## Querying the governance log
 
 ```bash
-# Stream live log
-agentsecrets log list --tail
+# Stream live logs
+agentsecrets logs list --tail
 
 # Filter by agent
-agentsecrets log list --agent billing-processor
+agentsecrets logs list --agent billing-processor
 
 # Find anonymous calls — gaps in identity coverage
-agentsecrets log list --identity anonymous
+agentsecrets logs list --identity anonymous
 
 # Aggregate statistics for the last 7 days
-agentsecrets log summary --since 7d
+agentsecrets logs summary --since 7d
 
 # Export for compliance review
-agentsecrets log export --format csv --since 30d
+agentsecrets logs export --format csv --since 30d
 
 # Inspect a specific entry in full detail
-agentsecrets log detail <entry-id>
+agentsecrets logs show <entry-id>
 ```
+
+---
+
+## Workspace & Project Audit Logs
+
+To view activity scoped specifically to workspaces or projects, use:
+
+### Workspace Logs
+```bash
+agentsecrets workspace logs
+```
+Fetches the logs for the active workspace. If the workspace is **Shared**, the CLI pulls workspace-wide logs from the central server. If the workspace is **Personal**, it reads them from the local SQLite audit database (`~/.agentsecrets/audit.db`).
+
+### Project Logs
+```bash
+agentsecrets project logs
+```
+Fetches the logs for the active project. Queries the remote server for **Shared** workspaces and the local SQLite audit database for **Personal** workspaces.
+
+---
 
 ## What is never in the log
 

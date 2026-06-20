@@ -163,3 +163,15 @@ agentsecrets workspace switch "Acme Eng"
 ```
 
 You can belong to and switch between as many workspaces as needed. The active workspace is shown in `agentsecrets status`.
+
+---
+
+## Workspace audit logs
+
+For security compliance and monitoring, administrators can retrieve audit logs for all activity within the active workspace:
+
+```bash
+agentsecrets workspace logs
+```
+
+If the active workspace is a **Shared workspace**, this command queries the remote server's API to fetch the audit log of credential calls made by all agents and members across the workspace. If it is a **Personal workspace**, it reads from the local SQLite database (`~/.agentsecrets/audit.db`).

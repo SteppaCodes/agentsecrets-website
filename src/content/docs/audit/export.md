@@ -12,10 +12,10 @@ You can export logs stored in your local SQLite database directly to a CSV or ne
 
 ```bash
 # Export the last 7 days of logs to a CSV file
-agentsecrets log export --since 7d --format csv --output ~/audit_export.csv
+agentsecrets logs export --since 7d --format csv --output ~/audit_export.csv
 
 # Export all logs for a specific agent to a JSONL file
-agentsecrets log export --since 30d --agent "billing-processor" --format jsonl --output ~/billing_logs.jsonl
+agentsecrets logs export --since 30d --agent "billing-processor" --format jsonl --output ~/billing_logs.jsonl
 ```
 
 The CLI export supports filters such as `--agent` and `--credential` to scope your export files.

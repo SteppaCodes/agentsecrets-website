@@ -13,7 +13,7 @@ The primary tool for uncovering gaps is the `--identity anonymous` log filter. T
 To search for gaps in the current workspace, run:
 
 ```bash
-agentsecrets log list --identity anonymous --last 100
+agentsecrets logs list --identity anonymous --last 100
 ```
 
 > [TIP]
