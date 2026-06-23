@@ -54,7 +54,7 @@ Requests are sent as a single line JSON object:
 ```json
 {
   "type": "REQUEST",
-  "action": "read | write | delete | search",
+  "action": "read | write | delete | search | check",
   "service": "AgentSecrets",
   "match": "exact | prefix",
   "targets": ["ws_01H:proj_01:production:STRIPE_KEY"],
@@ -93,9 +93,11 @@ The daemon processes the batch atomically and replies:
 While modern Windows versions support Unix Domain Sockets (`AF_UNIX`), they lack standard POSIX capabilities like `SO_PEERCRED` to query the connecting client's process credentials. To prevent process impersonation, AgentSecrets utilizes **Windows Named Pipes** for communication.
 By calling `GetNamedPipeClientProcessId`, `keychain-auth` verifies the exact PID of the connecting CLI or proxy client, resolves its executable path, and computes its SHA-256 hash. Any connection from unauthorized paths or modified binaries is rejected immediately.
 
-### WSL & Headless Linux In-Memory Fallback
-Traditional setups fall back to storing keyring credentials in local plaintext files (e.g. `keyring.json`) when a graphical session or D-Bus/GNOME Keyring is unavailable (such as in headless servers or WSL environments).
-To preserve our **Zero-Disk guarantee**, `keychain-auth` now runs an **in-memory-only database fallback** under WSL and headless Linux. Secrets are held in a thread-safe, encrypted in-memory map. Plaintext credentials are never written to disk, ensuring that even if your WSL instance is compromised or backed up, your secrets remain safe.
+### WSL Host Interop & TPM2 Sealing Fallbacks
+In headless or virtualized environments where standard desktop keyrings (GNOME Keyring/KWallet/D-Bus) are unavailable, `keychain-auth` implements secure fallback mechanisms:
+* **WSL (Windows Host Interop)**: Instead of storing master credentials on the Linux filesystem, `keychain-auth` delegates the master key storage to the Windows Host's native **Windows Credential Manager** via execution interop. At runtime, the daemon executes a lightweight Windows helper (`keychain-helper.exe`) which it automatically extracts to the host user's profile folder (`C:\Users\<user>\.config\keychain-auth\keychain-helper.exe`). The master key is loaded dynamically into daemon memory, leaving zero footprints on the Linux VM disk.
+* **Headless Linux (TPM2 Key Sealing)**: If a hardware or virtual TPM 2.0 module is present (`/dev/tpm0`), the master key is sealed directly to the hardware TPM chip platform configuration registers, preventing physical database extraction attacks.
+* **POSIX Fallback**: If neither TPM2 nor WSL is available, the daemon falls back to writing the encrypted database locally inside the platform-appropriate config folder with strict `0600` permissions.
 
 ---
 
