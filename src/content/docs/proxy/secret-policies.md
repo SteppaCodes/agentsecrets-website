@@ -10,15 +10,15 @@ Each secret in AgentSecrets can be configured with a policy specifying allowed d
 
 When a request is processed by the proxy, the engine evaluates the secret's policy rules:
 
-1. **Domain-Specific Rules (`--rule`)**: If domain-specific rules (e.g., `domain:METHOD=ACTION`) are defined, the proxy checks if the request matches the domain and HTTP method. If it matches, the corresponding action (`allow`, `deny`, `request_permission`) is executed. **When rules are present, they take complete precedence, and all other unlisted domains or methods for those domains are denied by default.**
-2. **Global Fallback Constraints (`--domains` and `--methods`)**: If no domain-specific rules are defined, the proxy falls back to the global constraints:
-   * **Domain Constraint**: If `domains` are specified in the secret's policy, the target domain of the outbound request *must* match one of the listed domains. Otherwise, the request is immediately denied.
-   * **HTTP Method Constraint**: If `methods` are mapped to actions in the policy, the request's HTTP method is evaluated:
-     * **`allow`**: The request is allowed.
-     * **`deny`**: The request is blocked.
-     * **`request_permission`**: The request requires interactive developer approval.
+1. **Domain-Specific Rules (`--rule`)**: If domain-specific rules (e.g., `domain:METHOD=ACTION`) are defined, the proxy checks if the request matches the domain.
+   * If the domain matches: the corresponding method action is executed. If the method is unlisted in that rule, the engine checks the global methods map for a fallback constraint; if none exists, it defaults to `allow`.
+2. **Global Fallback Constraints (`--domains` and `--methods`)**: If the request domain does not match any domain-specific rule, the proxy falls back to the global constraints:
+   * **Domain Constraint**: If global `domains` are specified, the target domain of the outbound request *must* match one of the listed domains. If no global domains are specified and domain-specific rules are defined, the request is denied (unlisted domains are blocked by default).
+   * **HTTP Method Constraint**: If global `methods` are configured, the request's HTTP method is evaluated against them. If unlisted globally, it defaults to `allow`.
 
-If both global domains and methods are configured, both constraints must be satisfied. If a secret has no policy, it is unrestricted.
+Under all policy scopes, any HTTP method not explicitly restricted defaults to `allow` by default, enabling simple configurations (e.g. only restricting `POST` without having to explicitly allow `GET`).
+
+If a secret has no policy, it is unrestricted.
 
 ---
 

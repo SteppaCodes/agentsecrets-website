@@ -69,9 +69,9 @@ agentsecrets secrets policy set KEY --rule api.stripe.com:GET=allow,POST=request
 ```
 Configures domain and method constraints on a secret key.
 * `--domains`: A comma-separated list of allowed domains.
-* `--methods`: A comma-separated list of allowed HTTP methods. Any unlisted methods will be blocked if methods are configured.
-* `--action`: The outcome if method constraint matches. Values: `allow`, `deny`, `request_permission`. Default is `allow`.
-* `--rule`: A repeatable flag specifying domain-specific constraints in the format `domain:METHOD=ACTION` (e.g. `--rule api.stripe.com:GET=allow,POST=request_permission`). Rules take precedence over `--domains` and `--methods`, enabling precise, fine-grained access control. Any domain or method not explicitly allowed by a rule will be blocked by default.
+* `--methods`: A comma-separated list of allowed HTTP methods and actions (e.g. `POST=request_permission`). Any unlisted methods default to `allow` unless explicitly constrained.
+* `--action`: The outcome if global method constraint matches. Values: `allow`, `deny`, `request_permission`. Default is `allow`.
+* `--rule`: A repeatable flag specifying domain-specific constraints in the format `domain:METHOD=ACTION` (e.g. `--rule api.stripe.com:POST=request_permission`). Rules take precedence over `--domains` and `--methods`. If the domain matches a rule but the method is unlisted, the engine falls back to checking the global `--methods` map before defaulting to `allow`. If rules are defined but the request domain does not match any rule, it falls back to global constraints; if no global constraints exist, unlisted domains are denied by default.
 
 ### agentsecrets secrets policy get
 ```bash
