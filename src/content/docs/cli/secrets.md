@@ -65,11 +65,13 @@ Configure and inspect domain and HTTP method restriction policies for individual
 ```bash
 agentsecrets secrets policy set KEY --domains api.stripe.com,api.github.com --methods GET,POST
 agentsecrets secrets policy set KEY --methods GET --action request_permission
+agentsecrets secrets policy set KEY --rule api.stripe.com:GET=allow,POST=request_permission --rule api.github.com:GET=allow
 ```
-Configures domain and method constraints on a secret key. 
+Configures domain and method constraints on a secret key.
 * `--domains`: A comma-separated list of allowed domains.
 * `--methods`: A comma-separated list of allowed HTTP methods. Any unlisted methods will be blocked if methods are configured.
 * `--action`: The outcome if method constraint matches. Values: `allow`, `deny`, `request_permission`. Default is `allow`.
+* `--rule`: A repeatable flag specifying domain-specific constraints in the format `domain:METHOD=ACTION` (e.g. `--rule api.stripe.com:GET=allow,POST=request_permission`). Rules take precedence over `--domains` and `--methods`, enabling precise, fine-grained access control. Any domain or method not explicitly allowed by a rule will be blocked by default.
 
 ### agentsecrets secrets policy get
 ```bash
