@@ -19,18 +19,27 @@ agentsecrets agent policy get <agent-name>
 ```
 
 #### Set Agent Policy
-To restrict an agent to specific keys (whitelisting):
+To restrict an agent to specific keys (whitelisting) using a comma-separated list or repeatable flags:
 ```bash
+# Comma-separated list
 agentsecrets agent policy set <agent-name> --allow GITHUB_TOKEN,SERP_KEY
+
+# Repeatable flags
+agentsecrets agent policy set <agent-name> --allow GITHUB_TOKEN --allow SERP_KEY
 ```
 
 To block an agent from accessing specific sensitive keys (blacklisting):
 ```bash
+# Comma-separated list
 agentsecrets agent policy set <agent-name> --deny STRIPE_SECRET_KEY,AWS_SECRET_ACCESS_KEY
+
+# Repeatable flags
+agentsecrets agent policy set <agent-name> --deny STRIPE_SECRET_KEY --deny AWS_SECRET_ACCESS_KEY
 ```
 
 > [!NOTE]
-> Setting agent policies is a sensitive administrative action. The CLI will prompt you for your workspace/project password to authenticate the changes.
+> - Setting agent policies is a sensitive administrative action. The CLI will prompt you for your workspace/project password to authenticate the changes.
+> - Secrets must exist locally or remotely in the project before you can bind them to an agent policy. Providing a key that does not exist will fail the command with a `SEC-404` validation error.
 
 ---
 

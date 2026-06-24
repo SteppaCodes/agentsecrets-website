@@ -159,8 +159,9 @@ agentsecrets agent policy set "billing-processor" --allow "STRIPE_KEY,DATABASE_U
 ### CLI Flags
 | Flag | Short | Type | Default | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| `--allow` | | string | `""` | Comma-separated list of secret keys the agent is allowed to access (whitelisting). |
-| `--deny` | | string | `""` | Comma-separated list of secret keys the agent is blocked from accessing (blacklisting). |
+| `--allow` | | stringSlice | `[]` | Comma-separated or repeatable list of secret keys the agent is allowed to access (whitelisting). |
+| `--deny` | | stringSlice | `[]` | Comma-separated or repeatable list of secret keys the agent is blocked from accessing (blacklisting). |
 
 > [!NOTE]
-> Setting agent policies is a sensitive administrative action. The CLI will prompt you for your workspace/project password to authenticate changes locally before sending them to the control plane.
+> - Setting agent policies is a sensitive administrative action. The CLI will prompt you for your workspace/project password to authenticate changes locally before sending them to the control plane.
+> - The keys passed to `--allow` and `--deny` are validated to ensure they exist within the project context (either locally in the OS keychain or remotely in the environment). If a key doesn't exist, the command fails with a `SEC-404` error to prevent granting policies on non-existent secrets.
