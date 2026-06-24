@@ -11,7 +11,6 @@ AgentSecrets is a zero-knowledge credential infrastructure. Rather than retrievi
 
 Furthermore, AgentSecrets acts as an extensible security host where specialized subsystems plug in to provide composable security guarantees:
 - **Zero-Knowledge Core (AgentSecrets)**: Keeps credential values out of agent context, traces, and logs.
-- **Intent Attestation (SEC)**: Restricts credential usage to cryptographically signed contracts pre-declaring natural-language objectives and target URL glob patterns.
 - **Capability Bounding (Keychain-Auth)**: Uses process-level validation to block unauthorized local scripts or processes from accessing keychain entries.
 
 ### How does AgentSecrets enforce the principle of least privilege for AI agents?
@@ -80,11 +79,7 @@ When your application makes a request, it is configured to use the proxy (via st
 The latency overhead is minimal, typically under 1-2 milliseconds per request. The proxy resolves keys from local memory-mapped cache or fast OS keychain queries and uses connection pooling/keep-alive connections to ensure that there is no meaningful impact on request duration.
 
 ### How does the proxy handle certificate verification, and do I need to install a root certificate?
-Because the proxy intercepts TLS traffic, it generates local, on-the-fly SSL certificates for the domains you access. To ensure your HTTP clients trust these certificates without throwing SSL verification errors, you must install the AgentSecrets local root CA certificate:
-```bash
-agentsecrets ca install
-```
-This adds the local root CA to your operating system's trust store. The proxy then signs the local traffic, while maintaining full upstream validation (verifying the real certificates of upstream servers like Stripe or OpenAI).
+No, you do not need to install any custom root certificates or trust stores. Since your application communicates with the local proxy over a standard HTTP loopback connection (`http://127.0.0.1:8765/proxy`), no local TLS interception or certificate generation is required. The proxy handles upstream TLS/HTTPS connections and performs standard certificate validation using your operating system's native certificate authority (CA) store.
 
 ### How does response redaction work, and does it guarantee that credentials are never printed in logs?
 When an upstream API returns a response, the proxy performs a high-performance search on the response body for the plaintext credential value. If a match is found (e.g., if an API echoes back the token in an error message or debug payload), the proxy replaces it with `[REDACTED_BY_AGENTSECRETS]` before returning the data to your code.

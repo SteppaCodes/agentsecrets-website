@@ -19,61 +19,71 @@ This guide walks you through migrating from `dotenv-vault` to AgentSecrets, achi
 
 ## Step-by-Step Migration
 
+### 1. Retrieve decrypted credentials
 :::step
-1. **Retrieve your decrypted credentials:**
-   Ensure you have your current decrypted secrets loaded locally. If you do not have a local `.env` file, run the decrypt command using the `dotenv-vault` CLI:
-   ```bash
-   npx dotenv-vault decrypt
-   ```
+Ensure you have your current decrypted secrets loaded locally. If you do not have a local `.env` file, run the decrypt command using the `dotenv-vault` CLI:
+```bash
+npx dotenv-vault decrypt
+```
+:::
 
-2. **Initialize your AgentSecrets workspace:**
-   Initialize a new project and workspace in your directory:
-   ```bash
-   agentsecrets init
-   ```
+### 2. Initialize AgentSecrets workspace
+:::step
+Initialize a new project and workspace in your project directory:
+```bash
+agentsecrets init
+```
+:::
 
-3. **Import your secrets:**
-   Push your decrypted local `.env` file into AgentSecrets. This command automatically encrypts each credential value locally and stores it in your secure OS Keychain:
-   ```bash
-   agentsecrets secrets push
-   ```
-   Verify they have been imported correctly:
-   ```bash
-   agentsecrets secrets list
-   ```
+### 3. Import your secrets
+:::step
+Push your decrypted local `.env` file into AgentSecrets. This command automatically encrypts each credential value locally and stores it in your secure OS Keychain:
+```bash
+agentsecrets secrets push
+```
 
-4. **Remove dotenv-vault files and keys:**
-   Clean up your repository by deleting the dotenv-vault configuration and encrypted keys. Run:
-   ```bash
-   rm .env.vault .env.project .env.keys .env
-   ```
-   Remove any `DOTENV_KEY` environment variables from your shell profile, system environment, or hosting provider configuration.
+Verify they have been imported correctly:
+```bash
+agentsecrets secrets list
+```
+:::
 
-5. **Update your code integration:**
-   Remove the `dotenv-vault` setup from your application code:
-   
-   **Before (Node.js):**
-   ```javascript
-   require('dotenv-vault').config();
-   // Secrets are now exposed in process.env
-   ```
-   
-   **After (Zero-Knowledge CLI Environment Injection):**
-   Simply launch your app prefixing it with the AgentSecrets runtime execution command:
-   ```bash
-   agentsecrets env -- node app.js
-   ```
-   
-   **After (Zero-Knowledge Proxy Integration):**
-   Configure your application to query external APIs through the local proxy:
-   ```javascript
-   const response = await fetch('http://localhost:8765/proxy', {
-     headers: {
-       'X-AS-Target-URL': 'https://api.stripe.com/v1/balance',
-       'X-AS-Inject-Bearer': 'STRIPE_KEY'
-     }
-   });
-   ```
+### 4. Remove dotenv-vault files and keys
+:::step
+Clean up your repository by deleting the dotenv-vault configuration and encrypted keys:
+```bash
+rm .env.vault .env.project .env.keys .env
+```
+
+Remove any `DOTENV_KEY` environment variables from your shell profile, system environment, or hosting provider configuration.
+:::
+
+### 5. Update your code integration
+:::step
+Remove the `dotenv-vault` setup from your application code:
+
+**Before (Node.js):**
+```javascript
+require('dotenv-vault').config();
+// Secrets are now exposed in process.env
+```
+
+**After (Zero-Knowledge CLI Environment Injection):**
+Simply launch your app prefixing it with the AgentSecrets runtime execution command:
+```bash
+agentsecrets env -- node app.js
+```
+
+**After (Zero-Knowledge Proxy Integration):**
+Configure your application to query external APIs through the local proxy:
+```javascript
+const response = await fetch('http://localhost:8765/proxy', {
+  headers: {
+    'X-AS-Target-URL': 'https://api.stripe.com/v1/balance',
+    'X-AS-Inject-Bearer': 'STRIPE_KEY'
+  }
+});
+```
 :::
 
 ---
