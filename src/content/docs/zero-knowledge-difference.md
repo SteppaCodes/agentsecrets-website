@@ -2,7 +2,7 @@
 
 In traditional cybersecurity, "zero-knowledge" means the cloud provider has no way to decrypt your data. While AgentSecrets enforces this server-side boundary, the unique threat model of AI agents requires a far more robust definition.
 
-For AgentSecrets, **Zero-Knowledge is holistic**: the plaintext credential value is structurally absent and completely invisible at every single point in the entire architecture—from the sync servers, to the local disk, to the AI agent’s process memory, and the application log traces.
+For AgentSecrets, **zero-knowledge is holistic**: the plaintext credential value is structurally absent and invisible at every point in the architecture—from the sync servers, to the local disk, to the AI agent's process memory, and the application log traces.
 
 ---
 
@@ -23,7 +23,7 @@ Plaintext credential values **never leave your local machine**.
 Unlike legacy secrets managers, the AI agent **never holds or sees the plaintext credential value**.
 * **By-Reference Execution**: The agent process only ever references key names (e.g., `STRIPE_KEY` or `OPENAI_KEY`).
 * **Transport-Layer Injection**: The local proxy intercepts the outbound request, resolves the secret from the secure local keychain inside an isolated process space, injects it into the network payload, and immediately routes the request.
-* **RAM Protection**: The calling application's process memory and variable scope remain completely blind to the actual secret value, neutralising prompt injection and compromised dependencies.
+* **Agent Memory Protection**: The calling agent's process memory and variable scope never receive the actual secret value, neutralising prompt injection and compromised dependencies in the agent runtime.
 :::
 
 ### 3. Zero-Knowledge at the Disk (Keychain Delegation)
@@ -78,7 +78,7 @@ response = client.call(
 # "sk_live_51H..." never existed in this application's process.
 ```
 
-The plaintext value exists only within the milliseconds required to form the outbound request packet at the network boundary, ensuring total runtime isolation.
+The plaintext value exists only inside the trusted proxy/keychain boundary for the milliseconds required to form the outbound request packet at the network boundary, ensuring total runtime isolation.
 
 ---
 
@@ -93,4 +93,4 @@ A **structural guarantee** is built into the architecture:
 * The backend database schema cannot accept plaintext.
 * The proxy automatically filters and replaces reflected values.
 
-Because the system is architected without a pathway for plaintext values to travel, it is physically impossible to leak them—even by accident.
+Because the system is architected without a pathway for plaintext values to return to the agent or sync server, accidental exposure through agent context, logs, or cloud sync is structurally prevented.

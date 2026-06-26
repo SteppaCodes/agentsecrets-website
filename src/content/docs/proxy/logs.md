@@ -44,21 +44,15 @@ agentsecrets logs show <entry-id>
 
 ---
 
-## Workspace & Project Audit Logs
+## Workspace & Project Scoping
 
-To view activity scoped specifically to workspaces or projects, use:
+All `agentsecrets logs` commands are implicitly scoped to your **active workspace** (configured via `agentsecrets workspace switch`). If the workspace is **Shared**, the CLI pulls workspace-wide logs from the central server. If the workspace is **Personal**, it reads them from the local SQLite audit database (`~/.agentsecrets/audit.db`).
 
-### Workspace Logs
+To filter logs for a specific project within that active workspace, use the `--project` flag on any logs command:
 ```bash
-agentsecrets workspace logs
+agentsecrets logs list --project payments-service
+agentsecrets logs summary --project content-pipeline
 ```
-Fetches the logs for the active workspace. If the workspace is **Shared**, the CLI pulls workspace-wide logs from the central server. If the workspace is **Personal**, it reads them from the local SQLite audit database (`~/.agentsecrets/audit.db`).
-
-### Project Logs
-```bash
-agentsecrets project logs
-```
-Fetches the logs for the active project. Queries the remote server for **Shared** workspaces and the local SQLite audit database for **Personal** workspaces.
 
 ---
 

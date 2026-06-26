@@ -17,11 +17,11 @@ The onboarding flow relies on the AgentSecrets client-side cryptosystem. When yo
    agentsecrets workspace invite new-developer@acme.com
    ```
 
-2. **Developer receives the invite:**
-   The developer receives an email containing a secure invite link and an invitation token.
+2. **Developer is added immediately:**
+   The invitation immediately adds the developer to the workspace (gated behind administrative password confirmation).
 
-3. **Developer accepts the invite:**
-   The developer runs the acceptance command in their CLI to join the workspace.
+3. **Developer logs in:**
+   The developer logs in using the CLI to automatically sync the workspace.
 :::
 
 ---
@@ -40,13 +40,9 @@ The developer needs to run a few simple commands to set up their machine, join t
    ```bash
    agentsecrets login
    ```
+   Logging in automatically retrieves, decrypts, and caches the keys for the workspace they were invited to.
 
-3. **Accept the workspace invite:**
-   ```bash
-   agentsecrets workspace accept --token <invite-token>
-   ```
-
-4. **Initialize local workspace and select storage mode:**
+3. **Initialize local workspace and select storage mode:**
    Run the initialization command. This will prompt the developer to choose their preferred storage mode:
    ```bash
    agentsecrets init
@@ -60,7 +56,7 @@ The developer needs to run a few simple commands to set up their machine, join t
    agentsecrets init --storage-mode 2
    ```
 
-5. **Pull the secrets:**
+4. **Pull the secrets:**
    ```bash
    agentsecrets secrets pull
    ```

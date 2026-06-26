@@ -61,23 +61,27 @@ A constraint rule dictates:
 #### View Secret Policy
 To inspect the current policy/constraints of a secret key:
 ```bash
-agentsecrets secrets constraints <KEY>
+agentsecrets secrets policy get <KEY>
 ```
 
 #### Set Secret Policy
 To bind target constraints to a secret:
 ```bash
-agentsecrets secrets constraints <KEY> set --domains api.stripe.com --allow GET,POST --deny DELETE --request-permission PUT
+agentsecrets secrets policy set <KEY> --domains api.stripe.com --methods GET,POST --action request_permission
+```
+Alternatively, to bind domain-specific method rules:
+```bash
+agentsecrets secrets policy set <KEY> --rule api.stripe.com:GET=allow,POST=request_permission
 ```
 
 #### Clear Secret Policy
 To remove all target constraints from a secret:
 ```bash
-agentsecrets secrets constraints <KEY> clear
+agentsecrets secrets policy delete <KEY>
 ```
 
 > [!NOTE]
-> Modifying secret constraints requires password verification.
+> Modifying secret policies requires password verification.
 
 ---
 

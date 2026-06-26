@@ -194,7 +194,7 @@ export default function StatsSection() {
               color: '#005E50'
             }}
           >
-            Zero trust.<br/>Absolute security.
+            Zero trust.<br/>Context-free credentials.
           </h2>
           <p 
             ref={textRef}
@@ -206,7 +206,7 @@ export default function StatsSection() {
               margin: '0 auto'
             }}
           >
-            AgentSecrets provides a zero-knowledge credential infrastructure for AI agents, enforcing layered governance policies and transient injection. Your keys never touch the agent's context.
+            AgentSecrets provides zero-knowledge credential infrastructure for AI agents, enforcing layered governance policies and transient transport-layer injection. Your keys never enter the agent's context.
           </p>
         </div>
 

@@ -8,14 +8,19 @@ export function formatMetric(num: number | undefined | null): string {
     return '0';
   }
 
+  const fmt = (val: number, suffix: string): string => {
+    const s = val.toFixed(1);
+    return s.endsWith('.0') ? s.slice(0, -2) + suffix : s + suffix;
+  };
+
   if (n >= 1000000000) {
-    return Math.round(n / 1000000000) + 'B';
+    return fmt(n / 1000000000, 'B');
   }
   if (n >= 1000000) {
-    return Math.round(n / 1000000) + 'M';
+    return fmt(n / 1000000, 'M');
   }
   if (n >= 1000) {
-    return Math.round(n / 1000) + 'K';
+    return fmt(n / 1000, 'K');
   }
   return n.toString();
 }

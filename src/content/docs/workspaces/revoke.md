@@ -11,7 +11,7 @@ Only workspace administrators (`Admin`) or the workspace owner can remove member
 1. **Identify the member:**
    List the active members of your workspace to find the email of the person you need to remove:
    ```bash
-   agentsecrets workspace members list
+   agentsecrets workspace members
    ```
 
 2. **Execute the removal command:**

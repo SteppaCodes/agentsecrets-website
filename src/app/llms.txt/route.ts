@@ -11,12 +11,15 @@ export async function GET() {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}`;
   
   let output = `# AgentSecrets\n\n`;
-  output += `AgentSecrets is zero-knowledge secrets management and credential infrastructure for the AI era.\n\n`;
-  output += `It provides both a secure local credential proxy for transport-layer key injection (ensuring AI agents never see credentials in context) and a command-line environment injector (\`agentsecrets env\`) to run developer workflows, tools, and scripts securely without storing credentials in plaintext files like \`.env\`.\n\n`;
+  output += `AgentSecrets is zero-knowledge credential infrastructure for AI agents, combining transport-layer secret injection with cryptographic agent identity, per-secret policies, and process-level anti-impersonation.\n\n`;
+  output += `It keeps credentials out of agent context entirely — no \`.env\` files, no environment variable leaks, no plaintext in LLM memory. Agents call APIs by reference name; secrets are resolved from the OS keychain and injected at the transport layer by a local proxy guarded by the \`keychain-auth\` daemon.\n\n`;
   output += `## Key Features\n`;
+  output += `- **Cryptographic Agent Identity**: Register agents with signed tokens (\`agentsecrets agent register\`). Every credential access is attributed to a specific agent.\n`;
+  output += `- **Agent Policies**: Bind secrets to specific agents via allow/deny lists (\`agentsecrets agent policy set\`). An email agent never touches the Stripe key.\n`;
+  output += `- **Secret Constraints**: Lock individual secrets to specific domains and HTTP methods (\`agentsecrets secrets policy set\`). STRIPE_KEY only works on api.stripe.com.\n`;
+  output += `- **Keychain Auth (\`keychain-auth\`)**: Verifies the calling binary's SHA-256 hash before releasing any credential. Rogue scripts are denied at the IPC handshake.\n`;
+  output += `- **Transport Layer Injection**: SDK requests (OpenAI, Stripe, GitHub) are intercepted by the local proxy. Credentials are injected mid-flight; the agent never sees the raw value.\n`;
   output += `- **Zero-Knowledge Sync**: E2E encrypted local key database. The cloud server cannot decrypt your keys.\n`;
-  output += `- **The No get() Principle**: AI agents only hold key names. Credentials exist in-memory only during transit.\n`;
-  output += `- **Transport Layer Injection**: Transparently intercepts SDK requests (like OpenAI or Stripe) to authenticate outbound queries.\n`;
   output += `- **Domain Allowlist**: Strict egress rules to prevent prompt injection credential theft.\n\n`;
   
   output += `## Search the Documentation\n`;

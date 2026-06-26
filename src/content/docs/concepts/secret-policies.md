@@ -1,6 +1,6 @@
 # Secret-Level Policies & Approvals
 
-Secret-level policies allow you to define fine-grained constraints on *where* and *how* individual secrets can be used, independent of which agent is accessing them. 
+Secret-level policies allow you to define fine-grained constraints on *where* and *how* individual secrets can be used, independent of which agent is accessing them.
 
 Each secret in AgentSecrets can be configured with a policy specifying allowed domains, allowed HTTP methods, and whether certain requests require explicit manual approval.
 
@@ -24,13 +24,49 @@ If a secret has no policy, it is unrestricted.
 
 ## Handling Approvals (`request_permission`)
 
-If a secret policy resolves to `request_permission` for a request, the proxy:
-1. Temporarily blocks the request and returns a `403 Forbidden` response to the agent.
-2. Returns the error code `policy_approval_required`.
-3. Displays the exact CLI command required to authorize the request in the error message.
+If a secret policy resolves to `request_permission` for a request, the proxy holds the request open and waits for a developer decision. The request is **not immediately denied** — the HTTP connection stays alive until the developer approves or denies it.
 
-### Granting Session Approvals
-To approve the request, a developer runs the `proxy approve` command in their terminal:
+### What happens when approval is required
+
+Two things happen simultaneously the moment a blocked request arrives:
+
+**1. Proxy terminal — immediate interactive prompt**
+
+If you started the proxy in an interactive terminal (`agentsecrets proxy start`), an approval prompt appears immediately:
+
+```
+╭─────────────────────────────╮
+│  Approval Required          │
+│  ────────────────────────── │
+│  Secret:   STRIPE_KEY       │
+│  Agent:    claude           │
+│  Request:  POST → api.stripe.com │
+│                             │
+│  Allow? [y/N/always]:       │
+╰─────────────────────────────╯
+```
+
+Type `y` or `N` and press Enter. The blocked request proceeds or is denied immediately — no re-run needed.
+
+- `y` / `yes` — approves this specific request and lets it through
+- `N` / Enter — denies the request; the agent receives a `403`
+- `always` — approves all requests for this secret+method+domain for the remainder of the proxy session
+
+**2. Caller terminal — waiting hint after 2 seconds**
+
+In the terminal where you (or the agent) ran `agentsecrets call`, a hint appears after 2 seconds if no response has arrived:
+
+```
+Waiting for approval...
+   A secret policy requires manual approval for this request.
+   → Check the proxy terminal and respond to the prompt there, or run:
+
+     agentsecrets proxy approve STRIPE_KEY POST api.stripe.com
+```
+
+### Granting Approvals from Another Terminal
+
+If the proxy is running headless (no interactive terminal, e.g. in CI or a background process), run this from any terminal:
 
 ```bash
 agentsecrets proxy approve <SECRET_KEY> <METHOD> <DOMAIN>
@@ -41,7 +77,14 @@ For example:
 agentsecrets proxy approve STRIPE_KEY POST api.stripe.com
 ```
 
-Once run, the local proxy registers a session-based approval for that specific agent, secret, domain, and method. The agent can then retry the request, and the proxy will allow it to proceed.
+This sends the approval to the running proxy over the local session-authenticated HTTP interface. Any requests currently waiting for that key+method+domain are released immediately.
+
+> [!NOTE]
+> Approvals are **session-scoped** — they last until the proxy is restarted. They are not persisted to disk or synced to the cloud.
+
+### Approval Timeout
+
+If no approval or denial is received within **5 minutes**, the proxy automatically denies the request and returns a `403` with the `policy_approval_required` error code. The agent can retry the request after approval is granted.
 
 ---
 
@@ -72,5 +115,5 @@ When running `agentsecrets secrets pull`, the CLI downloads all secret metadata 
 Any policy block or approval event is logged to the local audit trail. You can view blocked attempts and check why a request was rejected by running:
 
 ```bash
-agentsecrets log list
+agentsecrets logs list
 ```

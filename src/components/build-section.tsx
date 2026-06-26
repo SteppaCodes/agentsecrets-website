@@ -30,7 +30,7 @@ const BUILD_CATEGORIES = [
       {
         id: "sdk-js",
         title: "Modern JS/TS\nSDK",
-        description: "Integrate zero-knowledge secret injection into Node.js or Bun agent frameworks like LangChain. Credentials are resolved at the transport layer, never in-memory.",
+        description: "Integrate zero-knowledge secret injection into Node.js or Bun agent frameworks like LangChain. Credentials are resolved at the transport layer, never inside the agent context.",
         icon: <Layers size={48} strokeWidth={1.5} />,
         cta: "Coming Soon",
         status: "upcoming"
@@ -40,7 +40,7 @@ const BUILD_CATEGORIES = [
   {
     id: "02",
     label: "ECOSYSTEM",
-    header: "Built on Agent Secrets",
+    header: "Built on AgentSecrets",
     summary: "Explore tools and platforms built on top of our secure credentials infrastructure.",
     items: [
       {
@@ -134,16 +134,16 @@ export default function BuildSection() {
           <div className="reveal-header flex flex-col lg:flex-row lg:items-end justify-between gap-12">
             <div className="max-w-2xl">
               <div className="text-[10px] font-bold tracking-[0.15em] uppercase mb-8 text-[#007F6A]">
-                PLATFORM — BUILD ON AGENT SECRETS
+                PLATFORM — BUILD ON AGENTSECRETS
               </div>
               <h2 className="text-[clamp(28px,3.5vw,42px)] font-medium tracking-[-0.03em] leading-[1.15] text-[#1B1B1B]">
-                Make Agent Secrets<br />
+                Make AgentSecrets<br />
                 <span className="text-[#0d9488]">part of your product</span>
               </h2>
             </div>
             <div className="max-w-[380px]">
               <p className="text-[16px] md:text-[18px] text-[#1B1B1B]/50 leading-relaxed lg:text-right">
-                Use Agent Secrets as the base, then extend it to build the secure credentials infrastructure your product needs.
+                Use AgentSecrets as the base, then extend it to build the secure credentials infrastructure your product needs.
               </p>
             </div>
           </div>

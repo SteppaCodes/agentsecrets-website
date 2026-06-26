@@ -28,7 +28,7 @@ const features = [
       </svg>
     ),
     title: "Zero-Knowledge\nProxy",
-    desc: "All credentialed traffic routes through a secure proxy. Keys are resolved from the keychain and injected at the transport layer, returning only the API response to the agent. Value exposure is prevented in memory, logs, and CLI execution.",
+    desc: "All credentialed traffic routes through a secure proxy. Keys are resolved from the keychain and injected at the transport layer, returning only the API response to the agent. Values stay out of the agent process, logs, and CLI output.",
   },
   {
     icon: (

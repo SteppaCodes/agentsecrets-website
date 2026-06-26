@@ -59,6 +59,12 @@ Checks if a specific secret key name exists in the active environment.
 #### `get_coverage`
 Retrieves a table of secret keys and shows which environments (`development`, `staging`, `production`) they are set in.
 
+#### `rotate_key`
+**IMPORTANT**: This permanently deletes a secret key from the current environment (cloud, local `.env`, and OS keychain). Always confirm with the user in chat before calling this tool.
+* **Arguments**:
+  - `key_name` (required): The name of the secret key to delete/rotate (e.g. `STRIPE_KEY`).
+  - `environment` (optional): The environment to rotate the key in. Defaults to the active environment.
+
 ---
 
 ### Context Management
@@ -81,6 +87,12 @@ Compares local OS Keychain cached keys with the cloud sync service to detect dri
 #### `diff_environments`
 Compares secret keys between two environments (e.g. comparing development vs production).
 
+#### `get_agent_identity`
+Gets the current agent's identity information including authentication status, keychain-auth configuration, and whether an agent token (`AS_AGENT_TOKEN`) is set.
+
+#### `list_agent_tokens`
+Lists all registered agent identities and their tokens for the current workspace. Shows token metadata (label, status, created/expiry dates) but never the token values.
+
 ---
 
 ### Audit & Allowlist
@@ -93,6 +105,9 @@ Lists outbound requests blocked by the proxy firewall (due to allowlist violatio
 
 #### `get_redaction_events`
 Lists events where the proxy detected reflected credential values in responses and redacted them.
+
+#### `get_audit_summary`
+Gets an aggregate summary of proxy audit activity: total calls, unique domains, unique credentials used, blocked/redacted counts, and breakdown by environment.
 
 #### `check_domain`
 Checks if a target domain is authorized in the workspace allowlist.

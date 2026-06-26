@@ -10,34 +10,54 @@ gsap.registerPlugin(ScrollTrigger);
 
 const WORKFLOW_STEPS = [
   {
-    label: "Store Credentials",
-    cmd: "$ agentsecrets secrets set OPENAI_API_KEY=sk_...",
-    output: "Encrypted locally. Stored in zero-knowledge vault."
+    label: "Initialize",
+    cmd: "$ agentsecrets init",
+    output: "Initialized workspace. Keychain configured."
   },
   {
-    label: "Sync Environments",
+    label: "Store Credentials",
+    cmd: "$ agentsecrets secrets set OPENAI_API_KEY=sk_...",
+    output: "Encrypted locally in OS keychain."
+  },
+  {
+    label: "Register Agent",
+    cmd: "$ agentsecrets agent register billing-service --env production",
+    output: "Agent 'billing-service' registered. Token agt_... saved to keychain."
+  },
+  {
+    label: "Sync & Share",
     cmd: "$ agentsecrets secrets pull",
     output: "Synced 3 secrets from cloud to OS keychain."
   },
   {
-    label: "Detect Drift",
-    cmd: "$ agentsecrets secrets diff",
-    output: "Only local:   NEW_KEY\nOnly remote:  DEPRECATED_KEY\nDiffers:      DATABASE_URL"
+    label: "Set Agent Policy",
+    cmd: "$ agentsecrets agent policy set billing-service --allow STRIPE_KEY",
+    output: "Policy updated. Agent scoped to STRIPE_KEY only."
   },
   {
-    label: "Switch Environments",
-    cmd: "$ agentsecrets environment switch production",
-    output: "Switched to production."
+    label: "Set Constraints",
+    cmd: "$ agentsecrets secrets policy set STRIPE_KEY --domains api.stripe.com",
+    output: "Policy applied. STRIPE_KEY restricted to api.stripe.com."
   },
   {
-    label: "Execute Calls",
+    label: "Start Proxy",
+    cmd: "$ agentsecrets proxy start",
+    output: "Proxy on localhost:8765. Keychain-auth guarding process boundary."
+  },
+  {
+    label: "Make API Calls",
     cmd: "$ agentsecrets call --url api.stripe.com/v1/balance --bearer STRIPE_KEY",
     output: '{"object":"balance","available":[{"amount":420000,"currency":"usd"}]}'
   },
   {
+    label: "Inject Env",
+    cmd: "$ agentsecrets env -- npm test",
+    output: "Secrets injected into process. No .env file written."
+  },
+  {
     label: "Audit Logs",
     cmd: "$ agentsecrets proxy logs --watch",
-    output: "14:23:01  GET  api.stripe.com/v1/balance  STRIPE_KEY  200  245ms"
+    output: "14:23:01  GET  api.stripe.com  STRIPE_KEY  (agent: billing-service)  200  245ms"
   },
 ];
 
@@ -64,7 +84,7 @@ function MobileWorkflow() {
         id: 'mobile-workflow-trigger',
         trigger: containerRef.current,
         start: 'top top',
-        end: '+=250%',
+        end: '+=400%',
         pin: true,
         pinSpacing: true,
         scrub: 1,
@@ -349,13 +369,12 @@ function DesktopWorkflow() {
       ScrollTrigger.create({
         trigger: containerRef.current,
         start: 'top top',
-        end: '+=300%',
+        end: '+=500%',
         pin: true,
         pinSpacing: true,
         scrub: 1,
         onUpdate: (self) => {
-          const animationProgress = Math.min(self.progress / 0.66, 1);
-          updateItemsPosition(animationProgress);
+          updateItemsPosition(self.progress);
         },
       });
 

@@ -1,19 +1,35 @@
 # AgentSecrets vs AWS Secrets Manager
 
-AWS Secrets Manager is a robust cloud service for storing and retrieving secrets, heavily integrated into the AWS ecosystem (IAM, KMS, Lambda, ECS).
+AWS Secrets Manager is a robust cloud service for storing and retrieving secrets, deeply integrated into the AWS ecosystem (IAM, KMS, Lambda, ECS, EKS).
 
-## The AI Agent Vulnerability
+## Recent Evolution
 
-Like HashiCorp Vault, AWS Secrets Manager operates on a "request and receive" model. Your application calls `GetSecretValue`, and AWS returns the plaintext secret to your application over the network. 
+AWS has made two notable additions since 2025:
 
-If your application is an AI agent, pulling secrets from AWS Secrets Manager brings those secrets directly into the LLM's executing environment. This violates the **Zero-Knowledge Principle**, exposing the credentials to prompt injections or malicious tool executions.
+**Workload Credentials Provider** (v3.0.0, June 2026): Rebranded from the Secrets Manager Agent. A local HTTP caching sidecar on `localhost:2773` that caches secrets in memory with configurable TTL. Also now handles ACM certificate export/refresh. Open source (Rust).
 
-## How AgentSecrets Differs
+**AI Agent Secret Safety Skill** (June 17, 2026): Part of the AWS Agent Toolkit. Two layers — (1) guides agents to use `{{resolve:secretsmanager:...}}` dynamic references with `asm-exec`, a wrapper that resolves secrets in a child process; (2) a `PreToolUse` hook that blocks agents from calling `GetSecretValue` directly.
 
-1. **Zero-Knowledge Credential Infrastructure**: AgentSecrets never returns a plaintext value to the calling process. Instead of simple retrieval, it provides transport-layer injection, validated by intent attestation (SEC) and OS process isolation (Keychain-Auth) subsystems.
-2. **Local E2E Encryption**: AWS Secrets Manager encrypts data at rest using AWS KMS. The keys are managed by AWS. AgentSecrets encrypts your secrets locally on your machine using AES-256-GCM *before* syncing them to the cloud. The AgentSecrets servers only ever store ciphertext and cannot decrypt it.
-3. **Developer Experience**: AWS requires configuring IAM roles, policies, and the AWS SDK. AgentSecrets is designed to be as simple as an `.env` file, with a local CLI and automatic cross-environment syncing.
+### What These Don't Change
 
-## Using them together
+The Workload Credentials Provider is a caching layer, not a credential broker. It holds the decrypted secret in its own memory cache, and any process with the SSRF token can retrieve it. The secret still reaches the application process in plaintext.
 
-If your enterprise mandates AWS Secrets Manager for storage, you can build a hybrid model. Your CI/CD pipeline can pull secrets from AWS Secrets Manager and inject them into the AgentSecrets proxy at deployment time, ensuring that the running AI agent still benefits from transport-layer injection rather than holding the secrets directly.
+The AI Agent Safety Skill is an agent-level guardrail — it tells the agent *not* to read secrets, but does not prevent a compromised or misconfigured agent from bypassing it. It depends on the agent respecting the `PreToolUse` hook, and does not enforce the restriction at the infrastructure level.
+
+Underneath both, `GetSecretValue` still returns the decrypted `SecretString` or `SecretBinary` in the API response. The credential delivery model is unchanged: request-and-receive.
+
+## The Core Architectural Difference
+
+| | AWS Secrets Manager | AgentSecrets |
+|---|---|---|
+| **Delivery model** | Request-and-receive — agent calls `GetSecretValue`, gets plaintext | Transport-layer injection — agent passes key name, proxy resolves and injects |
+| **Agent sees credential** | Yes, in API response | No — credential never enters agent context |
+| **Local caching** | In-memory cache (Workload Credentials Provider) | OS keychain (persistent, encrypted at rest) |
+| **Per-secret constraints** | IAM policies (coarse, API-level) | Domain + method restrictions (`secrets policy set`) |
+| **Agent identity** | IAM roles (instance-level) | Cryptographic tokens per agent (`agent register`) |
+| **Process verification** | None (SSRF token-based) | `keychain-auth` daemon (binary hash) |
+| **AI agent safety** | Client-side guardrails (agent toolkit hook) | Infrastructure-enforced (proxy blocks injection) |
+
+## Using Them Together
+
+If your enterprise mandates AWS Secrets Manager for storage, you can use AgentSecrets as the credential delivery layer. Store secrets in AWS, then configure the AgentSecrets proxy to resolve from AWS and inject at the transport boundary. Your AI agents benefit from zero-knowledge execution without migrating storage.
