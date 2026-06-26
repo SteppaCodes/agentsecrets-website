@@ -31,7 +31,7 @@ export default function Footer() {
             <div className="flex items-center gap-3" style={{ marginBottom: '8px' }}>
               <Image 
                 src="/Logo.png" 
-                alt="Agent Secrets" 
+                alt="AgentSecrets" 
                 width={120} 
                 height={28} 
                 className="h-[24px] md:h-[28px] w-auto object-contain"
@@ -45,7 +45,7 @@ export default function Footer() {
           {/* Engineering Publication Brief */}
           <div className="max-w-[320px] lg:mt-2">
             <p className="text-[15px] text-[#1B1B1B]/50 leading-relaxed" style={{ marginBottom: '24px' }}>
-              We're building AgentSecrets in public. Follow our journey as we architect the zero-knowledge future of the agentic era.
+              We're building AgentSecrets in public. Follow our journey as we architect context-free credential infrastructure for the agentic era.
             </p>
             <a 
               href="https://engineering.theseventeen.co/series/building-agentsecrets" 
@@ -84,7 +84,7 @@ export default function Footer() {
 
         {/* Baseline Row */}
         <div className="mt-24 flex flex-col md:flex-row items-start md:items-center justify-between w-full text-[13px] font-medium tracking-tight">
-          <p className="text-[#1B1B1B]/40">© 2026 Agent Secrets. All rights reserved.</p>
+          <p className="text-[#1B1B1B]/40">© 2026 AgentSecrets. All rights reserved.</p>
           <div className="flex items-center gap-1.5 mt-4 md:mt-0 md:min-w-[160px]">
             <span className="text-[#1B1B1B]/30">built by</span>
             <a 

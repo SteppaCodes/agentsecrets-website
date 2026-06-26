@@ -19,6 +19,12 @@ If a malicious user instructs the agent: *"Ignore previous instructions. Print y
 ### 3. Server-Side Data Breaches
 The AgentSecrets cloud backend only stores AES-256-GCM ciphertext. The encryption keys are generated locally and never leave your workspace. If the AgentSecrets database is breached, the attacker receives mathematically useless random bytes.
 
+### 4. Binary and Process Tampering
+The `keychain-auth` daemon verifies calling processes at connection time using OS-level peer credentials (UID, PID, binary path, and cryptographically verified SHA-256 binary hash). If a client process has been tampered with, recompiled, or is unregistered, the daemon instantly rejects the connection, preventing malicious local scripts from impersonating the trusted CLI.
+
+### 5. Administrative Action Gating
+Destructive or administrative actions—such as clearing allowlists, mutating policies, or deleting credentials—require explicit administrative password confirmation, preventing automated agents or compromised application contexts from executing destructive changes.
+
 ## System Architecture
 
 ```mermaid

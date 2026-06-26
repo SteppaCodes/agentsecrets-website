@@ -1,6 +1,6 @@
 # How AgentSecrets Works
 
-AgentSecrets is a zero-knowledge developer credential orchestrator built for the AI era. Rather than acting as a simple HTTP request proxy, it manages the complete credentials lifecycle—secure storage, environment isolation, team sharing, transport-layer injection, and auditing—for AI agents and automated workflows.
+AgentSecrets is a zero-knowledge developer credential orchestrator built for the AI era. Rather than acting as a simple HTTP request proxy, it manages the complete credentials lifecycle—secure storage, zero-knowledge sync, environment isolation, team sharing, transport-layer injection, and auditing—for AI agents and automated workflows.
 
 By decoupling credentials from the application runtime, AgentSecrets ensures that sensitive keys never enter the memory, context, file logs, or console output of AI agents.
 
@@ -19,7 +19,7 @@ AgentSecrets enables developers to build and run AI agents and automated workflo
 
 ## Zero-Knowledge Architecture
 
-The zero-knowledge nature of AgentSecrets is holistic: **the credential value itself is never present or visible at any point in the entire architecture**. From storage and cloud synchronization to runtime execution and transport-layer injection, the raw secret value remains completely hidden from the agent, the host application, and the sync servers.
+The zero-knowledge nature of AgentSecrets is holistic: the credential value itself is structurally absent across the entire architecture. For cloud synchronization, the sync server only stores ciphertext and never receives the Workspace Key. For runtime execution, the agent only sees key references while the trusted proxy/keychain boundary resolves the value transiently for transport-layer injection. The raw secret value is never returned to the agent, written to disk, recorded in logs, or exposed to the sync servers.
 
 ### At-Rest Encryption & Process-Level Security
 
@@ -121,6 +121,69 @@ Once the upstream API returns a response, the proxy scans the body. If the upstr
 
 Finally, the proxy logs the metadata of the call (timestamp, requesting agent token, environment, endpoint, response status, and duration) to the audit log. No credential values are ever saved in the logs. The redacted response is then handed to the calling agent code.
 :::
+
+---
+
+## Execution Modes
+
+AgentSecrets provides four distinct execution paths, each suited to a different workflow:
+
+### 1. Credential Proxy (Persistent Daemon)
+
+The primary mode for AI agents and long-running processes. Start the daemon, route HTTP traffic through `localhost:8765`, and the proxy intercepts, resolves, and injects credentials at the transport layer automatically.
+
+```
+agentsecrets proxy start
+```
+
+The proxy runs as a background daemon, handling every outbound request through the full enforcement pipeline — allowlist checks, anti-impersonation verification, secret policy evaluation, transport-layer injection, and response redaction.
+
+### 2. Environment Injection (CLI & Scripts)
+
+For tools, test runners, and scripts that read from environment variables:
+
+```
+agentsecrets env -- npm test
+agentsecrets env -- python train.py
+```
+
+AgentSecrets spawns the child process with secrets injected into its environment — no `.env` file needed, no plaintext on disk. The values exist only in the child process RAM for its lifetime.
+
+### 3. Direct CLI Calls (One-Shot Requests)
+
+For quick API calls, curl replacements, and ad-hoc testing:
+
+```
+agentsecrets call --url https://api.stripe.com/v1/balance --bearer STRIPE_KEY
+agentsecrets call --url https://api.openai.com/v1/models --header Authorization=OPENAI_KEY
+```
+
+Each call spawns a transient proxy, resolves the credential, injects it, makes the request, and tears down. No daemon required.
+
+### 4. MCP Server (AI Assistant Integration)
+
+For AI coding assistants and desktop tools that support the Model Context Protocol:
+
+```
+agentsecrets mcp install
+```
+
+This registers an MCP server that exposes credential resolution as tools (`api_call`, `list_keys`, `check_key`) to clients like Cursor and Claude Desktop. The same zero-knowledge guarantees apply — the assistant sees key references, never values.
+
+---
+
+## Secret Policy Enforcement Pipeline
+
+Every request through the proxy passes through a multi-stage policy engine before a credential is resolved:
+
+1. **Agent Identity Check**: If an agent token is present, the proxy validates it and loads the agent's capability allowlist/denylist.
+2. **Target Domain Verification**: The outbound domain is checked against the workspace allowlist. Unauthorized domains receive a `403 Forbidden`.
+3. **Secret Policy Evaluation**: If the requested credential has a policy attached (restricted domains, HTTP methods, or required approval), the proxy enforces it. If the policy requires interactive approval, the proxy pauses and prompts via `agentsecrets proxy approve`.
+4. **Anti-Impersonation**: Before querying the keychain, the `keychain-auth` daemon verifies the calling process hash and binary path.
+5. **Transport-Layer Injection**: The credential is injected into the outbound request at the network boundary.
+6. **Response Redaction**: The upstream response is scanned for reflected credential values and redacted before delivery.
+
+This pipeline ensures that every authenticated call is governed, attributed, and audited — not just proxied.
 
 ---
 

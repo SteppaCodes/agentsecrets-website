@@ -230,7 +230,7 @@ TIME      RESULT  METHOD  URL                           KEY         AUTH    STAT
 You can also tail the log in real time or filter by agent:
 ```bash
 agentsecrets proxy logs --watch
-agentsecrets log list --agent my-billing-agent
+agentsecrets logs list --agent my-billing-agent
 ```
 :::
 

@@ -23,6 +23,7 @@ export const DOCS_SECTIONS = [
   { id: "concepts/agent-identity", group: "Fundamental Concepts", label: "Agent Identity" },
   { id: "concepts/storage-modes", group: "Fundamental Concepts", label: "Storage Modes" },
   { id: "concepts/no-get-method", group: "Fundamental Concepts", label: "The No get() Principle" },
+  { id: "concepts/secret-policies", group: "Fundamental Concepts", label: "Secret-Level Policies" },
 
   // CLI Reference
   { id: "cli/account", group: "CLI Reference", label: "Account (init / login)" },
@@ -53,7 +54,6 @@ export const DOCS_SECTIONS = [
   { id: "proxy/injection-styles", group: "CLI Reference", label: "Auth Injection Styles", parent: "proxy/overview" },
   { id: "proxy/domain-allowlist", group: "CLI Reference", label: "Domain Allowlist", parent: "proxy/overview" },
   { id: "proxy/agent-capabilities", group: "CLI Reference", label: "Agent Capabilities", parent: "proxy/overview" },
-  { id: "proxy/secret-policies", group: "CLI Reference", label: "Secret-Level Policies & Approvals", parent: "proxy/overview" },
   { id: "proxy/response-redaction", group: "CLI Reference", label: "Response Body Redaction", parent: "proxy/overview" },
   { id: "proxy/ssrf-protection", group: "CLI Reference", label: "SSRF Protection", parent: "proxy/overview" },
   { id: "proxy/session-token", group: "CLI Reference", label: "Session Token Auth", parent: "proxy/overview" },

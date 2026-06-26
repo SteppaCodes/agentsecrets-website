@@ -20,45 +20,31 @@ Only administrators (`Admin`) or the workspace owner can invite new members to a
    ```
 
 2. **Verify pending invites:**
-   To see the list of active invites and their status, list the pending invites for the current workspace:
+   To see the list of invited members and their status, view the members of the current workspace:
    ```bash
-   agentsecrets workspace invites list
+   agentsecrets workspace members
    ```
    Output:
    ```
-   EMAIL              ROLE    STATUS   SENT AT
-   alice@acme.com     viewer  pending  2026-05-20 02:00
-   bob@acme.com       editor  pending  2026-05-20 02:05
+   alice@acme.com  (member)  pending
+   bob@acme.com    (admin)   pending
    ```
 :::
 
----
+## Accessing the Workspace
 
-## What the invitee sees
-
-Invited members receive an email with a secure link and instructions to accept the invite. They can accept it directly via the CLI or web console.
+Inviting a team member adds them to the workspace immediately. Under the hood, the admin's client encrypts the workspace key using the invitee's public key and registers them with the workspace, which is why the invite is gated behind administrative privileges and password confirmation.
 
 :::step
-1. **Accept the invite via email or link:**
-   The invite email contains a CLI command similar to this:
-   ```bash
-   agentsecrets workspace accept --token <invite-token>
-   ```
-
-2. **Initialize their local CLI:**
-   If they haven't set up AgentSecrets, they should install the CLI and log in:
+1. **Log in or register:**
+   The invitee installs the CLI and logs in using their credentials:
    ```bash
    agentsecrets login
    ```
+   The client-side end-to-end encryption engine automatically detects their workspace access, performs the secure key exchange, and decrypts their workspace key. No separate accept command is needed.
 
-3. **Accept the workspace invite:**
-   Running the acceptance command registers their local public cryptographic key (ECDH) with the workspace:
-   ```bash
-   agentsecrets workspace accept --token <invite-token>
-   ```
-
-4. **Verify access:**
-   They can now switch to the workspace and verify they see it in their workspace list:
+2. **Verify access and switch:**
+   They can now list and switch to the new workspace:
    ```bash
    agentsecrets workspace list
    agentsecrets workspace switch "Acme Engineering"
@@ -76,13 +62,13 @@ By default, workspace invites expire after **7 days** for security. If an invite
 
 :::step
 1. **Cancel a pending invite:**
-   If you need to revoke an outstanding invitation, run:
+   If you need to revoke an outstanding invitation or remove access, run:
    ```bash
-   agentsecrets workspace invite revoke developer@acme.com
+   agentsecrets workspace remove developer@acme.com
    ```
 
 2. **Resend an invite:**
-   To resend an expired or lost invitation, simply issue the invite command again. The system will invalidate the previous token and generate a fresh invite with a new 7-day expiry:
+   To resend an expired or lost invitation, simply issue the invite command again. The system will generate a fresh invite with a new 7-day expiry:
    ```bash
    agentsecrets workspace invite developer@acme.com
    ```

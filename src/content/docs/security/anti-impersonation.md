@@ -24,6 +24,11 @@ To ensure a seamless Developer Experience (DX), AgentSecrets features an intelli
 ### 3. Absolute Privilege Separation
 Because the `keychain-auth` daemon is the only entity with access to the OS keychain (macOS Keychain, Windows Credential Manager, Linux Secret Service), the AgentSecrets CLI itself is completely unprivileged. Even if the CLI binary is compromised, it cannot extract your secrets because the daemon strictly controls the decryption context.
 
+### 4. Developer Updates & Binary Re-registration
+Because the security model enforces strict SHA-256 hash verification:
+* **Local/Development Builds**: Every time you recompile the `agentsecrets` binary locally, its SHA-256 hash changes. The next time it runs, `keychain-auth` will detect the new hash and prompt for authorization (requiring your local `sudo` password to update the registration database `/etc/keychain-auth/config.json`).
+* **Production/Signed Releases**: Standard production releases of the `agentsecrets` CLI are cryptographically signed by the developer using a private Ed25519 key. The `keychain-auth` daemon is pre-configured with the corresponding public key under `trusted_signers`. When you update the signed binary (e.g. via brew or npm), the daemon verifies the signature on first connection, automatically updates the hash registry silently, and continues execution **without any passwords or prompts**.
+
 ## OS Native Access Controls
 A critical question regarding the architecture is how `keychain-auth` leverages the **Operating System's native access controls** to prevent bypasses.
 

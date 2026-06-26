@@ -13,40 +13,46 @@ To understand the security threat models and conceptual foundations of agent ide
 
 ## The Identity CLI Workflow
 
-Governing agent access involves four primary commands: registering the agent, setting its security policy, issuing its token, and verifying its audit log.
+Governing agent access follows a simple pipeline: registering the identity, setting secret capability policies, and using the tokens to authenticate requests.
 
 ```
-          1. REGISTER                   2. POLICY SET
-   agentsecrets agent register    agentsecrets agent policy set
-              │                             │
-              ▼                             ▼
-       ┌──────────────┐              ┌──────────────┐
-       │ Registered   │              │ Capabilities │
-       │  Agent ID    │              │  Configured  │
-       └──────┬───────┘              └──────┬───────┘
-              │                             │
-              └──────────────┬──────────────┘
-                             │
-                             ▼
-                        3. ISSUE TOKEN
-                 agentsecrets agent token issue
-                             │
-                             ▼
-                       agt_s8d2k... (Token)
+         1. REGISTER (Identity & Token #1)
+           agentsecrets agent register
+                       │
+                       ▼
+                ┌──────────────┐
+                │ Registered   │
+                │  Agent ID    │
+                └──────┬───────┘
+                       │
+                       ▼
+         2. POLICY SET (Grant Access)
+           agentsecrets agent policy set
+                       │
+                       ▼
+         3. USE TOKEN (Proxy Auth)
+           Export AS_AGENT_TOKEN=<token>
+                       │
+                       ▼
+      4. ISSUE ADDITIONAL TOKENS (Optional)
+           agentsecrets agent token issue
 ```
 
-### Step 1: Register the Agent
-Registering creates a logical identity inside your workspace.
+### 1. Register the Agent (Creates Identity & Token #1)
+:::step
+Registering creates a logical identity inside your workspace and automatically issues its **first active token**.
 
 ```bash
 agentsecrets agent register my-billing-agent
 ```
 
 * **Options**:
-  * `--project, -p <project-id>`: Scope the agent identity to a specific project. If omitted, the agent operates workspace-wide.
+  * `--project, -p <project-name>`: Scope the agent identity to a specific project. If omitted, the agent operates workspace-wide.
+:::
 
-### Step 2: Configure Secrets Capabilities
-By default, newly registered agents have zero access. You must explicitly configure their capability boundary.
+### 2. Configure Secrets Capabilities (Set Policy)
+:::step
+By default, newly registered agents have zero access. You must explicitly configure their capability boundary to allow them to fetch specific credentials.
 
 To allow access to specific secrets in a project:
 ```bash
@@ -61,19 +67,23 @@ agentsecrets agent policy set my-billing-agent --deny AWS_ROOT_ACCESS_KEY
 * **Options**:
   * `--allow <keys>`: Comma-separated list of permitted secret keys.
   * `--deny <keys>`: Comma-separated list of prohibited secret keys (takes precedence).
+:::
 
-### Step 3: Issue a Cryptographic Token
-Generate a secure token for Level 2 (Issued) authentication.
+### 3. Issue Additional Tokens (Optional)
+:::step
+While registration generates your first token, you can issue additional tokens for the same agent profile (e.g. for key rotation, different hosting environments like staging/production, or separate developer machines):
 
 ```bash
-agentsecrets agent token issue my-billing-agent
+agentsecrets agent token issue my-billing-agent --env production
 ```
 
-This generates a token prefixed with `agt_` (e.g., `agt_3f8a9...`).
+This generates another secure token.
 * **OS Keychain Storage**: The CLI automatically stores the issued token in your local OS Keychain. 
 * **Key Reference**: You can use `<AGENTNAME>_TOKEN` (e.g., `MY-BILLING-AGENT_TOKEN`) in your local developer scripts, and the proxy will resolve it directly from the keyring at runtime.
+:::
 
-### Step 4: List and Inspect
+### 4. List and Inspect
+:::step
 To view all registered agents and their scopes in the current workspace:
 ```bash
 agentsecrets agent list
@@ -83,6 +93,7 @@ To view all active tokens issued for a specific agent:
 ```bash
 agentsecrets agent token list my-billing-agent
 ```
+:::
 
 ---
 

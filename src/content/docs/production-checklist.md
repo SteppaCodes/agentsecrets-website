@@ -33,9 +33,9 @@ Before deploying an AgentSecrets-powered agent to production, work through this 
 
 ## Audit log
 
-[ ] **Audit log is accessible** — run `agentsecrets log list` and confirm entries are appearing
-[ ] **No anonymous calls in production** — run `agentsecrets log list --identity anonymous` and resolve any identity coverage gaps
-[ ] **Log export process is in place** — if you need audit logs for compliance, test `agentsecrets log export --format csv` and confirm the output meets your requirements
+[ ] **Audit log is accessible** — run `agentsecrets logs list` and confirm entries are appearing
+[ ] **No anonymous calls in production** — run `agentsecrets logs list --identity anonymous` and resolve any identity coverage gaps
+[ ] **Log export process is in place** — if you need audit logs for compliance, test `agentsecrets logs export --format csv` and confirm the output meets your requirements
 
 ---
 
@@ -79,7 +79,7 @@ Then make a test call and confirm the audit log entry appears:
 
 ```bash
 agentsecrets call --url https://api.stripe.com/v1/balance --bearer STRIPE_KEY
-agentsecrets log list --tail
+agentsecrets logs list --tail
 ```
 
 If both succeed, your production setup is correct.

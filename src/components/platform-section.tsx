@@ -192,7 +192,7 @@ export default function PlatformSection() {
             className='text-[clamp(28px,3.5vw,42px)] leading-[1.15] tracking-[-0.03em] text-[#1B1B1B] font-medium text-center w-full'
             style={{ fontFamily: 'var(--font-helvetica), sans-serif' }}
           >
-            Use Agent Secrets in the<br />way that fits your stack
+            Use AgentSecrets in the<br />way that fits your stack
           </h2>
 
           <div className="h-16 md:h-20" />
@@ -278,4 +278,3 @@ export default function PlatformSection() {
     </section>
   );
 }
-

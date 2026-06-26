@@ -88,7 +88,7 @@ func main() {
 
 ## Customizing Injection
 
-AgentSecrets supports multiple injection methods depending on what the upstream API expects. See the [Injection Styles Reference](../proxy/injection-styles.md) for details on:
+AgentSecrets supports multiple injection methods depending on what the upstream API expects. See the [Injection Styles Reference](/docs/proxy/injection-styles) for details on:
 - `X-AS-Inject-Header: <HeaderName> <KeyName>` (Custom header injection)
 - `X-AS-Inject-Query: <ParamName> <KeyName>` (URL query parameter injection)
 - `X-AS-Inject-Basic: <Username> <PasswordKey>` (Basic authentication)

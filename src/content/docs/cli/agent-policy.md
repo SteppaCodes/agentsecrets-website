@@ -19,18 +19,27 @@ agentsecrets agent policy get <agent-name>
 ```
 
 #### Set Agent Policy
-To restrict an agent to specific keys (whitelisting):
+To restrict an agent to specific keys (whitelisting) using a comma-separated list or repeatable flags:
 ```bash
+# Comma-separated list
 agentsecrets agent policy set <agent-name> --allow GITHUB_TOKEN,SERP_KEY
+
+# Repeatable flags
+agentsecrets agent policy set <agent-name> --allow GITHUB_TOKEN --allow SERP_KEY
 ```
 
 To block an agent from accessing specific sensitive keys (blacklisting):
 ```bash
+# Comma-separated list
 agentsecrets agent policy set <agent-name> --deny STRIPE_SECRET_KEY,AWS_SECRET_ACCESS_KEY
+
+# Repeatable flags
+agentsecrets agent policy set <agent-name> --deny STRIPE_SECRET_KEY --deny AWS_SECRET_ACCESS_KEY
 ```
 
 > [!NOTE]
-> Setting agent policies is a sensitive administrative action. The CLI will prompt you for your workspace/project password to authenticate the changes.
+> - Setting agent policies is a sensitive administrative action. The CLI will prompt you for your workspace/project password to authenticate the changes.
+> - Secrets must exist locally or remotely in the project before you can bind them to an agent policy. Providing a key that does not exist will fail the command with a `SEC-404` validation error.
 
 ---
 
@@ -52,23 +61,27 @@ A constraint rule dictates:
 #### View Secret Policy
 To inspect the current policy/constraints of a secret key:
 ```bash
-agentsecrets secrets constraints <KEY>
+agentsecrets secrets policy get <KEY>
 ```
 
 #### Set Secret Policy
 To bind target constraints to a secret:
 ```bash
-agentsecrets secrets constraints <KEY> set --domains api.stripe.com --allow GET,POST --deny DELETE --request-permission PUT
+agentsecrets secrets policy set <KEY> --domains api.stripe.com --methods GET,POST --action request_permission
+```
+Alternatively, to bind domain-specific method rules:
+```bash
+agentsecrets secrets policy set <KEY> --rule api.stripe.com:GET=allow,POST=request_permission
 ```
 
 #### Clear Secret Policy
 To remove all target constraints from a secret:
 ```bash
-agentsecrets secrets constraints <KEY> clear
+agentsecrets secrets policy delete <KEY>
 ```
 
 > [!NOTE]
-> Modifying secret constraints requires password verification.
+> Modifying secret policies requires password verification.
 
 ---
 

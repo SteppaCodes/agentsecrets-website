@@ -35,7 +35,7 @@ chain_hash = SHA-256(previous_entry_id + current_entry_id + created_at_RFC3339)
 ```
 
 * **Immutable History**: If an attacker modifies a row's details, deletes an entry, or tries to reorder logs, the hash chain breaks.
-* **Non-Repudiation**: Running `agentsecrets log verify` walks the chain chronologically, recalculates the hashes, and flags any discrepancy instantly.
+* **Non-Repudiation**: Running `agentsecrets logs verify` walks the chain chronologically, recalculates the hashes, and flags any discrepancy instantly.
 * **Zero Credential Exposure**: No plaintext credential values are ever written to the database. Only key names (e.g., `STRIPE_KEY`) and metadata are recorded.
 
 ---
@@ -75,6 +75,6 @@ AgentSecrets separates logs into three distinct categories to cover the entire l
 
 | Category | Storage Target | Description | How to Query |
 |---|---|---|---|
-| **Runtime Forensic Audit Log** | SQLite (`~/.agentsecrets/audit.db`) & Cloud Backend (Sync) | Flat indexable metadata with E2EE-linked JSON snapshots. Tracks all runtime credential usage. | `agentsecrets log`, `agentsecrets proxy logs` |
+| **Runtime Forensic Audit Log** | SQLite (`~/.agentsecrets/audit.db`) & Cloud Backend (Sync) | Flat indexable metadata with E2EE-linked JSON snapshots. Tracks all runtime credential usage. | `agentsecrets logs`, `agentsecrets proxy logs` |
 | **Workspace Policy Log** | Synchronization Server (Cloud Backend) | Audit trail of administrative settings changes (e.g., changes to domain allowlists). | `agentsecrets workspace allowlist log` |
 | **Keychain Auth Security Log** | Plaintext File (`~/.local/share/keychain-auth/audit.log`) | Audit trail of secure daemon authorizations, process hash checks, and OS keychain reads. | View local audit file |

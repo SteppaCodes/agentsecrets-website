@@ -50,7 +50,7 @@ export default function Nav({ page }: { page?: string }) {
           >
             <Image
               src='/Logo.png'
-              alt='Agent Secrets'
+              alt='AgentSecrets'
               width={200}
               height={45}
               className='h-[28px] md:h-[40px] w-auto object-contain'

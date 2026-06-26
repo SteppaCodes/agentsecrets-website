@@ -170,9 +170,9 @@ Below is the complete reference of all error codes used in AgentSecrets, includi
 * **Resolution:**
   1. Specify the actual Log ID (e.g., `log_01J0A...`) in the command:
      ```bash
-     agentsecrets log detail log_01J0A8B7...
+     agentsecrets logs show log_01J0A8B7...
      ```
-  2. Use the interactive menu by running `agentsecrets log list` or `agentsecrets log` and selecting the row.
+  2. Use the interactive menu by running `agentsecrets logs list` or `agentsecrets logs` and selecting the row.
 
 ### ERR-999: Unexpected Runtime Exception
 * **Description:** An unhandled error occurred during CLI execution.

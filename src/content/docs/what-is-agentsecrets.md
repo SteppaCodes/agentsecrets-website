@@ -1,6 +1,6 @@
 # What is AgentSecrets?
 
-AgentSecrets is the **Zero-Knowledge Credential Infrastructure** for the AI agent era. Designed for autonomous agents, development teams, and human-in-the-loop workflows, AgentSecrets moves credentials below the application layer. It ensures that agents can execute tasks using credentials by reference (e.g., `STRIPE_KEY`) without ever holding raw credential values in memory.
+AgentSecrets is the **Zero-Knowledge Credential Infrastructure** for the AI agent era. Designed for autonomous agents, development teams, and human-in-the-loop workflows, AgentSecrets moves credentials below the application layer. It ensures that agents can execute tasks using credentials by reference (e.g., `STRIPE_KEY`) without ever seeing raw credential values in their context or process memory.
 
 Rather than a simple secrets manager or proxy, AgentSecrets serves as an **extensible security host** that compiles specialized subsystems into a unified defense-in-depth framework:
 
@@ -45,11 +45,12 @@ Integrates directly with the OS security layers, verifying the cryptographic has
 
 ## Execution Modes
 
-AgentSecrets provides three core execution paths depending on your workflow:
+AgentSecrets provides four core execution paths depending on your workflow:
 
 1. **The Credential Proxy (for AI Agents)**: Intercepts HTTP/HTTPS requests at the transport layer, resolving key names from the OS keychain and injecting credential values on the fly. This prevents credentials from entering the agent's context or memory.
 2. **Environment Injection (for Developers & CLI Tools)**: Runs tools, scripts, or servers using `agentsecrets env -- <command>`. This injects secrets directly into the process environment variables at runtime without writing them to disk (replacing `.env` files completely).
 3. **Direct CLI Calls (for Quick Tests)**: Use `agentsecrets call` to make one-shot authenticated requests from the command line. The proxy resolves the key and injects the credential for a single request without needing to start the background proxy daemon.
+4. **MCP Server (for AI Assistant Integrations)**: Use `agentsecrets mcp install` to register a Model Context Protocol server. AI coding assistants like Cursor and Claude Desktop can resolve credentials through the same zero-knowledge pipeline using tool calls.
 
 These execution paths ensure credentials never leave your environment as plaintext.
 
@@ -78,5 +79,4 @@ flowchart TD
 ## License
 
 MIT. The CLI, proxy, Python SDK, and MCP template are free to use, fork, and modify. See the [repository](https://github.com/The-17/agentsecrets) for the full license.
-
 
